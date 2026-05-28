@@ -38,4 +38,5 @@ go test ./...
 
 - `docs/guides/local-dev.md`
 - `docs/guides/clean-architecture-operations.md`
+- `docs/guides/glossary.md`
 - `docs/pr/`
