@@ -1,4 +1,4 @@
-package task
+package task_test
 
 import (
 	"context"
@@ -6,14 +6,18 @@ import (
 	"time"
 
 	domaintask "github.com/iwasawarenji954/hogedd-clean/apps/api/internal/domain/task"
+	taskusecase "github.com/iwasawarenji954/hogedd-clean/apps/api/internal/usecase/task"
 )
 
 func TestServiceCreateTask(t *testing.T) {
 	now := time.Date(2026, 5, 28, 12, 0, 0, 0, time.UTC)
 	repository := newFakeRepository()
-	service := NewService(repository, fixedIDGenerator{id: "task-1"}, fixedClock{now: now})
+	service := taskusecase.NewService(repository, fixedIDGenerator{id: "task-1"}, fixedClock{now: now})
 
-	output, err := service.CreateTask(context.Background(), CreateTaskInput{Title: "  Write tests  "})
+	output, err := service.CreateTask(
+		context.Background(),
+		taskusecase.CreateTaskInput{Title: "  Write tests  "},
+	)
 	if err != nil {
 		t.Fatalf("CreateTask returned error: %v", err)
 	}
@@ -36,9 +40,13 @@ func TestServiceCreateTask(t *testing.T) {
 }
 
 func TestServiceCreateTaskRejectsEmptyTitle(t *testing.T) {
-	service := NewService(newFakeRepository(), fixedIDGenerator{id: "task-1"}, fixedClock{now: time.Now()})
+	service := taskusecase.NewService(
+		newFakeRepository(),
+		fixedIDGenerator{id: "task-1"},
+		fixedClock{now: time.Now()},
+	)
 
-	_, err := service.CreateTask(context.Background(), CreateTaskInput{Title: "   "})
+	_, err := service.CreateTask(context.Background(), taskusecase.CreateTaskInput{Title: "   "})
 	if err != domaintask.ErrEmptyTitle {
 		t.Fatalf("error = %v, want %v", err, domaintask.ErrEmptyTitle)
 	}
@@ -51,7 +59,7 @@ func TestServiceListTasks(t *testing.T) {
 		{ID: "task-1", Title: "First", CreatedAt: now},
 		{ID: "task-2", Title: "Second", CreatedAt: now.Add(time.Minute)},
 	}
-	service := NewService(repository, fixedIDGenerator{id: "unused"}, fixedClock{now: now})
+	service := taskusecase.NewService(repository, fixedIDGenerator{id: "unused"}, fixedClock{now: now})
 
 	outputs, err := service.ListTasks(context.Background())
 	if err != nil {

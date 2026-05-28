@@ -1,4 +1,4 @@
-package httpapi
+package httpapi_test
 
 import (
 	"bytes"
@@ -10,6 +10,7 @@ import (
 
 	"github.com/iwasawarenji954/hogedd-clean/apps/api/internal/infrastructure/memory"
 	"github.com/iwasawarenji954/hogedd-clean/apps/api/internal/infrastructure/system"
+	httpapi "github.com/iwasawarenji954/hogedd-clean/apps/api/internal/interface/http"
 	taskusecase "github.com/iwasawarenji954/hogedd-clean/apps/api/internal/usecase/task"
 )
 
@@ -38,7 +39,12 @@ func TestCreateAndListTasks(t *testing.T) {
 	router.ServeHTTP(createResponse, createRequest)
 
 	if createResponse.Code != http.StatusCreated {
-		t.Fatalf("create status = %d, want %d; body = %s", createResponse.Code, http.StatusCreated, createResponse.Body.String())
+		t.Fatalf(
+			"create status = %d, want %d; body = %s",
+			createResponse.Code,
+			http.StatusCreated,
+			createResponse.Body.String(),
+		)
 	}
 	assertJSONField(t, createResponse.Body.Bytes(), "id", "task-1")
 	assertJSONField(t, createResponse.Body.Bytes(), "title", "Learn clean architecture")
@@ -87,7 +93,7 @@ func newTestRouter() http.Handler {
 		system.NewSequentialIDGenerator("task"),
 		fixedClock{now: time.Date(2026, 5, 28, 12, 0, 0, 0, time.UTC)},
 	)
-	return NewRouter(service)
+	return httpapi.NewRouter(service)
 }
 
 func assertJSONField(t *testing.T, body []byte, field string, want string) {

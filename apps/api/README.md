@@ -47,4 +47,6 @@ internal/interface/http
 internal/infrastructure/memory
 internal/infrastructure/system
 cmd/server
+test/usecase/task
+test/interface/http
 ```

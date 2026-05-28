@@ -18,6 +18,9 @@ apps/api/
       memory/
       postgres/
       system/
+  test/
+    usecase/
+    interface/
 ```
 
 各層の役割は次の通り。
@@ -29,6 +32,7 @@ apps/api/
 | `interface/http` | REST API 境界              | handler、request/response 変換、status code 変換     | 業務ロジック、SQL                  |
 | `infrastructure` | 外部技術の実装             | repository 実装、SQL、ID 生成、時計、外部 API client | domain の都合を壊すモデル          |
 | `cmd/server`     | 起動と DI                  | 設定読み込み、依存の組み立て                         | 業務ロジック                       |
+| `test`           | 層ごとの外部テスト         | usecase test、HTTP handler test                      | 本番コード                         |
 
 ## 依存方向
 
@@ -78,6 +82,8 @@ infrastructure
 8. `cmd/server` で DI する
 9. CI と同じコマンドをローカルで通す
 
+テストは原則として `apps/api/test/...` に分ける。学習時に「どの層を何で検証しているか」が見えるようにするため。本番コードと同じディレクトリに置く必要があるテストだけ、例外的に対象 package の隣へ置く。
+
 ## 今回の最小 Task API の読み方
 
 今回の `task` は学習用の最小例。
@@ -100,6 +106,12 @@ infrastructure/memory
 
 infrastructure/system
   Clock と sequential ID generator
+
+test/usecase/task
+  usecase を repository fake と固定 clock / ID generator で検証
+
+test/interface/http
+  HTTP request/response を httptest で検証
 ```
 
 見る順番は `domain -> usecase -> interface/http -> infrastructure -> cmd/server` が分かりやすい。外からではなく、中心から読む。
