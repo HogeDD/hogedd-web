@@ -1,7 +1,9 @@
 <!-- BEGIN:nextjs-agent-rules -->
+
 # This is NOT the Next.js you know
 
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
+
 <!-- END:nextjs-agent-rules -->
 
 # エージェント向けプロジェクトガイド
@@ -155,11 +157,15 @@ transaction / DB:
 
 ```bash
 npm run dev
+npm run format:check
 npm run lint
+npm run typecheck
 npm run build
 ```
 
+- format check では `npm run format:check` を実行する。
 - 通常の検証では `npm run lint` を実行する。
+- TypeScript の型検証では `npm run typecheck` を実行する。
 - ルーティング、レンダリング、metadata、Next.js config、ビルド設定を触った場合は `npm run build` も実行する。
 - 現時点では test script がない。テストを追加する場合は、スクリプト、設定、CI の実行手順まで揃える。
 
