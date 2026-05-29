@@ -17,7 +17,7 @@
 | infrastructure     | DB、外部 API、時刻、ID 生成など具体技術を扱う層。                                          |
 | interface/http     | HTTP request/response と usecase の変換を担当する層。                                      |
 | composition root   | 依存関係を組み立てる場所。今は `cmd/server/main.go`。                                      |
-| BFF                | Backend for Frontend。フロントエンド専用の薄い backend 境界。今は `frontend/app/api/*`。 |
+| BFF                | Backend for Frontend。フロントエンド専用の薄い backend 境界。今は `frontend/app/apps/clean-tasks/api/*`。 |
 
 ## Go API の主要ファイル
 
@@ -71,27 +71,27 @@
 
 | ファイル                 | 役割                                                             |
 | ------------------------ | ---------------------------------------------------------------- |
-| `frontend/app/page.tsx`           | トップページ。Server Component として `TasksClient` を表示する。 |
-| `frontend/app/tasks-client.tsx`   | task UI。state、event handler、fetch を使う Client Component。   |
-| `frontend/app/api/tasks/route.ts` | Next.js Route Handler。BFF として Go API へ転送する。            |
-| `frontend/app/lib/tasks.ts`       | フロント側で使う task 型。                                       |
+| `frontend/app/page.tsx`                                             | トップページ。Server Component としてサイト全体の要素を表示する。 |
+| `frontend/app/apps/clean-tasks/_components/tasks-client.tsx`        | task UI。state、event handler、fetch を使う Client Component。   |
+| `frontend/app/apps/clean-tasks/api/tasks/route.ts`                  | Next.js Route Handler。アプリ専用 BFF として Go API へ転送する。  |
+| `frontend/app/apps/clean-tasks/_lib/tasks.ts`                       | Clean Tasks 専用の task 型と API path。                          |
 
 ## Next.js / BFF 側の型・変数名
 
 | 名前                | 場所                     | 意味                                                     |
 | ------------------- | ------------------------ | -------------------------------------------------------- |
-| `Task`              | `frontend/app/lib/tasks.ts`       | フロント側で扱う task 型。                               |
-| `ListTasksResponse` | `frontend/app/lib/tasks.ts`       | `GET /api/tasks` の response 型。                        |
-| `CreateTaskRequest` | `frontend/app/lib/tasks.ts`       | task 作成 request 型。                                   |
-| `TasksClient`       | `frontend/app/tasks-client.tsx`   | task UI の Client Component。                            |
-| `LoadState`         | `frontend/app/tasks-client.tsx`   | task 読み込み状態。`idle`、`loading`、`ready`、`error`。 |
-| `tasks`             | `frontend/app/tasks-client.tsx`   | 画面に表示する task 配列。                               |
-| `title`             | `frontend/app/tasks-client.tsx`   | 入力中の task title。                                    |
-| `message`           | `frontend/app/tasks-client.tsx`   | 接続状態やエラーを画面に出す文字列。                     |
-| `fetchTasks`        | `frontend/app/tasks-client.tsx`   | Next BFF から task 一覧を取得する関数。                  |
-| `loadTasks`         | `frontend/app/tasks-client.tsx`   | loading state を含めて task 一覧を読み直す関数。         |
-| `handleSubmit`      | `frontend/app/tasks-client.tsx`   | task 作成 form の submit handler。                       |
-| `getAPIBaseURL`     | `frontend/app/api/tasks/route.ts` | Go API の base URL を返す関数。                          |
+| `Task`              | `frontend/app/apps/clean-tasks/_lib/tasks.ts` | Clean Tasks の task 型。                          |
+| `ListTasksResponse` | `frontend/app/apps/clean-tasks/_lib/tasks.ts` | `GET /apps/clean-tasks/api/tasks` の response 型。 |
+| `CreateTaskRequest` | `frontend/app/apps/clean-tasks/_lib/tasks.ts` | task 作成 request 型。                             |
+| `TasksClient`       | `frontend/app/apps/clean-tasks/_components/tasks-client.tsx` | task UI の Client Component。 |
+| `LoadState`         | `frontend/app/apps/clean-tasks/_components/tasks-client.tsx` | task 読み込み状態。`idle`、`loading`、`ready`、`error`。 |
+| `tasks`             | `frontend/app/apps/clean-tasks/_components/tasks-client.tsx` | 画面に表示する task 配列。 |
+| `title`             | `frontend/app/apps/clean-tasks/_components/tasks-client.tsx` | 入力中の task title。 |
+| `message`           | `frontend/app/apps/clean-tasks/_components/tasks-client.tsx` | 接続状態やエラーを画面に出す文字列。 |
+| `fetchTasks`        | `frontend/app/apps/clean-tasks/_components/tasks-client.tsx` | アプリ専用 BFF から task 一覧を取得する関数。 |
+| `loadTasks`         | `frontend/app/apps/clean-tasks/_components/tasks-client.tsx` | loading state を含めて task 一覧を読み直す関数。 |
+| `handleSubmit`      | `frontend/app/apps/clean-tasks/_components/tasks-client.tsx` | task 作成 form の submit handler。 |
+| `tasksAPIPath`      | `frontend/app/apps/clean-tasks/_lib/tasks.ts` | アプリ専用 BFF の path。 |
 | `API_BASE_URL`      | `.env.example`           | Next.js BFF が接続する Go API URL。                      |
 
 ## DTO とは
@@ -105,12 +105,12 @@ DTO は Data Transfer Object の略。層の境界でデータを渡すための
 | domain entity             | `domain/task.Task`                  | 業務ルールの中心。                       |
 | usecase input/output      | `CreateTaskInput`、`TaskOutput`     | usecase の入力・出力を明確にする。       |
 | HTTP request/response DTO | `createTaskRequest`、`taskResponse` | JSON と status code の境界を明確にする。 |
-| frontend type             | `frontend/app/lib/tasks.ts` の `Task`        | UI が扱うデータ形状を明確にする。        |
+| frontend type             | `frontend/app/apps/clean-tasks/_lib/tasks.ts` の `Task` | UI が扱うデータ形状を明確にする。        |
 
 ## 読むときのコツ
 
 - `domain` から読む。外側の HTTP や UI から読むと迷いやすい。
 - `interface` は翻訳係として読む。業務判断を探さない。
 - `infrastructure` は具体技術として読む。今は memory、将来は postgres。
-- `frontend/app/api/*` は BFF として読む。Clean Architecture の中心ではなく、Go API の外側にある薄い adapter。
+- `frontend/app/apps/clean-tasks/api/*` は Clean Tasks の BFF として読む。Clean Architecture の中心ではなく、Go API の外側にある薄い adapter。
 - 似た型名が出てきたら「どの層の型か」を見る。

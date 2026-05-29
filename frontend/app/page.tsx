@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { CopyLinkButton } from "@/app/components/copy-link-button";
+import { CopyLinkButton } from "@/app/_components/copy-link-button";
 
 export const metadata: Metadata = {
   title: "HogeDD",

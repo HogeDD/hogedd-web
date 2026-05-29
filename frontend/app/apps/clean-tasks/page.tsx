@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { TasksClient } from "@/app/tasks-client";
+import { TasksClient } from "@/app/apps/clean-tasks/_components/tasks-client";
 
 export const metadata: Metadata = {
   title: "Clean Tasks",

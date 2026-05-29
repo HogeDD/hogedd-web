@@ -297,6 +297,15 @@ decision log には最低限、以下を書く。
 - カードやタイルを多用しすぎず、余白、見出し、リスト、セクションのリズムで見せる。
 - 小さく作りながら、モバイルでの操作性を先に確認する。
 
+## Frontend ディレクトリ方針
+
+- サイト全体で使うものは `frontend/app/_components` と `frontend/app/_lib` に置く。
+- アプリ固有のコードは `frontend/app/apps/<app-name>/` に閉じる。
+- そのアプリだけで使う components / lib / data / BFF は、できるだけそのアプリ配下に置く。
+- 一時的な実験コードや置き場は `_drafts`、`_tmp` のように `_` で始めて分かるようにする。
+- ルーティングに見せたくない code は private folder を使う。Next.js の private folder は `_folder` で表す。
+- 共有にするか app 内に閉じるか迷ったら、まず app 内に置き、複数アプリで再利用が確定してから外へ出す。
+
 ## 変更前後の確認
 
 - 変更前に既存実装を読む。

@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import type { ListTasksResponse, Task } from "@/app/lib/tasks";
+import { tasksAPIPath, type ListTasksResponse, type Task } from "@/app/apps/clean-tasks/_lib/tasks";
 
 type LoadState = "idle" | "loading" | "ready" | "error";
 
@@ -15,7 +15,7 @@ export function TasksClient() {
   const completedCount = useMemo(() => tasks.filter((task) => task.completed).length, [tasks]);
 
   async function fetchTasks() {
-    const response = await fetch("/api/tasks", { cache: "no-store" });
+    const response = await fetch(tasksAPIPath, { cache: "no-store" });
     const body = (await response.json()) as ListTasksResponse | { error?: string };
 
     if (!response.ok) {
@@ -64,7 +64,7 @@ export function TasksClient() {
     setMessage("Creating task...");
 
     try {
-      const response = await fetch("/api/tasks", {
+      const response = await fetch(tasksAPIPath, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
