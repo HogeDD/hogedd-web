@@ -35,8 +35,8 @@ const releaseNotes = [
     body: "まずはトップページとアプリ一覧を分けて、今後の拡張に耐える形へ寄せる。",
   },
   {
-    title: "最初の公開アプリを準備",
-    body: "既存の Clean Tasks を最初のデモアプリとして `/apps/clean-tasks` で見せる。",
+    title: "アプリの置き場を整備",
+    body: "各アプリは `/apps/` 配下に積み上げて、見せるものだけを表に出す。",
   },
   {
     title: "ポートフォリオ化を見据える",
@@ -45,12 +45,6 @@ const releaseNotes = [
 ];
 
 const appCards = [
-  {
-    name: "Clean Tasks",
-    description: "Go API とつながる最初のデモアプリ。実験用の土台として使う。",
-    href: "/apps/clean-tasks",
-    status: "公開中",
-  },
   {
     name: "More apps",
     description: "くだらないけれど、見た目はちゃんとしているアプリを今後追加する。",
