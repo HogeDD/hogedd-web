@@ -56,7 +56,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: backend/api
+        working-directory: backend/apps/clean-tasks
 
     steps:
       - name: Checkout
@@ -65,7 +65,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version-file: backend/api/.go-version
+          go-version-file: backend/apps/clean-tasks/.go-version
 
       - name: Check formatting
         run: |
