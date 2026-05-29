@@ -96,7 +96,7 @@ export function ChinchinGame() {
                     disabled={status.type !== "playing" || mark !== null}
                     aria-label={`${row + 1}行${col + 1}列`}
                     className={[
-                      "relative flex aspect-square items-center justify-center rounded-md border text-3xl font-semibold transition sm:text-5xl",
+                      "relative flex aspect-square touch-manipulation items-center justify-center rounded-md border text-3xl font-semibold transition sm:text-5xl",
                       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)]",
                       isWinningCell
                         ? "border-[#b58a64] bg-[#d5b28e]"
