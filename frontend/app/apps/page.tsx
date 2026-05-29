@@ -1,18 +1,11 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { appLinks } from "@/app/apps/_lib/app-links";
 
 export const metadata: Metadata = {
   title: "Apps",
-  description: "HogeDD のアプリ一覧",
+  description: "HogeDD のアプリ紹介動画リンク集",
 };
-
-const comingSoonApps = [
-  {
-    name: "Next app slot",
-    status: "準備中",
-    description: "今後、くだらないけれど真面目に見せたいアプリを追加していく場所。",
-  },
-];
 
 export default function AppsPage() {
   return (
@@ -24,7 +17,7 @@ export default function AppsPage() {
               /apps
             </p>
             <h1 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
-              アプリの置き場
+              アプリ紹介動画
             </h1>
           </div>
           <Link
@@ -37,24 +30,73 @@ export default function AppsPage() {
 
         <section className="py-8">
           <p className="max-w-2xl text-sm leading-7 text-[var(--muted)] sm:text-base sm:leading-8">
-            `/apps/` は HogeDD の成長面です。新しいアプリはここに積み上げて、
-            変な中身をちゃんとした見せ方で並べます。
+            YouTube で紹介したアプリをここに並べます。概要欄から戻ってきた人が、
+            動画とアプリ本体をすぐ行き来できる場所です。
           </p>
         </section>
 
         <section className="grid gap-4 md:grid-cols-2">
-          {comingSoonApps.map((app) => (
-            <div
-              key={app.name}
-              className="rounded-md border border-[var(--border)] bg-[var(--surface)] p-5"
-            >
+          {appLinks.length === 0 ? (
+            <div className="rounded-md border border-[var(--border)] bg-[var(--surface)] p-5">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
-                {app.status}
+                準備中
               </p>
-              <h2 className="mt-2 text-lg font-semibold tracking-tight">{app.name}</h2>
-              <p className="mt-4 text-sm leading-6 text-[var(--muted)]">{app.description}</p>
+              <h2 className="mt-2 text-lg font-semibold tracking-tight">最初の動画を準備中</h2>
+              <p className="mt-4 text-sm leading-6 text-[var(--muted)]">
+                公開したアプリ紹介動画から順に、このページへ追加していきます。
+              </p>
             </div>
-          ))}
+          ) : (
+            appLinks.map((app) => (
+              <article
+                key={app.slug}
+                className="overflow-hidden rounded-md border border-[var(--border)] bg-[var(--surface)]"
+              >
+                <div
+                  aria-label={`${app.title} の YouTube サムネイル`}
+                  className="aspect-video border-b border-[var(--border)] bg-[var(--surface-strong)] bg-cover bg-center"
+                  style={{ backgroundImage: `url(${app.thumbnailUrl})` }}
+                />
+                <div className="p-5">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+                    {app.publishedAt}
+                  </p>
+                  <h2 className="mt-2 text-lg font-semibold tracking-tight">{app.title}</h2>
+                  <p className="mt-4 text-sm leading-6 text-[var(--muted)]">{app.description}</p>
+
+                  {app.tags.length > 0 ? (
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {app.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="rounded-full border border-[var(--border)] px-2.5 py-1 text-xs font-medium text-[var(--muted)]"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  ) : null}
+
+                  <div className="mt-5 flex flex-wrap gap-3">
+                    <Link
+                      href={app.appHref}
+                      className="rounded-md bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white transition hover:opacity-90"
+                    >
+                      アプリを見る
+                    </Link>
+                    <a
+                      href={app.youtubeUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="rounded-md border border-[var(--border)] px-3 py-2 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--surface-strong)]"
+                    >
+                      YouTube
+                    </a>
+                  </div>
+                </div>
+              </article>
+            ))
+          )}
         </section>
       </div>
     </main>
