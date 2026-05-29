@@ -38,5 +38,12 @@ export function defineAppLink(youtubeUrl: string, options: DefineAppLinkOptions)
 }
 
 export const appLinks: readonly AppLink[] = [
-  // YouTube 公開後は、ここに defineAppLink("https://youtu.be/...", {...}) を足す。
+  defineAppLink("https://youtu.be/5mo0qnPuVTY?si=5comgyazMjAYnOJ9", {
+    slug: "clean-tasks",
+    title: "Clean Tasks",
+    description: "Clean Architecture の練習として作った、最小構成のタスクアプリ。",
+    appHref: "/apps/clean-tasks",
+    publishedAt: "2026-05-30",
+    tags: ["Next.js", "Go", "Clean Architecture"],
+  }),
 ];
