@@ -23,38 +23,38 @@
 
 | ファイル                                                     | 役割                                    |
 | ------------------------------------------------------------ | --------------------------------------- |
-| `backend/api/cmd/server/main.go`                                | API server の起動、依存関係の組み立て。 |
-| `backend/api/internal/domain/task/task.go`                      | task の domain entity と validation。   |
-| `backend/api/internal/usecase/task/service.go`                  | task の usecase。                       |
-| `backend/api/internal/interface/http/router.go`                 | REST API handler。                      |
-| `backend/api/internal/infrastructure/memory/task_repository.go` | in-memory repository 実装。             |
-| `backend/api/internal/infrastructure/system/clock.go`           | 実時刻を返す clock 実装。               |
-| `backend/api/internal/infrastructure/system/id_generator.go`    | 簡易 ID generator 実装。                |
-| `backend/api/test/usecase/task/service_test.go`                 | usecase の外部テスト。                  |
-| `backend/api/test/interface/http/router_test.go`                | HTTP handler の外部テスト。             |
+| `backend/apps/clean-tasks/cmd/server/main.go`                   | API server の起動、依存関係の組み立て。 |
+| `backend/apps/clean-tasks/internal/domain/task/task.go`         | task の domain entity と validation。   |
+| `backend/apps/clean-tasks/internal/usecase/task/service.go`     | task の usecase。                       |
+| `backend/apps/clean-tasks/internal/interface/http/router.go`    | REST API handler。                      |
+| `backend/apps/clean-tasks/internal/infrastructure/memory/task_repository.go` | in-memory repository 実装。             |
+| `backend/apps/clean-tasks/internal/infrastructure/system/clock.go`           | 実時刻を返す clock 実装。               |
+| `backend/apps/clean-tasks/internal/infrastructure/system/id_generator.go`    | 簡易 ID generator 実装。                |
+| `backend/apps/clean-tasks/test/usecase/task/service_test.go`     | usecase の外部テスト。                  |
+| `backend/apps/clean-tasks/test/interface/http/router_test.go`    | HTTP handler の外部テスト。             |
 
 ## Go API の型・変数名
 
 | 名前                    | 場所                    | 意味                                                            |
 | ----------------------- | ----------------------- | --------------------------------------------------------------- |
-| `Task`                  | `domain/task`           | task entity。アプリの中心にある task の表現。                   |
-| `ID`                    | `domain/task`           | task ID 用の domain 型。今は `string` の別名。                  |
-| `ErrEmptyTitle`         | `domain/task`           | title が空のときの domain error。                               |
-| `New`                   | `domain/task`           | `Task` を作る constructor。title の trim と validation を行う。 |
-| `Repository`            | `usecase/task`          | task 保存・取得の port。usecase が必要とする interface。        |
-| `IDGenerator`           | `usecase/task`          | ID 採番の port。具体実装は外側に置く。                          |
-| `Clock`                 | `usecase/task`          | 現在時刻取得の port。テストで固定時刻に差し替えるために使う。   |
-| `Service`               | `usecase/task`          | task usecase の実装。                                           |
-| `CreateTaskInput`       | `usecase/task`          | task 作成 usecase の入力 DTO。                                  |
-| `TaskOutput`            | `usecase/task`          | usecase から外側へ返す出力 DTO。                                |
-| `toOutput`              | `usecase/task`          | domain entity を usecase output へ変換する関数。                |
-| `TaskRepository`        | `infrastructure/memory` | `Repository` port の in-memory 実装。                           |
-| `SequentialIDGenerator` | `infrastructure/system` | `task-1` のような ID を生成する簡易実装。                       |
-| `taskHandler`           | `interface/http`        | `/tasks` の HTTP handler。                                      |
-| `createTaskRequest`     | `interface/http`        | HTTP request body 用 DTO。                                      |
-| `taskResponse`          | `interface/http`        | HTTP response body 用 DTO。                                     |
-| `listTasksResponse`     | `interface/http`        | `GET /tasks` の response body 用 DTO。                          |
-| `writeJSON`             | `interface/http`        | JSON response を返す helper。                                   |
+| `Task`                  | `backend/apps/clean-tasks/internal/domain/task`           | task entity。アプリの中心にある task の表現。                   |
+| `ID`                    | `backend/apps/clean-tasks/internal/domain/task`           | task ID 用の domain 型。今は `string` の別名。                  |
+| `ErrEmptyTitle`         | `backend/apps/clean-tasks/internal/domain/task`           | title が空のときの domain error。                               |
+| `New`                   | `backend/apps/clean-tasks/internal/domain/task`           | `Task` を作る constructor。title の trim と validation を行う。 |
+| `Repository`            | `backend/apps/clean-tasks/internal/usecase/task`          | task 保存・取得の port。usecase が必要とする interface。        |
+| `IDGenerator`           | `backend/apps/clean-tasks/internal/usecase/task`          | ID 採番の port。具体実装は外側に置く。                          |
+| `Clock`                 | `backend/apps/clean-tasks/internal/usecase/task`          | 現在時刻取得の port。テストで固定時刻に差し替えるために使う。   |
+| `Service`               | `backend/apps/clean-tasks/internal/usecase/task`          | task usecase の実装。                                           |
+| `CreateTaskInput`       | `backend/apps/clean-tasks/internal/usecase/task`          | task 作成 usecase の入力 DTO。                                  |
+| `TaskOutput`            | `backend/apps/clean-tasks/internal/usecase/task`          | usecase から外側へ返す出力 DTO。                                |
+| `toOutput`              | `backend/apps/clean-tasks/internal/usecase/task`          | domain entity を usecase output へ変換する関数。                |
+| `TaskRepository`        | `backend/apps/clean-tasks/internal/infrastructure/memory` | `Repository` port の in-memory 実装。                           |
+| `SequentialIDGenerator` | `backend/apps/clean-tasks/internal/infrastructure/system` | `task-1` のような ID を生成する簡易実装。                       |
+| `taskHandler`           | `backend/apps/clean-tasks/internal/interface/http`        | `/tasks` の HTTP handler。                                      |
+| `createTaskRequest`     | `backend/apps/clean-tasks/internal/interface/http`        | HTTP request body 用 DTO。                                      |
+| `taskResponse`          | `backend/apps/clean-tasks/internal/interface/http`        | HTTP response body 用 DTO。                                     |
+| `listTasksResponse`     | `backend/apps/clean-tasks/internal/interface/http`        | `GET /tasks` の response body 用 DTO。                          |
+| `writeJSON`             | `backend/apps/clean-tasks/internal/interface/http`        | JSON response を返す helper。                                   |
 
 ## テストで出てくる名前
 

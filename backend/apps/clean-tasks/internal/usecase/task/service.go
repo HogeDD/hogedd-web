@@ -5,7 +5,7 @@ import (
 	"errors"
 	"time"
 
-	domaintask "github.com/iwasawarenji954/hogedd-clean/backend/api/internal/domain/task"
+	domaintask "github.com/iwasawarenji954/hogedd-clean/backend/apps/clean-tasks/internal/domain/task"
 )
 
 type Repository interface {

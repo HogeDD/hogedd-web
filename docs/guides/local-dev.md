@@ -1,6 +1,6 @@
 # ローカル開発手順
 
-このリポジトリは `frontend` の Next.js と `backend/api` の Go API を別プロセスで起動する。
+このリポジトリは `frontend` の Next.js と `backend/apps/clean-tasks` の Go API を別プロセスで起動する。
 
 ## 起動
 

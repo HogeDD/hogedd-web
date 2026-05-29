@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	domaintask "github.com/iwasawarenji954/hogedd-clean/backend/api/internal/domain/task"
-	taskusecase "github.com/iwasawarenji954/hogedd-clean/backend/api/internal/usecase/task"
+	domaintask "github.com/iwasawarenji954/hogedd-clean/backend/apps/clean-tasks/internal/domain/task"
+	taskusecase "github.com/iwasawarenji954/hogedd-clean/backend/apps/clean-tasks/internal/usecase/task"
 )
 
 func TestServiceCreateTask(t *testing.T) {

@@ -8,10 +8,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/iwasawarenji954/hogedd-clean/backend/api/internal/infrastructure/memory"
-	"github.com/iwasawarenji954/hogedd-clean/backend/api/internal/infrastructure/system"
-	httpapi "github.com/iwasawarenji954/hogedd-clean/backend/api/internal/interface/http"
-	taskusecase "github.com/iwasawarenji954/hogedd-clean/backend/api/internal/usecase/task"
+	"github.com/iwasawarenji954/hogedd-clean/backend/apps/clean-tasks/internal/infrastructure/memory"
+	"github.com/iwasawarenji954/hogedd-clean/backend/apps/clean-tasks/internal/infrastructure/system"
+	httpapi "github.com/iwasawarenji954/hogedd-clean/backend/apps/clean-tasks/internal/interface/http"
+	taskusecase "github.com/iwasawarenji954/hogedd-clean/backend/apps/clean-tasks/internal/usecase/task"
 )
 
 func TestHealthz(t *testing.T) {

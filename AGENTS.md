@@ -24,7 +24,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 ## 現在の構成
 
 - フロントエンドは `frontend/` にある Next.js `16.2.6` の App Router アプリ。
-- バックエンドは `backend/api/` にある Go API。
+- バックエンドは `backend/apps/clean-tasks/` にある Go API。これは最初の実装例であり、今後は app ごとに独立した Go API として育てる前提で考える。
 - React は `19.2.4`。
 - TypeScript は `strict: true`。
 - スタイリングは Tailwind CSS v4。`frontend/app/globals.css` で `@import "tailwindcss";` を使っている。
@@ -37,7 +37,8 @@ This version has breaking changes — APIs, conventions, and file structure may 
 ```text
 frontend/     # TypeScript / Next.js フロントエンド
 backend/
-  api/        # Go バックエンド
+  apps/
+    <app-name>/  # Go バックエンド
 docs/         # ADR、PR decision log、設計判断の記録
 ```
 
@@ -45,6 +46,26 @@ docs/         # ADR、PR decision log、設計判断の記録
 - フロントとバックエンドの境界は API 契約で明確にする。
 - API 契約は OpenAPI を単一の生成元にする。
 - ディレクトリ構成は拡張性と保守性を優先する。ただし、実体のない抽象化や早すぎる分割は避ける。
+
+backend 側も app 単位で切る。新しいアプリは 1 ディレクトリに閉じ、その中で clean architecture を完結させる。
+
+```text
+backend/
+  apps/
+    <app-name>/
+      cmd/server/               # 起動、DI、設定
+      internal/
+        domain/
+        usecase/
+        interface/http/
+        infrastructure/
+      test/
+```
+
+- `backend/apps/clean-tasks` は現行の最初の例であり、今後は `backend/apps/<app-name>/` に寄せる前提で設計する。
+- app ごとのコードは app のディレクトリの外に漏らさない。
+- app をまたぐ共有は、必要になってから最小限で切り出す。
+- 共有コードは命名と責務を曖昧にしやすいので、最初から大量に作らない。
 
 ## クリーンアーキテクチャ方針
 
@@ -62,7 +83,7 @@ infrastructure  # DB、SQL、外部 API、具体的なフレームワーク実�
 想定ディレクトリ例:
 
 ```text
-backend/api/
+backend/apps/<app-name>/
   cmd/server/                 # 起動、DI、設定読み込み
   internal/
     domain/                   # 外部依存を持たない中心
@@ -170,7 +191,7 @@ npm run build
 Go バックエンドでは、少なくとも以下のコマンドを整備する。
 
 ```bash
-cd backend/api
+cd backend/apps/clean-tasks
 test -z "$(gofmt -l .)"
 go vet ./...
 go test ./...

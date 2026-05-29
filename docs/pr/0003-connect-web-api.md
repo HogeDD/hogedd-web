@@ -7,7 +7,7 @@ Go API の最小実装が入ったため、次は Next.js 側から実際に API
 ## 決定したこと
 
 - Next.js の画面を create-next-app の初期表示から task UI に置き換える。
-- ブラウザから Go API を直接呼ばず、Next.js Route Handler `app/api/tasks/route.ts` を BFF として挟む。
+- ブラウザから Go API を直接呼ばず、Next.js Route Handler `app/apps/clean-tasks/api/tasks/route.ts` を BFF として挟む。
 - Go API の URL は `API_BASE_URL` で指定し、未指定時は `http://localhost:8080` を使う。
 - `.env.example` に `API_BASE_URL=http://localhost:8080` を追加する。
 - npm scripts に `dev:web` と `dev:api` を追加する。
@@ -41,9 +41,9 @@ npm run format:check
 npm run lint
 npm run typecheck
 npm run build
-cd apps/api && test -z "$(gofmt -l .)"
-cd apps/api && go vet ./...
-cd apps/api && go test ./...
+cd backend/apps/clean-tasks && test -z "$(gofmt -l .)"
+cd backend/apps/clean-tasks && go vet ./...
+cd backend/apps/clean-tasks && go test ./...
 ```
 
 dev 動作確認:

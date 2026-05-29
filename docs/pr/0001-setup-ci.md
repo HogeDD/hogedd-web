@@ -15,7 +15,7 @@
 
 ## 理由
 
-最初の CI は小さく始める。まだ Go バックエンドが存在しないため、存在しない `apps/api` や Go job を先に作らない。現在の実体である Next.js アプリに対して、壊れた formatting、lint 違反、型エラー、build 失敗を PR 上で検出できることを優先する。
+最初の CI は小さく始める。まだ Go バックエンドが存在しないため、存在しない `backend/apps/clean-tasks` や Go job を先に作らない。現在の実体である Next.js アプリに対して、壊れた formatting、lint 違反、型エラー、build 失敗を PR 上で検出できることを優先する。
 
 Prettier は formatter として採用済みの方針に合わせた。ESLint は品質ルール、Prettier は整形という責務分離にすることで、format だけの差分と lint ルールの議論を分けやすくする。
 
@@ -26,7 +26,7 @@ Node.js version は CI workflow に直接書かず `.node-version` に寄せた�
 ## 検討した代替案
 
 - Go job も最初から追加する案
-  - Go コードがまだ存在しないため見送った。`apps/api` 作成時に追加する。
+  - Go コードがまだ存在しないため見送った。`backend/apps/clean-tasks` 作成時に追加する。
 - Prettier ではなく Biome を使う案
   - ユーザー方針として Prettier を採用したため見送った。
 - push ではなく pull_request のみで CI を動かす案
@@ -49,7 +49,7 @@ npm run build
 
 ## 今後の見直し条件
 
-- `apps/web` / `apps/api` へモノレポ化したとき
+- `frontend` / `backend/apps/<app-name>` へモノレポ化したとき
 - Go バックエンドを追加したとき
 - テスト runner を導入したとき
 - OpenAPI 生成や migration を CI に組み込むとき
