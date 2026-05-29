@@ -24,7 +24,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 ## 現在の構成
 
 - フロントエンドは `frontend/` にある Next.js `16.2.6` の App Router アプリ。
-- バックエンドは `backend/api/` にある Go API。
+- バックエンドは `backend/apps/clean-tasks/` にある Go API。これは最初の実装例であり、今後は app ごとに独立した Go API として育てる前提で考える。
 - React は `19.2.4`。
 - TypeScript は `strict: true`。
 - スタイリングは Tailwind CSS v4。`frontend/app/globals.css` で `@import "tailwindcss";` を使っている。
@@ -37,7 +37,8 @@ This version has breaking changes — APIs, conventions, and file structure may 
 ```text
 frontend/     # TypeScript / Next.js フロントエンド
 backend/
-  api/        # Go バックエンド
+  apps/
+    <app-name>/  # Go バックエンド
 docs/         # ADR、PR decision log、設計判断の記録
 ```
 
@@ -45,6 +46,26 @@ docs/         # ADR、PR decision log、設計判断の記録
 - フロントとバックエンドの境界は API 契約で明確にする。
 - API 契約は OpenAPI を単一の生成元にする。
 - ディレクトリ構成は拡張性と保守性を優先する。ただし、実体のない抽象化や早すぎる分割は避ける。
+
+backend 側も app 単位で切る。新しいアプリは 1 ディレクトリに閉じ、その中で clean architecture を完結させる。
+
+```text
+backend/
+  apps/
+    <app-name>/
+      cmd/server/               # 起動、DI、設定
+      internal/
+        domain/
+        usecase/
+        interface/http/
+        infrastructure/
+      test/
+```
+
+- `backend/apps/clean-tasks` は現行の最初の例であり、今後は `backend/apps/<app-name>/` に寄せる前提で設計する。
+- app ごとのコードは app のディレクトリの外に漏らさない。
+- app をまたぐ共有は、必要になってから最小限で切り出す。
+- 共有コードは命名と責務を曖昧にしやすいので、最初から大量に作らない。
 
 ## クリーンアーキテクチャ方針
 
@@ -62,7 +83,7 @@ infrastructure  # DB、SQL、外部 API、具体的なフレームワーク実�
 想定ディレクトリ例:
 
 ```text
-backend/api/
+backend/apps/<app-name>/
   cmd/server/                 # 起動、DI、設定読み込み
   internal/
     domain/                   # 外部依存を持たない中心
@@ -170,7 +191,7 @@ npm run build
 Go バックエンドでは、少なくとも以下のコマンドを整備する。
 
 ```bash
-cd backend/api
+cd backend/apps/clean-tasks
 test -z "$(gofmt -l .)"
 go vet ./...
 go test ./...
@@ -275,6 +296,36 @@ decision log には最低限、以下を書く。
 - モバイルからデスクトップまで破綻しないレスポンシブレイアウトにする。
 - 装飾よりも、ユーザーが目的を達成しやすい情報設計を優先する。
 - テキストの overflow や UI 要素の重なりを避ける。
+
+## HogeDD サイト方針
+
+このリポジトリは `https://www.hogedd.com/` を今後育てる前提で、実際のサイト要素を拾いながら UI を整える。
+
+- ベースは mobile first で考える。スマホ、タブレット、PC の全幅で破綻しないことを前提にする。
+- 画面サイズごとに別物にせず、同じ情報設計をレスポンシブに拡張する。
+- グラデーションは最小限にする。必要なら薄いアクセント程度に留め、主役にはしない。
+- 軽いサイトを優先する。重いアニメーションや過剰な視覚効果は避ける。
+- ただし、軽量な motion は使ってよい。例えば hover、focus、load、sheet、menu の状態遷移は短く自然にする。
+- コンテンツは実際のサイト要素を基準に拾う。
+  - ロゴとブランド名
+  - About
+  - お知らせ・リリース
+  - SNS
+  - Contents
+  - Contact
+  - 共有や URL コピーのような導線
+- 既存サイトの雰囲気を単純コピーするのではなく、情報のまとまりを整理して現代的に見せる。
+- カードやタイルを多用しすぎず、余白、見出し、リスト、セクションのリズムで見せる。
+- 小さく作りながら、モバイルでの操作性を先に確認する。
+
+## Frontend ディレクトリ方針
+
+- サイト全体で使うものは `frontend/app/_components` と `frontend/app/_lib` に置く。
+- アプリ固有のコードは `frontend/app/apps/<app-name>/` に閉じる。
+- そのアプリだけで使う components / lib / data / BFF は、できるだけそのアプリ配下に置く。
+- 一時的な実験コードや置き場は `_drafts`、`_tmp` のように `_` で始めて分かるようにする。
+- ルーティングに見せたくない code は private folder を使う。Next.js の private folder は `_folder` で表す。
+- 共有にするか app 内に閉じるか迷ったら、まず app 内に置き、複数アプリで再利用が確定してから外へ出す。
 
 ## 変更前後の確認
 

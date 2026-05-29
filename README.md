@@ -6,7 +6,7 @@ Next.js frontend and Go API for practicing Clean Architecture in a small monorep
 
 ```text
 frontend/     # Next.js app and BFF
-backend/api/  # Go API
+backend/apps/clean-tasks/  # Go API
 docs/         # Guides and decision logs
 ```
 
@@ -39,7 +39,7 @@ npm run build
 ```
 
 ```bash
-cd backend/api
+cd backend/apps/clean-tasks
 test -z "$(gofmt -l .)"
 go vet ./...
 go test ./...

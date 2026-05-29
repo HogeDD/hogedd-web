@@ -6,10 +6,10 @@
 
 ## このリポジトリでの基本形
 
-Go API は `backend/api` に置く。
+Go API は app ごとに `backend/apps/<app-name>/` に置く。最初の実装例は `backend/apps/clean-tasks` で、以後は同じ構成を app ごとに繰り返す。
 
 ```text
-backend/api/
+backend/apps/<app-name>/
   cmd/server/
   internal/
     domain/
@@ -24,6 +24,8 @@ backend/api/
     usecase/
     interface/
 ```
+
+今の `clean-tasks` もこの形に合わせて置いている。
 
 各層の役割は次の通り。
 
@@ -84,7 +86,7 @@ infrastructure
 8. `cmd/server` で DI する
 9. CI と同じコマンドをローカルで通す
 
-テストは原則として `backend/api/test/...` に分ける。学習時に「どの層を何で検証しているか」が見えるようにするため。本番コードと同じディレクトリに置く必要があるテストだけ、例外的に対象 package の隣へ置く。
+テストは原則として `backend/apps/<app-name>/test/...` に分ける。学習時に「どの層を何で検証しているか」が見えるようにするため。本番コードと同じディレクトリに置く必要があるテストだけ、例外的に対象 package の隣へ置く。
 
 ## 今回の最小 Task API の読み方
 
@@ -102,6 +104,7 @@ interface/http
   GET /healthz
   POST /tasks
   GET /tasks
+  PATCH /tasks/{taskID}/complete
 
 infrastructure/memory
   TaskRepository の in-memory 実装
@@ -175,7 +178,7 @@ OpenAPI は spec-first にする。生成元は一つ。
 
 ```text
 docs/openapi/openapi.yaml
-backend/api/internal/interface/openapi/
+backend/apps/<app-name>/internal/interface/openapi/
 ```
 
 生成コードは手編集しない。API の仕様を変える場合は OpenAPI spec を直し、Go / TypeScript の型を再生成する。
@@ -219,7 +222,7 @@ npm run build
 Go API:
 
 ```bash
-cd backend/api
+cd backend/apps/clean-tasks
 test -z "$(gofmt -l .)"
 go vet ./...
 go test ./...

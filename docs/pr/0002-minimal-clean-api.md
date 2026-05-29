@@ -8,7 +8,7 @@
 
 ## 決定したこと
 
-- `apps/api` に Go module を追加する。
+- `backend/apps/clean-tasks` に Go module を追加する。
 - 題材は `task` とする。
 - REST API は最小の 3 endpoint にする。
   - `GET /healthz`
@@ -17,7 +17,7 @@
 - 層は `domain`、`usecase`、`interface/http`、`infrastructure`、`cmd/server` に分ける。
 - DB はまだ導入しない。
 - repository は `infrastructure/memory` の in-memory 実装にする。
-- テストコードは `apps/api/test/...` 配下に分ける。
+- テストコードは `backend/apps/clean-tasks/test/...` 配下に分ける。
 - Go CI job を追加し、`gofmt` check、`go vet ./...`、`go test ./...` を実行する。
 - 学習用に `docs/guides/clean-architecture-operations.md` を追加する。
 
@@ -29,7 +29,7 @@
 
 DB を見送ったのは、まず依存方向とテストの形を固定するため。PostgreSQL は次以降の PR で `infrastructure/postgres` と migration を追加すればよい。
 
-テストコードは本番コードの隣ではなく `apps/api/test/...` に分けた。Go では同一 package に `_test.go` を置く選択も一般的だが、このリポジトリでは学習しやすさを優先し、どの層の何を検証しているかがディレクトリから分かる形にした。
+テストコードは本番コードの隣ではなく `backend/apps/clean-tasks/test/...` に分けた。Go では同一 package に `_test.go` を置く選択も一般的だが、このリポジトリでは学習しやすさを優先し、どの層の何を検証しているかがディレクトリから分かる形にした。
 
 ## 検討した代替案
 
@@ -55,7 +55,7 @@ OpenAPI をまだ入れていないため、API 契約はコードとテスト�
 Go API:
 
 ```bash
-cd apps/api
+cd backend/apps/clean-tasks
 test -z "$(gofmt -l .)"
 go vet ./...
 go test ./...

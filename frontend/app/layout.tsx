@@ -2,8 +2,11 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Clean Tasks",
-  description: "Minimal Next.js and Go clean architecture application",
+  title: {
+    default: "HogeDD",
+    template: "%s | HogeDD",
+  },
+  description: "真面目な顔で、くだらないアプリを紹介する HogeDD の公式サイト",
 };
 
 export default function RootLayout({
@@ -12,8 +15,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full antialiased">
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="ja" className="h-full antialiased">
+      <body className="min-h-full bg-[var(--background)] text-[var(--foreground)]">{children}</body>
     </html>
   );
 }

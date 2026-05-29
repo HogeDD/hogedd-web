@@ -17,44 +17,44 @@
 | infrastructure     | DB、外部 API、時刻、ID 生成など具体技術を扱う層。                                          |
 | interface/http     | HTTP request/response と usecase の変換を担当する層。                                      |
 | composition root   | 依存関係を組み立てる場所。今は `cmd/server/main.go`。                                      |
-| BFF                | Backend for Frontend。フロントエンド専用の薄い backend 境界。今は `frontend/app/api/*`。 |
+| BFF                | Backend for Frontend。フロントエンド専用の薄い backend 境界。今は `frontend/app/apps/clean-tasks/api/*`。 |
 
 ## Go API の主要ファイル
 
 | ファイル                                                     | 役割                                    |
 | ------------------------------------------------------------ | --------------------------------------- |
-| `backend/api/cmd/server/main.go`                                | API server の起動、依存関係の組み立て。 |
-| `backend/api/internal/domain/task/task.go`                      | task の domain entity と validation。   |
-| `backend/api/internal/usecase/task/service.go`                  | task の usecase。                       |
-| `backend/api/internal/interface/http/router.go`                 | REST API handler。                      |
-| `backend/api/internal/infrastructure/memory/task_repository.go` | in-memory repository 実装。             |
-| `backend/api/internal/infrastructure/system/clock.go`           | 実時刻を返す clock 実装。               |
-| `backend/api/internal/infrastructure/system/id_generator.go`    | 簡易 ID generator 実装。                |
-| `backend/api/test/usecase/task/service_test.go`                 | usecase の外部テスト。                  |
-| `backend/api/test/interface/http/router_test.go`                | HTTP handler の外部テスト。             |
+| `backend/apps/clean-tasks/cmd/server/main.go`                   | API server の起動、依存関係の組み立て。 |
+| `backend/apps/clean-tasks/internal/domain/task/task.go`         | task の domain entity と validation。   |
+| `backend/apps/clean-tasks/internal/usecase/task/service.go`     | task の usecase。                       |
+| `backend/apps/clean-tasks/internal/interface/http/router.go`    | REST API handler。                      |
+| `backend/apps/clean-tasks/internal/infrastructure/memory/task_repository.go` | in-memory repository 実装。             |
+| `backend/apps/clean-tasks/internal/infrastructure/system/clock.go`           | 実時刻を返す clock 実装。               |
+| `backend/apps/clean-tasks/internal/infrastructure/system/id_generator.go`    | 簡易 ID generator 実装。                |
+| `backend/apps/clean-tasks/test/usecase/task/service_test.go`     | usecase の外部テスト。                  |
+| `backend/apps/clean-tasks/test/interface/http/router_test.go`    | HTTP handler の外部テスト。             |
 
 ## Go API の型・変数名
 
 | 名前                    | 場所                    | 意味                                                            |
 | ----------------------- | ----------------------- | --------------------------------------------------------------- |
-| `Task`                  | `domain/task`           | task entity。アプリの中心にある task の表現。                   |
-| `ID`                    | `domain/task`           | task ID 用の domain 型。今は `string` の別名。                  |
-| `ErrEmptyTitle`         | `domain/task`           | title が空のときの domain error。                               |
-| `New`                   | `domain/task`           | `Task` を作る constructor。title の trim と validation を行う。 |
-| `Repository`            | `usecase/task`          | task 保存・取得の port。usecase が必要とする interface。        |
-| `IDGenerator`           | `usecase/task`          | ID 採番の port。具体実装は外側に置く。                          |
-| `Clock`                 | `usecase/task`          | 現在時刻取得の port。テストで固定時刻に差し替えるために使う。   |
-| `Service`               | `usecase/task`          | task usecase の実装。                                           |
-| `CreateTaskInput`       | `usecase/task`          | task 作成 usecase の入力 DTO。                                  |
-| `TaskOutput`            | `usecase/task`          | usecase から外側へ返す出力 DTO。                                |
-| `toOutput`              | `usecase/task`          | domain entity を usecase output へ変換する関数。                |
-| `TaskRepository`        | `infrastructure/memory` | `Repository` port の in-memory 実装。                           |
-| `SequentialIDGenerator` | `infrastructure/system` | `task-1` のような ID を生成する簡易実装。                       |
-| `taskHandler`           | `interface/http`        | `/tasks` の HTTP handler。                                      |
-| `createTaskRequest`     | `interface/http`        | HTTP request body 用 DTO。                                      |
-| `taskResponse`          | `interface/http`        | HTTP response body 用 DTO。                                     |
-| `listTasksResponse`     | `interface/http`        | `GET /tasks` の response body 用 DTO。                          |
-| `writeJSON`             | `interface/http`        | JSON response を返す helper。                                   |
+| `Task`                  | `backend/apps/clean-tasks/internal/domain/task`           | task entity。アプリの中心にある task の表現。                   |
+| `ID`                    | `backend/apps/clean-tasks/internal/domain/task`           | task ID 用の domain 型。今は `string` の別名。                  |
+| `ErrEmptyTitle`         | `backend/apps/clean-tasks/internal/domain/task`           | title が空のときの domain error。                               |
+| `New`                   | `backend/apps/clean-tasks/internal/domain/task`           | `Task` を作る constructor。title の trim と validation を行う。 |
+| `Repository`            | `backend/apps/clean-tasks/internal/usecase/task`          | task 保存・取得の port。usecase が必要とする interface。        |
+| `IDGenerator`           | `backend/apps/clean-tasks/internal/usecase/task`          | ID 採番の port。具体実装は外側に置く。                          |
+| `Clock`                 | `backend/apps/clean-tasks/internal/usecase/task`          | 現在時刻取得の port。テストで固定時刻に差し替えるために使う。   |
+| `Service`               | `backend/apps/clean-tasks/internal/usecase/task`          | task usecase の実装。                                           |
+| `CreateTaskInput`       | `backend/apps/clean-tasks/internal/usecase/task`          | task 作成 usecase の入力 DTO。                                  |
+| `TaskOutput`            | `backend/apps/clean-tasks/internal/usecase/task`          | usecase から外側へ返す出力 DTO。                                |
+| `toOutput`              | `backend/apps/clean-tasks/internal/usecase/task`          | domain entity を usecase output へ変換する関数。                |
+| `TaskRepository`        | `backend/apps/clean-tasks/internal/infrastructure/memory` | `Repository` port の in-memory 実装。                           |
+| `SequentialIDGenerator` | `backend/apps/clean-tasks/internal/infrastructure/system` | `task-1` のような ID を生成する簡易実装。                       |
+| `taskHandler`           | `backend/apps/clean-tasks/internal/interface/http`        | `/tasks` の HTTP handler。                                      |
+| `createTaskRequest`     | `backend/apps/clean-tasks/internal/interface/http`        | HTTP request body 用 DTO。                                      |
+| `taskResponse`          | `backend/apps/clean-tasks/internal/interface/http`        | HTTP response body 用 DTO。                                     |
+| `listTasksResponse`     | `backend/apps/clean-tasks/internal/interface/http`        | `GET /tasks` の response body 用 DTO。                          |
+| `writeJSON`             | `backend/apps/clean-tasks/internal/interface/http`        | JSON response を返す helper。                                   |
 
 ## テストで出てくる名前
 
@@ -71,27 +71,27 @@
 
 | ファイル                 | 役割                                                             |
 | ------------------------ | ---------------------------------------------------------------- |
-| `frontend/app/page.tsx`           | トップページ。Server Component として `TasksClient` を表示する。 |
-| `frontend/app/tasks-client.tsx`   | task UI。state、event handler、fetch を使う Client Component。   |
-| `frontend/app/api/tasks/route.ts` | Next.js Route Handler。BFF として Go API へ転送する。            |
-| `frontend/app/lib/tasks.ts`       | フロント側で使う task 型。                                       |
+| `frontend/app/page.tsx`                                             | トップページ。Server Component としてサイト全体の要素を表示する。 |
+| `frontend/app/apps/clean-tasks/_components/tasks-client.tsx`        | task UI。state、event handler、fetch を使う Client Component。   |
+| `frontend/app/apps/clean-tasks/api/tasks/route.ts`                  | Next.js Route Handler。アプリ専用 BFF として Go API へ転送する。  |
+| `frontend/app/apps/clean-tasks/_lib/tasks.ts`                       | Clean Tasks 専用の task 型と API path。                          |
 
 ## Next.js / BFF 側の型・変数名
 
 | 名前                | 場所                     | 意味                                                     |
 | ------------------- | ------------------------ | -------------------------------------------------------- |
-| `Task`              | `frontend/app/lib/tasks.ts`       | フロント側で扱う task 型。                               |
-| `ListTasksResponse` | `frontend/app/lib/tasks.ts`       | `GET /api/tasks` の response 型。                        |
-| `CreateTaskRequest` | `frontend/app/lib/tasks.ts`       | task 作成 request 型。                                   |
-| `TasksClient`       | `frontend/app/tasks-client.tsx`   | task UI の Client Component。                            |
-| `LoadState`         | `frontend/app/tasks-client.tsx`   | task 読み込み状態。`idle`、`loading`、`ready`、`error`。 |
-| `tasks`             | `frontend/app/tasks-client.tsx`   | 画面に表示する task 配列。                               |
-| `title`             | `frontend/app/tasks-client.tsx`   | 入力中の task title。                                    |
-| `message`           | `frontend/app/tasks-client.tsx`   | 接続状態やエラーを画面に出す文字列。                     |
-| `fetchTasks`        | `frontend/app/tasks-client.tsx`   | Next BFF から task 一覧を取得する関数。                  |
-| `loadTasks`         | `frontend/app/tasks-client.tsx`   | loading state を含めて task 一覧を読み直す関数。         |
-| `handleSubmit`      | `frontend/app/tasks-client.tsx`   | task 作成 form の submit handler。                       |
-| `getAPIBaseURL`     | `frontend/app/api/tasks/route.ts` | Go API の base URL を返す関数。                          |
+| `Task`              | `frontend/app/apps/clean-tasks/_lib/tasks.ts` | Clean Tasks の task 型。                          |
+| `ListTasksResponse` | `frontend/app/apps/clean-tasks/_lib/tasks.ts` | `GET /apps/clean-tasks/api/tasks` の response 型。 |
+| `CreateTaskRequest` | `frontend/app/apps/clean-tasks/_lib/tasks.ts` | task 作成 request 型。                             |
+| `TasksClient`       | `frontend/app/apps/clean-tasks/_components/tasks-client.tsx` | task UI の Client Component。 |
+| `LoadState`         | `frontend/app/apps/clean-tasks/_components/tasks-client.tsx` | task 読み込み状態。`idle`、`loading`、`ready`、`error`。 |
+| `tasks`             | `frontend/app/apps/clean-tasks/_components/tasks-client.tsx` | 画面に表示する task 配列。 |
+| `title`             | `frontend/app/apps/clean-tasks/_components/tasks-client.tsx` | 入力中の task title。 |
+| `message`           | `frontend/app/apps/clean-tasks/_components/tasks-client.tsx` | 接続状態やエラーを画面に出す文字列。 |
+| `fetchTasks`        | `frontend/app/apps/clean-tasks/_components/tasks-client.tsx` | アプリ専用 BFF から task 一覧を取得する関数。 |
+| `loadTasks`         | `frontend/app/apps/clean-tasks/_components/tasks-client.tsx` | loading state を含めて task 一覧を読み直す関数。 |
+| `handleSubmit`      | `frontend/app/apps/clean-tasks/_components/tasks-client.tsx` | task 作成 form の submit handler。 |
+| `tasksAPIPath`      | `frontend/app/apps/clean-tasks/_lib/tasks.ts` | アプリ専用 BFF の path。 |
 | `API_BASE_URL`      | `.env.example`           | Next.js BFF が接続する Go API URL。                      |
 
 ## DTO とは
@@ -105,12 +105,12 @@ DTO は Data Transfer Object の略。層の境界でデータを渡すための
 | domain entity             | `domain/task.Task`                  | 業務ルールの中心。                       |
 | usecase input/output      | `CreateTaskInput`、`TaskOutput`     | usecase の入力・出力を明確にする。       |
 | HTTP request/response DTO | `createTaskRequest`、`taskResponse` | JSON と status code の境界を明確にする。 |
-| frontend type             | `frontend/app/lib/tasks.ts` の `Task`        | UI が扱うデータ形状を明確にする。        |
+| frontend type             | `frontend/app/apps/clean-tasks/_lib/tasks.ts` の `Task` | UI が扱うデータ形状を明確にする。        |
 
 ## 読むときのコツ
 
 - `domain` から読む。外側の HTTP や UI から読むと迷いやすい。
 - `interface` は翻訳係として読む。業務判断を探さない。
 - `infrastructure` は具体技術として読む。今は memory、将来は postgres。
-- `frontend/app/api/*` は BFF として読む。Clean Architecture の中心ではなく、Go API の外側にある薄い adapter。
+- `frontend/app/apps/clean-tasks/api/*` は Clean Tasks の BFF として読む。Clean Architecture の中心ではなく、Go API の外側にある薄い adapter。
 - 似た型名が出てきたら「どの層の型か」を見る。

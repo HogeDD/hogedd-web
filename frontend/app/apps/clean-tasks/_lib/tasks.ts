@@ -12,3 +12,5 @@ export type ListTasksResponse = {
 export type CreateTaskRequest = {
   title: string;
 };
+
+export const tasksAPIPath = "/apps/clean-tasks/api/tasks";

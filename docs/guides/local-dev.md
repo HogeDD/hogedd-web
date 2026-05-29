@@ -1,6 +1,6 @@
 # ローカル開発手順
 
-このリポジトリは `frontend` の Next.js と `backend/api` の Go API を別プロセスで起動する。
+このリポジトリは `frontend` の Next.js と `backend/apps/clean-tasks` の Go API を別プロセスで起動する。
 
 ## 起動
 
@@ -46,13 +46,13 @@ curl http://localhost:8080/healthz
 Next.js BFF:
 
 ```bash
-curl http://localhost:3000/api/tasks
+curl http://localhost:3000/apps/clean-tasks/api/tasks
 ```
 
 task 作成:
 
 ```bash
-curl -X POST http://localhost:3000/api/tasks \
+curl -X POST http://localhost:3000/apps/clean-tasks/api/tasks \
   -H 'Content-Type: application/json' \
   -d '{"title":"Learn clean architecture"}'
 ```
@@ -60,7 +60,7 @@ curl -X POST http://localhost:3000/api/tasks \
 作成後の一覧:
 
 ```bash
-curl http://localhost:3000/api/tasks
+curl http://localhost:3000/apps/clean-tasks/api/tasks
 ```
 
 ## よくある失敗
