@@ -6,15 +6,6 @@ export const metadata: Metadata = {
   description: "HogeDD のアプリ一覧",
 };
 
-const publishedApps = [
-  {
-    name: "Clean Tasks",
-    status: "公開中",
-    description: "最初のデモアプリ。Go API と BFF の接続を見せるための実験台。",
-    href: "/apps/clean-tasks",
-  },
-];
-
 const comingSoonApps = [
   {
     name: "Next app slot",
@@ -52,20 +43,6 @@ export default function AppsPage() {
         </section>
 
         <section className="grid gap-4 md:grid-cols-2">
-          {publishedApps.map((app) => (
-            <Link
-              key={app.name}
-              href={app.href}
-              className="rounded-md border border-[var(--border)] bg-[var(--surface)] p-5 transition hover:-translate-y-0.5 hover:border-[var(--accent)] hover:bg-white"
-            >
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
-                {app.status}
-              </p>
-              <h2 className="mt-2 text-lg font-semibold tracking-tight">{app.name}</h2>
-              <p className="mt-4 text-sm leading-6 text-[var(--muted)]">{app.description}</p>
-            </Link>
-          ))}
-
           {comingSoonApps.map((app) => (
             <div
               key={app.name}
