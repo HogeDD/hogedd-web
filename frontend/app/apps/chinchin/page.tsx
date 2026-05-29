@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ChinchinGame } from "@/app/apps/chinchin-game/_components/chinchin-game";
+import { ChinchinGame } from "@/app/apps/chinchin/_components/chinchin-game";
 
 export const metadata: Metadata = {
   title: "ちんちんゲーム",

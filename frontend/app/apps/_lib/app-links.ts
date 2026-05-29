@@ -79,11 +79,11 @@ export const appLinks: readonly AppLink[] = [
     tags: ["Next.js", "Go", "Clean Architecture"],
   }),
   definePreparingAppLink({
-    slug: "chinchin-game",
+    slug: "chinchin",
     title: "ちんちんゲーム",
-    description: "5x5 の盤面で「ち」と「ん」を交互に置くローカル2人対戦ゲーム。",
-    appHref: "/apps/chinchin-game",
+    description: "5x5 の盤面で「ち」と「ん」を交互に置く2人対戦ゲーム。",
+    appHref: "/apps/chinchin",
     publishedAt: "動画準備中",
-    tags: ["Game", "Local Match", "Next.js"],
+    tags: ["Game", "Online Match", "Next.js"],
   }),
 ];
