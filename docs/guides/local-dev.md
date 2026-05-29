@@ -25,6 +25,13 @@ npm run dev:web
 
 Codex が検証用に Web を起動する場合は、ユーザーが使う `3000` と競合しないよう `3100` を使う。
 
+同じネットワーク外の端末から確認する場合は、Codex は `3100` で Web を起動し、ngrok で公開する。
+
+```bash
+npm --prefix frontend run dev -- --port 3100
+ngrok http 3100
+```
+
 Next.js は `API_BASE_URL` を使って Go API に接続する。未指定の場合は `http://localhost:8080` を使う。
 
 ## 環境変数
@@ -39,6 +46,12 @@ NEXT_ALLOWED_DEV_ORIGINS=192.168.10.102
 `.env.local` は commit しない。
 
 スマホなど別端末から dev server にアクセスする場合は、アクセス元 URL の host を `NEXT_ALLOWED_DEV_ORIGINS` に入れる。複数ある場合は comma 区切りにする。
+
+ngrok 経由で確認する場合も、発行された host を `NEXT_ALLOWED_DEV_ORIGINS` に追加して dev server を再起動する。
+
+```bash
+NEXT_ALLOWED_DEV_ORIGINS=192.168.10.102,xxxx.ngrok-free.app
+```
 
 ## 疎通確認
 
