@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"sync/atomic"
 
-	domaintask "github.com/iwasawarenji954/hogedd-clean/apps/api/internal/domain/task"
+	domaintask "github.com/iwasawarenji954/hogedd-clean/backend/api/internal/domain/task"
 )
 
 type SequentialIDGenerator struct {

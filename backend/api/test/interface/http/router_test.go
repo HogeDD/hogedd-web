@@ -8,10 +8,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/iwasawarenji954/hogedd-clean/apps/api/internal/infrastructure/memory"
-	"github.com/iwasawarenji954/hogedd-clean/apps/api/internal/infrastructure/system"
-	httpapi "github.com/iwasawarenji954/hogedd-clean/apps/api/internal/interface/http"
-	taskusecase "github.com/iwasawarenji954/hogedd-clean/apps/api/internal/usecase/task"
+	"github.com/iwasawarenji954/hogedd-clean/backend/api/internal/infrastructure/memory"
+	"github.com/iwasawarenji954/hogedd-clean/backend/api/internal/infrastructure/system"
+	httpapi "github.com/iwasawarenji954/hogedd-clean/backend/api/internal/interface/http"
+	taskusecase "github.com/iwasawarenji954/hogedd-clean/backend/api/internal/usecase/task"
 )
 
 func TestHealthz(t *testing.T) {
@@ -85,6 +85,80 @@ func TestCreateTaskRejectsEmptyTitle(t *testing.T) {
 		t.Fatalf("status = %d, want %d", response.Code, http.StatusBadRequest)
 	}
 	assertJSONField(t, response.Body.Bytes(), "error", "title must not be empty")
+}
+
+func TestCompleteTask(t *testing.T) {
+	router := newTestRouter()
+
+	createResponse := httptest.NewRecorder()
+	createRequest := httptest.NewRequest(
+		http.MethodPost,
+		"/tasks",
+		bytes.NewBufferString(`{"title":" Learn complete flow "}`),
+	)
+	router.ServeHTTP(createResponse, createRequest)
+	if createResponse.Code != http.StatusCreated {
+		t.Fatalf("create status = %d, want %d", createResponse.Code, http.StatusCreated)
+	}
+
+	completeResponse := httptest.NewRecorder()
+	completeRequest := httptest.NewRequest(http.MethodPatch, "/tasks/task-1/complete", nil)
+	router.ServeHTTP(completeResponse, completeRequest)
+	if completeResponse.Code != http.StatusOK {
+		t.Fatalf(
+			"complete status = %d, want %d; body = %s",
+			completeResponse.Code,
+			http.StatusOK,
+			completeResponse.Body.String(),
+		)
+	}
+	assertJSONField(t, completeResponse.Body.Bytes(), "id", "task-1")
+
+	var completedTask struct {
+		Completed bool `json:"completed"`
+	}
+	if err := json.Unmarshal(completeResponse.Body.Bytes(), &completedTask); err != nil {
+		t.Fatalf("failed to decode complete response: %v", err)
+	}
+	if !completedTask.Completed {
+		t.Fatal("completed = false, want true")
+	}
+
+	listResponse := httptest.NewRecorder()
+	listRequest := httptest.NewRequest(http.MethodGet, "/tasks", nil)
+	router.ServeHTTP(listResponse, listRequest)
+	if listResponse.Code != http.StatusOK {
+		t.Fatalf("list status = %d, want %d", listResponse.Code, http.StatusOK)
+	}
+
+	var body struct {
+		Tasks []struct {
+			ID        string `json:"id"`
+			Completed bool   `json:"completed"`
+		} `json:"tasks"`
+	}
+	if err := json.Unmarshal(listResponse.Body.Bytes(), &body); err != nil {
+		t.Fatalf("failed to decode list response: %v", err)
+	}
+	if len(body.Tasks) != 1 {
+		t.Fatalf("tasks = %d, want 1", len(body.Tasks))
+	}
+	if body.Tasks[0].ID != "task-1" || !body.Tasks[0].Completed {
+		t.Fatalf("task = %#v, want completed task-1", body.Tasks[0])
+	}
+}
+
+func TestCompleteTaskReturnsNotFound(t *testing.T) {
+	router := newTestRouter()
+	response := httptest.NewRecorder()
+	request := httptest.NewRequest(http.MethodPatch, "/tasks/missing-task/complete", nil)
+
+	router.ServeHTTP(response, request)
+
+	if response.Code != http.StatusNotFound {
+		t.Fatalf("status = %d, want %d", response.Code, http.StatusNotFound)
+	}
+	assertJSONField(t, response.Body.Bytes(), "error", "task not found")
 }
 
 func newTestRouter() http.Handler {

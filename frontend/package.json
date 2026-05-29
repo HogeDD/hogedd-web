@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "dev:web": "next dev",
-    "dev:api": "cd apps/api && go run ./cmd/server",
+    "dev:api": "cd ../backend/api && go run ./cmd/server",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",

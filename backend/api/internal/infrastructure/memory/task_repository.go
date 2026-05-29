@@ -4,7 +4,8 @@ import (
 	"context"
 	"sync"
 
-	domaintask "github.com/iwasawarenji954/hogedd-clean/apps/api/internal/domain/task"
+	domaintask "github.com/iwasawarenji954/hogedd-clean/backend/api/internal/domain/task"
+	taskusecase "github.com/iwasawarenji954/hogedd-clean/backend/api/internal/usecase/task"
 )
 
 type TaskRepository struct {
@@ -31,4 +32,19 @@ func (r *TaskRepository) List(context.Context) ([]domaintask.Task, error) {
 	tasks := make([]domaintask.Task, len(r.tasks))
 	copy(tasks, r.tasks)
 	return tasks, nil
+}
+
+func (r *TaskRepository) Complete(_ context.Context, id domaintask.ID) (domaintask.Task, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	for index, task := range r.tasks {
+		if task.ID == id {
+			task.Completed = true
+			r.tasks[index] = task
+			return task, nil
+		}
+	}
+
+	return domaintask.Task{}, taskusecase.ErrTaskNotFound
 }

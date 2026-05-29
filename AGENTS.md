@@ -23,24 +23,21 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ## 現在の構成
 
-- 現時点では Next.js `16.2.6` の App Router アプリがルート直下にある。
+- フロントエンドは `frontend/` にある Next.js `16.2.6` の App Router アプリ。
+- バックエンドは `backend/api/` にある Go API。
 - React は `19.2.4`。
 - TypeScript は `strict: true`。
-- スタイリングは Tailwind CSS v4。`app/globals.css` で `@import "tailwindcss";` を使っている。
-- npm を使っている。依存関係を変更したら `package.json` と `package-lock.json` を必ず同期する。
-
-将来的にモノレポ化する場合は、既存の Next.js アプリを `apps/web` などへ移動することを検討する。ただし、移動は影響範囲が広いため、明示的なタスクとして扱う。
+- スタイリングは Tailwind CSS v4。`frontend/app/globals.css` で `@import "tailwindcss";` を使っている。
+- npm を使っている。依存関係を変更したら `frontend/package.json` と `frontend/package-lock.json` を必ず同期する。
 
 ## 目指すモノレポ構成
 
-まだ未作成のディレクトリを前提にコードを書かない。導入時は、以下のような責務分離を基準にする。
+このリポジトリは `frontend/` と `backend/` を分けた構成で進める。新しいディレクトリを前提にコードを書かない。導入時は、以下のような責務分離を基準にする。
 
 ```text
-apps/
-  web/        # TypeScript / Next.js フロントエンド
+frontend/     # TypeScript / Next.js フロントエンド
+backend/
   api/        # Go バックエンド
-packages/
-  shared/     # フロントで共有する型やユーティリティが必要な場合のみ
 docs/         # ADR、PR decision log、設計判断の記録
 ```
 
@@ -65,7 +62,7 @@ infrastructure  # DB、SQL、外部 API、具体的なフレームワーク実�
 想定ディレクトリ例:
 
 ```text
-apps/api/
+backend/api/
   cmd/server/                 # 起動、DI、設定読み込み
   internal/
     domain/                   # 外部依存を持たない中心
@@ -153,9 +150,10 @@ transaction / DB:
 
 ## 開発コマンド
 
-現時点のフロントエンドでは以下を使う。
+現時点のフロントエンドでは `frontend/` で以下を使う。
 
 ```bash
+npm install
 npm run dev
 npm run format:check
 npm run lint
@@ -169,10 +167,10 @@ npm run build
 - ルーティング、レンダリング、metadata、Next.js config、ビルド設定を触った場合は `npm run build` も実行する。
 - 現時点では test script がない。テストを追加する場合は、スクリプト、設定、CI の実行手順まで揃える。
 
-Go バックエンド導入後は、少なくとも以下のコマンドを整備する。
+Go バックエンドでは、少なくとも以下のコマンドを整備する。
 
 ```bash
-cd apps/api
+cd backend/api
 test -z "$(gofmt -l .)"
 go vet ./...
 go test ./...
@@ -265,10 +263,10 @@ decision log には最低限、以下を書く。
 ## コーディング規約
 
 - TypeScript と React function components を使う。
-- `app/` 配下では Server Components をデフォルトにする。
+- `frontend/app/` 配下では Server Components をデフォルトにする。
 - `"use client"` は browser API、state、effect、event handler が必要なコンポーネントに限定する。
 - `tsconfig.json` の `@/*` alias は、可読性が上がる場合に使う。
-- グローバル CSS は `app/globals.css` に限定し、コンポーネント固有の見た目は Tailwind class を優先する。
+- グローバル CSS は `frontend/app/globals.css` に限定し、コンポーネント固有の見た目は Tailwind class を優先する。
 - 生成物の `.next/`、`next-env.d.ts`、`node_modules/`、`out/`、`build/` は編集しない。
 
 ## UI 実装方針
