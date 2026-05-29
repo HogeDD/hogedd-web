@@ -92,6 +92,15 @@ export default function AppsPage() {
                     >
                       YouTube
                     </a>
+                    <a
+                      href={app.xShareUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label={`${app.title} の YouTube リンクを X で共有`}
+                      className="rounded-md border border-[var(--border)] px-3 py-2 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--surface-strong)]"
+                    >
+                      Xで共有
+                    </a>
                   </div>
                 </div>
               </article>
