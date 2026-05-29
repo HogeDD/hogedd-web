@@ -188,6 +188,8 @@ npm run build
 - ルーティング、レンダリング、metadata、Next.js config、ビルド設定を触った場合は `npm run build` も実行する。
 - 現時点では test script がない。テストを追加する場合は、スクリプト、設定、CI の実行手順まで揃える。
 - エージェントが検証用に Next.js dev server を起動する場合は、ユーザーの `3000` と競合しないよう `3100` を使う。
+- 同じネットワーク外の端末から確認する必要がある場合は、`3100` で起動した dev server を `ngrok http 3100` で公開する。
+- ngrok URL で確認する場合は、Next.js の dev origin 制限に注意し、必要に応じて `NEXT_ALLOWED_DEV_ORIGINS` に ngrok host を追加して dev server を再起動する。
 
 Go バックエンドでは、少なくとも以下のコマンドを整備する。
 
