@@ -2,14 +2,16 @@ package task
 
 import (
 	"context"
+	"errors"
 	"time"
 
-	domaintask "github.com/iwasawarenji954/hogedd-clean/apps/api/internal/domain/task"
+	domaintask "github.com/iwasawarenji954/hogedd-clean/backend/api/internal/domain/task"
 )
 
 type Repository interface {
 	Save(ctx context.Context, task domaintask.Task) error
 	List(ctx context.Context) ([]domaintask.Task, error)
+	Complete(ctx context.Context, id domaintask.ID) (domaintask.Task, error)
 }
 
 type IDGenerator interface {
@@ -45,6 +47,8 @@ type TaskOutput struct {
 	CreatedAt time.Time
 }
 
+var ErrTaskNotFound = errors.New("task not found")
+
 func (s Service) CreateTask(ctx context.Context, input CreateTaskInput) (TaskOutput, error) {
 	id, err := s.idGenerator.NewID(ctx)
 	if err != nil {
@@ -75,6 +79,19 @@ func (s Service) ListTasks(ctx context.Context) ([]TaskOutput, error) {
 	}
 
 	return outputs, nil
+}
+
+func (s Service) CompleteTask(ctx context.Context, id string) (TaskOutput, error) {
+	task, err := s.repository.Complete(ctx, domaintask.ID(id))
+	if err != nil {
+		if errors.Is(err, ErrTaskNotFound) {
+			return TaskOutput{}, ErrTaskNotFound
+		}
+
+		return TaskOutput{}, err
+	}
+
+	return toOutput(task), nil
 }
 
 func toOutput(task domaintask.Task) TaskOutput {

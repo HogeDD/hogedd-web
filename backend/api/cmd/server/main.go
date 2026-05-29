@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/iwasawarenji954/hogedd-clean/apps/api/internal/infrastructure/memory"
-	"github.com/iwasawarenji954/hogedd-clean/apps/api/internal/infrastructure/system"
-	httpapi "github.com/iwasawarenji954/hogedd-clean/apps/api/internal/interface/http"
-	taskusecase "github.com/iwasawarenji954/hogedd-clean/apps/api/internal/usecase/task"
+	"github.com/iwasawarenji954/hogedd-clean/backend/api/internal/infrastructure/memory"
+	"github.com/iwasawarenji954/hogedd-clean/backend/api/internal/infrastructure/system"
+	httpapi "github.com/iwasawarenji954/hogedd-clean/backend/api/internal/interface/http"
+	taskusecase "github.com/iwasawarenji954/hogedd-clean/backend/api/internal/usecase/task"
 )
 
 func main() {

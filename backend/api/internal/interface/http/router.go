@@ -7,13 +7,14 @@ import (
 	"net/http"
 	"time"
 
-	domaintask "github.com/iwasawarenji954/hogedd-clean/apps/api/internal/domain/task"
-	taskusecase "github.com/iwasawarenji954/hogedd-clean/apps/api/internal/usecase/task"
+	domaintask "github.com/iwasawarenji954/hogedd-clean/backend/api/internal/domain/task"
+	taskusecase "github.com/iwasawarenji954/hogedd-clean/backend/api/internal/usecase/task"
 )
 
 type TaskService interface {
 	CreateTask(ctx context.Context, input taskusecase.CreateTaskInput) (taskusecase.TaskOutput, error)
 	ListTasks(ctx context.Context) ([]taskusecase.TaskOutput, error)
+	CompleteTask(ctx context.Context, id string) (taskusecase.TaskOutput, error)
 }
 
 func NewRouter(service taskusecase.Service) http.Handler {
@@ -22,6 +23,7 @@ func NewRouter(service taskusecase.Service) http.Handler {
 
 	mux.HandleFunc("GET /healthz", handleHealthz)
 	mux.HandleFunc("/tasks", handler.handleTasks)
+	mux.HandleFunc("PATCH /tasks/{taskID}/complete", handler.completeTask)
 
 	return mux
 }
@@ -59,6 +61,21 @@ func (h taskHandler) handleTasks(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Allow", "GET, POST")
 		writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "method not allowed"})
 	}
+}
+
+func (h taskHandler) completeTask(w http.ResponseWriter, r *http.Request) {
+	output, err := h.service.CompleteTask(r.Context(), r.PathValue("taskID"))
+	if err != nil {
+		if errors.Is(err, taskusecase.ErrTaskNotFound) {
+			writeJSON(w, http.StatusNotFound, map[string]string{"error": "task not found"})
+			return
+		}
+
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "internal server error"})
+		return
+	}
+
+	writeJSON(w, http.StatusOK, toTaskResponse(output))
 }
 
 func (h taskHandler) createTask(w http.ResponseWriter, r *http.Request) {

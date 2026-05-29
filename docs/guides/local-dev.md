@@ -1,18 +1,20 @@
 # ローカル開発手順
 
-このリポジトリは Next.js フロントエンドと Go API を別プロセスで起動する。
+このリポジトリは `frontend` の Next.js と `backend/api` の Go API を別プロセスで起動する。
 
 ## 起動
 
 Terminal 1:
 
 ```bash
+cd frontend
 npm run dev:api
 ```
 
 Terminal 2:
 
 ```bash
+cd frontend
 npm run dev:web
 ```
 
@@ -25,7 +27,7 @@ Next.js は `API_BASE_URL` を使って Go API に接続する。未指定の場
 
 ## 環境変数
 
-`.env.example` を参考に `.env.local` を作る。
+`frontend/.env.example` を参考に `frontend/.env.local` を作る。
 
 ```bash
 API_BASE_URL=http://localhost:8080
@@ -64,7 +66,7 @@ curl http://localhost:3000/api/tasks
 ## よくある失敗
 
 - `api server is not reachable`
-  - `npm run dev:api` が起動しているか確認する。
+  - `frontend` で `npm run dev:api` が起動しているか確認する。
 - `EADDRINUSE`
   - 既に同じ port のプロセスが動いている。別 port にするか、既存プロセスを止める。
 - Web は動くが task が作れない

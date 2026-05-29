@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	domaintask "github.com/iwasawarenji954/hogedd-clean/apps/api/internal/domain/task"
-	taskusecase "github.com/iwasawarenji954/hogedd-clean/apps/api/internal/usecase/task"
+	domaintask "github.com/iwasawarenji954/hogedd-clean/backend/api/internal/domain/task"
+	taskusecase "github.com/iwasawarenji954/hogedd-clean/backend/api/internal/usecase/task"
 )
 
 func TestServiceCreateTask(t *testing.T) {
@@ -74,6 +74,50 @@ func TestServiceListTasks(t *testing.T) {
 	}
 }
 
+func TestServiceCompleteTask(t *testing.T) {
+	now := time.Date(2026, 5, 28, 12, 0, 0, 0, time.UTC)
+	repository := newFakeRepository()
+	repository.saved = []domaintask.Task{
+		{ID: "task-1", Title: "First", CreatedAt: now},
+		{ID: "task-2", Title: "Second", CreatedAt: now.Add(time.Minute)},
+	}
+	service := taskusecase.NewService(repository, fixedIDGenerator{id: "unused"}, fixedClock{now: now})
+
+	output, err := service.CompleteTask(context.Background(), "task-1")
+	if err != nil {
+		t.Fatalf("CompleteTask returned error: %v", err)
+	}
+
+	if output.ID != "task-1" {
+		t.Fatalf("ID = %q, want %q", output.ID, "task-1")
+	}
+	if !output.Completed {
+		t.Fatal("Completed = false, want true")
+	}
+	if len(repository.saved) != 2 {
+		t.Fatalf("saved tasks = %d, want 2", len(repository.saved))
+	}
+	if !repository.saved[0].Completed {
+		t.Fatal("First task is not completed, want completed")
+	}
+	if repository.saved[1].Completed {
+		t.Fatal("Second task is completed, want not completed")
+	}
+}
+
+func TestServiceCompleteTaskReturnsNotFound(t *testing.T) {
+	service := taskusecase.NewService(
+		newFakeRepository(),
+		fixedIDGenerator{id: "unused"},
+		fixedClock{now: time.Now()},
+	)
+
+	_, err := service.CompleteTask(context.Background(), "missing-task")
+	if err != taskusecase.ErrTaskNotFound {
+		t.Fatalf("error = %v, want %v", err, taskusecase.ErrTaskNotFound)
+	}
+}
+
 type fakeRepository struct {
 	saved []domaintask.Task
 }
@@ -91,6 +135,18 @@ func (r *fakeRepository) List(_ context.Context) ([]domaintask.Task, error) {
 	tasks := make([]domaintask.Task, len(r.saved))
 	copy(tasks, r.saved)
 	return tasks, nil
+}
+
+func (r *fakeRepository) Complete(_ context.Context, id domaintask.ID) (domaintask.Task, error) {
+	for index, task := range r.saved {
+		if task.ID == id {
+			task.Completed = true
+			r.saved[index] = task
+			return task, nil
+		}
+	}
+
+	return domaintask.Task{}, taskusecase.ErrTaskNotFound
 }
 
 type fixedIDGenerator struct {
