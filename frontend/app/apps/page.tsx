@@ -52,11 +52,17 @@ export default function AppsPage() {
                 key={app.slug}
                 className="overflow-hidden rounded-md border border-[var(--border)] bg-[var(--surface)]"
               >
-                <div
-                  aria-label={`${app.title} の YouTube サムネイル`}
-                  className="aspect-video border-b border-[var(--border)] bg-[var(--surface-strong)] bg-cover bg-center"
-                  style={{ backgroundImage: `url(${app.thumbnailUrl})` }}
-                />
+                {app.status === "published" ? (
+                  <div
+                    aria-label={`${app.title} の YouTube サムネイル`}
+                    className="aspect-video border-b border-[var(--border)] bg-[var(--surface-strong)] bg-cover bg-center"
+                    style={{ backgroundImage: `url(${app.thumbnailUrl})` }}
+                  />
+                ) : (
+                  <div className="flex aspect-video items-center justify-center border-b border-[var(--border)] bg-[var(--surface-strong)] px-6 text-center">
+                    <p className="text-sm font-semibold text-[var(--muted)]">YouTube 準備中</p>
+                  </div>
+                )}
                 <div className="p-5">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
                     {app.publishedAt}
@@ -84,23 +90,27 @@ export default function AppsPage() {
                     >
                       アプリを見る
                     </Link>
-                    <a
-                      href={app.youtubeUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="rounded-md border border-[var(--border)] px-3 py-2 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--surface-strong)]"
-                    >
-                      YouTube
-                    </a>
-                    <a
-                      href={app.xShareUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      aria-label={`${app.title} の YouTube リンクを X で共有`}
-                      className="rounded-md border border-[var(--border)] px-3 py-2 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--surface-strong)]"
-                    >
-                      Xで共有
-                    </a>
+                    {app.status === "published" ? (
+                      <>
+                        <a
+                          href={app.youtubeUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="rounded-md border border-[var(--border)] px-3 py-2 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--surface-strong)]"
+                        >
+                          YouTube
+                        </a>
+                        <a
+                          href={app.xShareUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          aria-label={`${app.title} の YouTube リンクを X で共有`}
+                          className="rounded-md border border-[var(--border)] px-3 py-2 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--surface-strong)]"
+                        >
+                          Xで共有
+                        </a>
+                      </>
+                    ) : null}
                   </div>
                 </div>
               </article>

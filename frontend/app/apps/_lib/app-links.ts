@@ -4,19 +4,29 @@ import {
   getYouTubeWatchUrl,
 } from "@/app/apps/_lib/youtube";
 
-export type AppLink = {
+type AppLinkBase = {
   slug: string;
   title: string;
   description: string;
   appHref: string;
+  publishedAt: string;
+  tags: readonly string[];
+};
+
+export type PublishedAppLink = AppLinkBase & {
+  status: "published";
   youtubeUrl: string;
   xShareUrl: string;
   videoId: string;
   thumbnailUrl: string;
-  publishedAt: string;
-  tags: readonly string[];
   shareText: string;
 };
+
+export type PendingAppLink = AppLinkBase & {
+  status: "preparing";
+};
+
+export type AppLink = PublishedAppLink | PendingAppLink;
 
 type DefineAppLinkOptions = {
   slug: string;
@@ -35,12 +45,21 @@ export function defineAppLink(youtubeUrl: string, options: DefineAppLinkOptions)
 
   return {
     ...options,
+    status: "published",
     tags: options.tags ?? [],
     youtubeUrl: normalizedYouTubeUrl,
     xShareUrl: getXShareUrl({ text: shareText, url: normalizedYouTubeUrl }),
     shareText,
     videoId,
     thumbnailUrl: getYouTubeThumbnailUrl(videoId),
+  };
+}
+
+export function definePreparingAppLink(options: DefineAppLinkOptions): AppLink {
+  return {
+    ...options,
+    status: "preparing",
+    tags: options.tags ?? [],
   };
 }
 
@@ -58,5 +77,13 @@ export const appLinks: readonly AppLink[] = [
     publishedAt: "2026-05-30",
     shareText: "Clean Architecture の練習アプリ Clean Tasks を見ました",
     tags: ["Next.js", "Go", "Clean Architecture"],
+  }),
+  definePreparingAppLink({
+    slug: "chinchin-game",
+    title: "ちんちんゲーム",
+    description: "5x5 の盤面で「ち」と「ん」を交互に置くローカル2人対戦ゲーム。",
+    appHref: "/apps/chinchin-game",
+    publishedAt: "動画準備中",
+    tags: ["Game", "Local Match", "Next.js"],
   }),
 ];

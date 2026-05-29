@@ -187,6 +187,7 @@ npm run build
 - TypeScript の型検証では `npm run typecheck` を実行する。
 - ルーティング、レンダリング、metadata、Next.js config、ビルド設定を触った場合は `npm run build` も実行する。
 - 現時点では test script がない。テストを追加する場合は、スクリプト、設定、CI の実行手順まで揃える。
+- エージェントが検証用に Next.js dev server を起動する場合は、ユーザーの `3000` と競合しないよう `3100` を使う。
 
 Go バックエンドでは、少なくとも以下のコマンドを整備する。
 
