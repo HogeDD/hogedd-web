@@ -227,13 +227,105 @@ GitHub Actions は段階的に整える。
 ## Branch / PR 方針
 
 - 長期ブランチは `main` と `dev` の 2 本を基本にする。
-- 通常の開発は `dev` から `feature/*` ブランチを切る。
+- 通常の開発は `dev` から Issue に対応するブランチを切る。
 - PR は原則 `dev` に向ける。
 - `main` はリリース可能な状態を保つ。
 - PR は小さく保ち、レビューしやすい単位に分ける。
 - 大きな設計変更やディレクトリ移動は、機能実装と分けて PR にする。
 - PR ごとに、実装内容だけでなく意思決定理由を残す。
 - PR のタイトル、本文、コメントは原則として日本語で書く。
+
+## Issue / Branch / PR 運用
+
+今後の開発は Issue を起点にする。非エンジニアの参加者とエージェントが同じ前提を読めるように、Issue、Branch、PR は原則 1 対 1 対応にする。
+
+基本の流れ:
+
+```text
+Issue を作る
+  -> Issue 番号つきブランチを切る
+  -> 実装する
+  -> PR を Issue に紐づける
+  -> CI とレビューを通す
+  -> merge して branch を消す
+```
+
+- Issue なしで大きな作業を始めない。
+- PR は 1 Issue に対応させる。
+- PR 本文には `Closes #<issue-number>` を書く。
+- ブランチ名には Issue 番号を入れる。
+- ブランチ名は作業種別に合わせて `feature/`、`fix/`、`docs/`、`infra/` から始める。
+- 作業開始時は `dev` を最新化してからブランチを切る。
+- PR merge 後は対応ブランチを削除する。
+
+ブランチ名の例:
+
+```text
+feature/14-new-mini-app
+fix/15-mobile-card-tap
+docs/13-collaboration-rules
+infra/16-web-ci-typecheck
+```
+
+Issue の粒度:
+
+- 新しいアプリは、開発段階では「動くところまで」を 1 Issue にしてよい。
+- 新しいアプリの Issue は少し大きくてもよい。最初から細かく分けすぎない。
+- 修正 Issue は小さくする。1 Issue で 1 つの問題、1 つの改善に寄せる。
+- UI の微修正、文言修正、バグ修正、設定変更は分ける。
+- 途中で Issue が大きくなったら、新しい Issue に切り出す。
+- 「ついでに直す」は避ける。小さい修正なら別 Issue にする。
+- ブルドーザのように荒々しく進めてよいが、Issue と PR の対応だけは崩さない。
+
+Issue に最低限書くこと:
+
+```text
+## 背景
+なぜやるのか。困っていること、作りたいもの、思いついた理由。
+
+## やること
+- 今回やること
+
+## やらないこと
+- 今回は触らないこと
+
+## 完了条件
+- 何ができたら終わりか
+```
+
+- Issue は長文にしすぎない。
+- 迷ったら、背景 2〜3 行、やること 3 個以内、完了条件 3 個以内で書く。
+- 非エンジニアが書く Issue は、技術用語が曖昧でもよい。エージェントが実装前に読み替えて確認する。
+- エージェントは Issue の意図が曖昧な場合、実装前に短く確認する。
+- エージェントは Issue を読んだら、必要に応じて「やること / やらないこと / 完了条件」を PR 本文で補う。
+
+Issue の種類:
+
+- `app`: 新しいアプリを作る、またはアプリ単位で大きく育てる。
+- `fix`: 壊れている挙動を直す。
+- `ui`: 見た目、文言、情報設計、導線を整える。
+- `docs`: AGENTS、docs、運用ルール、意思決定記録を整える。
+- `infra`: CI、環境変数、deploy、開発環境を整える。
+
+Issue title の例:
+
+```text
+[app] タイピング練習アプリを動くところまで作る
+[ui] ホームの About 文言を整理する
+[fix] スマホでカードのボタンが押しづらい問題を直す
+[docs] Issue と PR の運用ルールを追加する
+[infra] Web CI に typecheck を追加する
+```
+
+PR の書き方:
+
+- PR title は Issue title に近い日本語にする。
+- PR 本文は長くしすぎない。
+- 最低限、概要、検証、`Closes #<issue-number>` を書く。
+- 大きな判断をした場合は `docs/pr/` に decision log を残す。
+- decision log は every PR 必須ではない。判断理由を残したい PR だけでよい。
+
+GitHub repository settings は `docs/guides/repository-settings.md` を参照する。共同開発者の招待、branch protection、merge 方法、Actions 権限、Secrets の扱いはこの guide に沿って確認する。
 
 ## Docs / 意思決定記録
 
