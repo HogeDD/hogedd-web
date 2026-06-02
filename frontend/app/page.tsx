@@ -14,26 +14,10 @@ export const metadata: Metadata = {
 const navItems = [
   { href: "#apps", label: "Apps" },
   { href: "#about", label: "About" },
-  { href: "#updates", label: "Updates" },
-];
-
-const releaseNotes = [
-  {
-    title: "ちんちんゲームを育てた",
-    body: "ローカル対戦から始めて、今はオンラインのランダム対戦まで遊べる。",
-  },
-  {
-    title: "YouTube から戻る導線を整えた",
-    body: "概要欄のリンクから `/apps` に戻って、作品とアプリ本体を行き来できる。",
-  },
-  {
-    title: "小さく作って公開する",
-    body: "思いついたものを形にして、見せながら次の改善へ進める。",
-  },
 ];
 
 const appLinksArray = [...appLinks];
-const [featuredApp, secondaryApp] = appLinksArray;
+const [featuredApp] = appLinksArray;
 
 export default function Home() {
   return (
@@ -79,10 +63,10 @@ export default function Home() {
                 Apps を見る
               </Link>
               <Link
-                href="#updates"
+                href="#about"
                 className="rounded-full border border-transparent px-6 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--surface)]"
               >
-                更新を見る
+                HogeDD について
               </Link>
             </div>
           </div>
@@ -124,23 +108,17 @@ export default function Home() {
                 )}
               </div>
 
-              <div className="mt-8 grid gap-6 sm:grid-cols-2">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--muted)]">
-                    次に出すもの
-                  </p>
-                  <p className="mt-3 text-sm leading-7 text-[var(--muted)]">
-                    {secondaryApp?.title ?? "次のアプリ"}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--muted)]">
-                    ここでやること
-                  </p>
-                  <p className="mt-3 text-sm leading-7 text-[var(--muted)]">
-                    思いついたものを作って、見せて、また作る。
-                  </p>
-                </div>
+              <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                <p className="max-w-sm text-sm leading-7 text-[var(--muted)]">
+                  くだらないきっかけを、ちゃんと触れるものにする。今見せている作品から、 HogeDD
+                  の雰囲気がわかります。
+                </p>
+                <Link
+                  href={featuredApp?.appHref ?? "/apps"}
+                  className="w-fit rounded-full bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
+                >
+                  作品を見る
+                </Link>
               </div>
             </div>
           </div>
@@ -209,39 +187,12 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="updates" className="border-t border-[var(--border)] py-16">
-          <div className="space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent)]">
-              Updates
-            </p>
-            <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-              いま進めていること
-            </h2>
-          </div>
-
-          <div className="mt-10 grid gap-6 lg:grid-cols-3">
-            {releaseNotes.map((item, index) => (
-              <article
-                key={item.title}
-                className="space-y-4 border-l-4 border-[var(--highlight)] pl-5"
-              >
-                <p className="text-4xl font-semibold leading-none text-[var(--accent)]">
-                  0{index + 1}
-                </p>
-                <h3 className="text-xl font-semibold tracking-tight">{item.title}</h3>
-                <p className="text-sm leading-7 text-[var(--muted)]">{item.body}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-
         <SiteFooter
           title="Contact"
           description="共有や問い合わせはここから。必要なら X で見つけてもらい、URL はワンクリックでコピーできるようにしてあります。"
           links={[
             { href: "/apps", label: "Apps" },
             { href: "#about", label: "About" },
-            { href: "#updates", label: "Updates" },
           ]}
           actions={
             <>

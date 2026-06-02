@@ -34,30 +34,28 @@ export default function AppsPage() {
             </h1>
             <p className="max-w-2xl text-base leading-7 text-[var(--muted)] sm:text-lg sm:leading-8">
               YouTube で紹介したアプリを、動画と本体を往復しやすい形で並べています。
-              公開前のものは準備中として置き、増えるたびに自然に積み上がる設計です。
+              気になったものを見つけたら、そのまま触って遊べます。
             </p>
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2">
             <article className="rounded-[22px] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[0_10px_24px_rgba(20,24,22,0.04)]">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
-                管理方針
+                Watch
               </p>
-              <h2 className="mt-3 text-lg font-semibold tracking-tight">動画を足すだけで増える</h2>
+              <h2 className="mt-3 text-lg font-semibold tracking-tight">動画で雰囲気を見る</h2>
               <p className="mt-3 text-sm leading-6 text-[var(--muted)]">
-                `app-links.ts` に 1 件追加すると、一覧と個別ページの入口が揃います。
+                何を作ったのか、まずは短い紹介動画から確認できます。
               </p>
             </article>
 
             <article className="rounded-[22px] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[0_10px_24px_rgba(20,24,22,0.04)]">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
-                次の拡張
+                Play
               </p>
-              <h2 className="mt-3 text-lg font-semibold tracking-tight">
-                将来は DB に差し替え可能
-              </h2>
+              <h2 className="mt-3 text-lg font-semibold tracking-tight">そのまま触ってみる</h2>
               <p className="mt-3 text-sm leading-6 text-[var(--muted)]">
-                いまは静的データで十分。更新頻度が上がったら後で持ち方を変えます。
+                気になったらアプリ本体へ。動画と作品を行き来できます。
               </p>
             </article>
           </div>
@@ -162,7 +160,7 @@ export default function AppsPage() {
 
         <SiteFooter
           title="Apps"
-          description="このページは動画の一覧であり、アプリの入口でもあります。公開中のものは YouTube と本体を、準備中のものはこれからの追加を見せる場所です。"
+          description="動画で見て、気になったら触ってみる。HogeDD の作品はここから増えていきます。"
           links={[
             { href: "/", label: "Home" },
             { href: "#apps", label: "Apps" },
