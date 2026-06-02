@@ -50,4 +50,19 @@ go test ./...
 - `docs/guides/local-dev.md`
 - `docs/guides/clean-architecture-operations.md`
 - `docs/guides/glossary.md`
+- `docs/guides/onboarding.md`
+- `docs/guides/repository-settings.md`
 - `docs/pr/`
+
+## 開発の基本ルール
+
+HogeDD は Issue 起点で開発します。AI 駆動で開発する場合も、人間が GitHub の画面で操作する場合も、この流れを守ります。
+
+1. Issue を作る
+2. Issue を元に `dev` から branch を切る
+3. 基本ローカルで開発する
+4. PR が作れる状態になったら remote に push して PR を作る
+5. CI が通っていたら `dev` に squash merge する
+6. 用が済んだ remote branch は削除する
+
+`main` への merge / push は `iwasawarenji954` が行います。詳しい手順は `docs/guides/onboarding.md` を読んでください。
