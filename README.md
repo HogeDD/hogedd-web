@@ -12,6 +12,8 @@ docs/         # Guides and decision logs
 
 ## Local Development
 
+詳しい手順は `docs/guides/local-dev.md` を読んでください。ngrok を使って外部端末から確認する手順もここにまとめています。
+
 Start the Go API:
 
 ```bash
