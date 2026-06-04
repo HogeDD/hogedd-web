@@ -8,7 +8,7 @@ import { appLinks } from "@/app/apps/_lib/app-links";
 
 export const metadata: Metadata = {
   title: "HogeDD",
-  description: "真面目な顔で、くだらないアプリを紹介する HogeDD の公式サイト",
+  description: "欲望と衝動をきっかけに、アプリを作って見せていく HogeDD の公式サイト",
 };
 
 const navItems = [
@@ -30,14 +30,14 @@ export default function Home() {
       />
 
       <div className="mx-auto flex w-full max-w-6xl flex-col px-4 pb-14 pt-8 sm:px-6 lg:px-8">
-        <section className="grid gap-12 border-b border-[var(--border)] py-16 lg:grid-cols-[1fr_0.92fr] lg:items-center lg:py-24">
-          <div className="space-y-10">
-            <div className="space-y-4">
-              <p className="w-fit rounded-full bg-[var(--highlight)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.28em] text-[var(--foreground)]">
-                Portfolio / Contents / Apps
+        <section className="grid min-h-[calc(100svh-5.5rem)] gap-12 border-b border-[var(--border)] py-14 lg:grid-cols-[0.96fr_1.04fr] lg:items-center lg:py-16">
+          <div className="space-y-9">
+            <div className="space-y-5">
+              <p className="w-fit rounded-full bg-[var(--highlight)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-[var(--foreground)]">
+                HogeDD
               </p>
-              <h1 className="max-w-4xl text-6xl font-semibold leading-[0.92] tracking-tight text-[var(--foreground)] sm:text-7xl lg:text-[5.6rem]">
-                <span className="block text-[var(--accent)]">Hoge</span>
+              <h1 className="max-w-4xl text-6xl font-semibold leading-[0.88] tracking-tight text-[var(--foreground)] sm:text-7xl lg:text-[6.4rem]">
+                <span className="block">Hoge</span>
                 <span className="block">
                   <span className="text-[var(--accent)]">D</span>riven
                 </span>
@@ -45,15 +45,15 @@ export default function Home() {
                   <span className="text-[var(--accent)]">D</span>evelopment
                 </span>
               </h1>
-              <p className="max-w-2xl text-2xl leading-9 text-[var(--foreground)]/85 sm:text-[2rem] sm:leading-[2.4rem]">
-                きっかけは、なんでもいい。
+              <p className="max-w-2xl text-2xl leading-9 text-[var(--foreground)]/85 sm:text-[2.3rem] sm:leading-[2.75rem]">
+                人は欲望によって進歩する。
               </p>
             </div>
 
-            <p className="max-w-2xl text-base leading-8 text-[var(--muted)] sm:text-lg sm:leading-8">
-              作りたくなったら、まず作る。HogeDD は、その勢いで生まれたアプリを置いていく場所です。
-              完成度よりも、動き出したことを大事にします。
-            </p>
+            <div className="grid max-w-xl gap-3 text-base leading-7 text-[var(--muted)] sm:grid-cols-2">
+              <p>その衝動には価値がある。</p>
+              <p>理由はそれで十分だ。</p>
+            </div>
 
             <div className="flex flex-wrap gap-3">
               <Link
@@ -72,53 +72,72 @@ export default function Home() {
           </div>
 
           <div className="relative">
-            <div className="relative overflow-hidden rounded-[36px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[0_18px_40px_rgba(20,24,22,0.06)] sm:p-8">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--muted)]">
-                    Featured app
-                  </p>
-                  <h2 className="mt-3 text-2xl font-semibold tracking-tight text-[var(--foreground)]">
-                    {featuredApp?.title ?? "次のアプリ"}
-                  </h2>
-                </div>
-                <span className="rounded-full bg-[var(--accent-soft)] px-3 py-1 text-xs font-semibold text-[var(--accent)]">
-                  {featuredApp?.status === "published" ? "公開中" : "準備中"}
-                </span>
-              </div>
+            <div className="relative overflow-hidden rounded-[40px] bg-[var(--foreground)] p-5 text-white shadow-[0_24px_60px_rgba(20,24,22,0.16)] sm:p-7">
+              <div
+                className="absolute inset-x-0 top-0 h-28 bg-[var(--highlight)]"
+                aria-hidden="true"
+              />
+              <div
+                className="absolute bottom-8 right-8 h-28 w-28 rounded-full border border-white/20"
+                aria-hidden="true"
+              />
+              <div
+                className="absolute -bottom-20 -left-16 h-48 w-48 rounded-full border border-white/10"
+                aria-hidden="true"
+              />
 
-              <div className="mt-8 overflow-hidden rounded-[28px] bg-[var(--surface-strong)]">
-                {featuredApp?.status === "published" ? (
-                  <div
-                    className="aspect-[16/10] bg-cover bg-center"
-                    aria-label={`${featuredApp.title} の YouTube サムネイル`}
-                    style={{ backgroundImage: `url(${featuredApp.thumbnailUrl})` }}
-                  />
-                ) : (
-                  <div className="flex aspect-[16/10] items-end p-6">
-                    <div className="max-w-sm space-y-3">
-                      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--muted)]">
-                        Video pending
-                      </p>
-                      <p className="text-lg leading-7 text-[var(--foreground)]">
-                        ここに YouTube のサムネイルや、あとで差し替える画像が入ります。
-                      </p>
+              <div className="relative flex min-h-[31rem] flex-col justify-between gap-8">
+                <div className="flex items-start justify-between gap-4 text-[var(--foreground)]">
+                  <p className="max-w-44 text-sm font-semibold leading-6">
+                    モテたい。楽をしたい。やってみたい。
+                  </p>
+                  <span className="rounded-full bg-[var(--foreground)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-white">
+                    impulse
+                  </span>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="grid grid-cols-2 gap-3">
+                    {["H", "D", "D"].map((item, index) => (
+                      <div
+                        key={`${item}-${index}`}
+                        className="flex aspect-square items-center justify-center rounded-[28px] bg-white/[0.08] text-5xl font-semibold text-white ring-1 ring-white/10 sm:text-6xl"
+                      >
+                        {item}
+                      </div>
+                    ))}
+                    <div className="aspect-square overflow-hidden rounded-[28px] bg-white/[0.08] ring-1 ring-white/10">
+                      {featuredApp?.status === "published" ? (
+                        <div
+                          className="h-full bg-cover bg-center"
+                          aria-label={`${featuredApp.title} の YouTube サムネイル`}
+                          style={{ backgroundImage: `url(${featuredApp.thumbnailUrl})` }}
+                        />
+                      ) : (
+                        <div className="flex h-full items-center justify-center text-5xl font-semibold text-white sm:text-6xl">
+                          !
+                        </div>
+                      )}
                     </div>
                   </div>
-                )}
-              </div>
 
-              <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                <p className="max-w-sm text-sm leading-7 text-[var(--muted)]">
-                  くだらないきっかけを、ちゃんと触れるものにする。今見せている作品から、 HogeDD
-                  の雰囲気がわかります。
-                </p>
-                <Link
-                  href={featuredApp?.appHref ?? "/apps"}
-                  className="w-fit rounded-full bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
-                >
-                  作品を見る
-                </Link>
+                  <div className="flex flex-col gap-4 border-t border-white/15 pt-6 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-white/50">
+                        Featured app
+                      </p>
+                      <h2 className="mt-3 text-2xl font-semibold tracking-tight">
+                        {featuredApp?.title ?? "次のアプリ"}
+                      </h2>
+                    </div>
+                    <Link
+                      href={featuredApp?.appHref ?? "/apps"}
+                      className="w-fit rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--highlight)]"
+                    >
+                      作品を見る
+                    </Link>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -157,8 +176,8 @@ export default function Home() {
               動機は軽くていい。公開まで持っていく。
             </h2>
             <p className="max-w-xl text-sm leading-7 text-[var(--muted)] sm:text-base sm:leading-8">
-              HogeDD は、くだらない思いつきや小さな違和感を、実際に触れるものへ変えていく場所です。
-              きっかけが弱くても、まず動くものにしてみる。その過程ごと公開していきます。
+              HogeDD は、衝動や小さな違和感を、実際に触れるものへ変えていく場所です。
+              きっかけが個人的でも、まず動くものにしてみる。その過程ごと公開していきます。
             </p>
           </div>
 
