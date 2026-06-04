@@ -51,6 +51,7 @@ go test ./...
 - `docs/guides/clean-architecture-operations.md`
 - `docs/guides/glossary.md`
 - `docs/guides/onboarding.md`
+- `docs/guides/brand-copy.md`
 - `docs/guides/repository-settings.md`
 - `docs/pr/`
 
