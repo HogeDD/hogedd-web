@@ -66,14 +66,14 @@ export function HomeAppCarousel({ items }: HomeAppCarouselProps) {
 
   if (slides.length === 0) {
     return (
-      <div className="mt-10 rounded-[28px] border border-[var(--border)] bg-[var(--surface)] p-6 text-sm text-[var(--muted)]">
+      <div className="mt-14 rounded-[24px] border border-white/15 bg-white/95 p-8 text-sm text-[var(--muted)]">
         アプリがまだありません。
       </div>
     );
   }
 
   return (
-    <Carousel opts={{ align: "start", loop: true }} className="mt-10">
+    <Carousel opts={{ align: "start", loop: true }} className="mt-14 sm:mt-16">
       <CarouselContent>
         {slides.map((slide) => (
           <CarouselItem key={slide.key} className="basis-[86%] sm:basis-[58%] lg:basis-1/3">
@@ -82,9 +82,9 @@ export function HomeAppCarousel({ items }: HomeAppCarouselProps) {
         ))}
       </CarouselContent>
 
-      <div className="mt-4 flex items-center justify-center gap-4">
+      <div className="mt-8 flex items-center justify-center gap-4">
         <CarouselPrevious className="text-white" />
-        <span className="h-px w-10 bg-white/30" aria-hidden="true" />
+        <span className="h-px w-14 bg-white/30" aria-hidden="true" />
         <CarouselNext className="text-white" />
       </div>
     </Carousel>
@@ -93,8 +93,8 @@ export function HomeAppCarousel({ items }: HomeAppCarouselProps) {
 
 function CarouselCard({ slide }: { slide: Slide }) {
   return (
-    <article className="group h-full overflow-hidden rounded-[28px] border border-[var(--border)] bg-[var(--surface)] shadow-[0_10px_28px_rgba(20,24,22,0.04)] transition hover:border-[var(--accent)]">
-      <div className="flex h-full min-h-[17.5rem] w-full flex-col overflow-hidden sm:min-h-[18.5rem]">
+    <article className="group h-full overflow-hidden rounded-[24px] border border-white/14 bg-white shadow-[0_18px_42px_rgba(9,18,15,0.18)] transition hover:-translate-y-0.5 hover:border-[var(--highlight)]">
+      <div className="flex h-full min-h-[18rem] w-full flex-col overflow-hidden sm:min-h-[19rem]">
         <div className="aspect-video flex-none overflow-hidden bg-[var(--surface-strong)]">
           {slide.kind === "app" ? (
             slide.status === "published" ? (
