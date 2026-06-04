@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { CopyLinkButton } from "@/app/_components/copy-link-button";
+import { HeroImpulsePanel } from "@/app/_components/hero-impulse-panel";
 import { HomeAppCarousel } from "@/app/_components/home-app-carousel";
 import { SiteFooter } from "@/app/_components/site-footer";
 import { SiteHeader } from "@/app/_components/site-header";
@@ -17,7 +18,6 @@ const navItems = [
 ];
 
 const appLinksArray = [...appLinks];
-const [featuredApp] = appLinksArray;
 
 export default function Home() {
   return (
@@ -48,11 +48,6 @@ export default function Home() {
               <p className="max-w-2xl text-2xl leading-9 text-[var(--foreground)]/85 sm:text-[2.3rem] sm:leading-[2.75rem]">
                 人は欲望によって進歩する。
               </p>
-            </div>
-
-            <div className="grid max-w-xl gap-3 text-base leading-7 text-[var(--muted)] sm:grid-cols-2">
-              <p>その衝動には価値がある。</p>
-              <p>理由はそれで十分だ。</p>
             </div>
 
             <div className="flex flex-wrap gap-3">
@@ -86,58 +81,8 @@ export default function Home() {
                 aria-hidden="true"
               />
 
-              <div className="relative flex min-h-[31rem] flex-col justify-between gap-8">
-                <div className="flex items-start justify-between gap-4 text-[var(--foreground)]">
-                  <p className="max-w-44 text-sm font-semibold leading-6">
-                    モテたい。楽をしたい。やってみたい。
-                  </p>
-                  <span className="rounded-full bg-[var(--foreground)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-white">
-                    impulse
-                  </span>
-                </div>
-
-                <div className="space-y-6">
-                  <div className="grid grid-cols-2 gap-3">
-                    {["H", "D", "D"].map((item, index) => (
-                      <div
-                        key={`${item}-${index}`}
-                        className="flex aspect-square items-center justify-center rounded-[28px] bg-white/[0.08] text-5xl font-semibold text-white ring-1 ring-white/10 sm:text-6xl"
-                      >
-                        {item}
-                      </div>
-                    ))}
-                    <div className="aspect-square overflow-hidden rounded-[28px] bg-white/[0.08] ring-1 ring-white/10">
-                      {featuredApp?.status === "published" ? (
-                        <div
-                          className="h-full bg-cover bg-center"
-                          aria-label={`${featuredApp.title} の YouTube サムネイル`}
-                          style={{ backgroundImage: `url(${featuredApp.thumbnailUrl})` }}
-                        />
-                      ) : (
-                        <div className="flex h-full items-center justify-center text-5xl font-semibold text-white sm:text-6xl">
-                          !
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col gap-4 border-t border-white/15 pt-6 sm:flex-row sm:items-end sm:justify-between">
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-white/50">
-                        Featured app
-                      </p>
-                      <h2 className="mt-3 text-2xl font-semibold tracking-tight">
-                        {featuredApp?.title ?? "次のアプリ"}
-                      </h2>
-                    </div>
-                    <Link
-                      href={featuredApp?.appHref ?? "/apps"}
-                      className="w-fit rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--highlight)]"
-                    >
-                      作品を見る
-                    </Link>
-                  </div>
-                </div>
+              <div className="relative min-h-[31rem]">
+                <HeroImpulsePanel />
               </div>
             </div>
           </div>
