@@ -90,26 +90,41 @@ export default function Home() {
 
         <section
           id="apps"
-          className="-mx-4 bg-[var(--foreground)] px-4 py-16 text-white sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8"
+          className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden bg-[var(--accent)] px-4 py-28 text-white sm:px-6 sm:py-32 lg:px-8 lg:py-36"
         >
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-            <div className="space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--highlight)]">
-                Apps
-              </p>
-              <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-                いま見せている作品
-              </h2>
-            </div>
-            <Link
-              href="/apps"
-              className="w-fit rounded-full border border-white/20 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10"
-            >
-              一覧を見る
-            </Link>
-          </div>
+          <div className="relative mx-auto max-w-6xl">
+            <div
+              className="absolute -right-36 -top-36 h-80 w-80 rounded-full border border-white/10"
+              aria-hidden="true"
+            />
+            <div
+              className="absolute -bottom-32 left-2 h-64 w-64 rounded-full border border-[var(--highlight)]/25"
+              aria-hidden="true"
+            />
+            <div
+              className="absolute left-1/2 top-4 h-px w-64 -translate-x-1/2 bg-white/10"
+              aria-hidden="true"
+            />
 
-          <HomeAppCarousel items={appLinksArray} />
+            <div className="relative flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between">
+              <div className="max-w-xl space-y-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--highlight)]">
+                  Apps
+                </p>
+                <h2 className="text-4xl font-semibold tracking-tight sm:text-5xl">
+                  公開中のアプリ
+                </h2>
+              </div>
+              <Link
+                href="/apps"
+                className="w-fit rounded-full border border-white/20 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+              >
+                一覧を見る
+              </Link>
+            </div>
+
+            <HomeAppCarousel items={appLinksArray} />
+          </div>
         </section>
 
         <section id="about" className="grid gap-12 py-20 lg:grid-cols-[0.9fr_1.1fr]">
@@ -150,7 +165,6 @@ export default function Home() {
             ))}
           </div>
         </section>
-
         <SiteFooter
           title="Contact"
           description="共有や問い合わせはここから。必要なら X で見つけてもらい、URL はワンクリックでコピーできるようにしてあります。"
