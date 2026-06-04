@@ -127,42 +127,52 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="about" className="grid gap-12 py-20 lg:grid-cols-[0.9fr_1.1fr]">
-          <div className="space-y-4">
+        <section id="about" className="py-32 sm:py-40">
+          <div className="space-y-12">
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent)]">
               About
             </p>
-            <h2 className="max-w-md text-3xl font-semibold tracking-tight sm:text-4xl">
-              動機は軽くていい。公開まで持っていく。
-            </h2>
-            <p className="max-w-xl text-sm leading-7 text-[var(--muted)] sm:text-base sm:leading-8">
-              HogeDD は、衝動や小さな違和感を、実際に触れるものへ変えていく場所です。
-              きっかけが個人的でも、まず動くものにしてみる。その過程ごと公開していきます。
-            </p>
-          </div>
-
-          <div className="grid gap-8 border-l border-[var(--border)] pl-6 sm:grid-cols-3">
-            {[
-              {
-                title: "つくる",
-                body: "思いつきを、動くものとして一度外に出す。",
-              },
-              {
-                title: "見せる",
-                body: "動画やページで、作ったものにすぐ触れるようにする。",
-              },
-              {
-                title: "続ける",
-                body: "小さく直して、次のきっかけにつなげる。",
-              },
-            ].map((item) => (
-              <div key={item.title} className="space-y-3">
-                <h3 className="text-sm font-semibold uppercase tracking-[0.22em] text-[var(--muted)]">
-                  {item.title}
-                </h3>
-                <p className="text-sm leading-7 text-[var(--foreground)]">{item.body}</p>
+            <div className="flex flex-wrap items-baseline justify-center gap-x-6 gap-y-5 border-y border-[var(--border)] py-10 text-center">
+              {[
+                { text: "モテたい。", size: "text-4xl sm:text-6xl", opacity: "opacity-100" },
+                { text: "暇を潰したい。", size: "text-3xl sm:text-5xl", opacity: "opacity-85" },
+                { text: "驚かせたい。", size: "text-4xl sm:text-6xl", opacity: "opacity-95" },
+                { text: "笑わせたい。", size: "text-3xl sm:text-5xl", opacity: "opacity-90" },
+                { text: "自慢したい。", size: "text-2xl sm:text-4xl", opacity: "opacity-80" },
+                { text: "助けたい。", size: "text-3xl sm:text-5xl", opacity: "opacity-95" },
+                {
+                  text: "好奇心を満たしたい。",
+                  size: "text-2xl sm:text-4xl",
+                  opacity: "opacity-85",
+                },
+                { text: "忘れたくない。", size: "text-3xl sm:text-5xl", opacity: "opacity-90" },
+                { text: "愛したい。", size: "text-2xl sm:text-4xl", opacity: "opacity-80" },
+                { text: "神になりたい。", size: "text-4xl sm:text-6xl", opacity: "opacity-100" },
+                { text: "推しを布教したい。", size: "text-3xl sm:text-5xl", opacity: "opacity-85" },
+                { text: "なんとなく。", size: "text-2xl sm:text-4xl", opacity: "opacity-90" },
+              ].map((item, index) => (
+                <span
+                  key={item.text}
+                  className={`${item.size} ${item.opacity} font-semibold leading-none tracking-tight ${
+                    index % 3 === 1 ? "text-[var(--accent)]" : "text-[var(--foreground)]"
+                  }`}
+                >
+                  {item.text}
+                </span>
+              ))}
+            </div>
+            <div className="flex flex-col items-center gap-6 text-center">
+              <p className="text-5xl font-semibold tracking-tight text-[var(--accent)] sm:text-7xl">
+                <span>理由はそれで</span>
+                <br className="sm:hidden" />
+                <span>十分だ。</span>
+              </p>
+              <div className="flex items-center gap-2" aria-hidden="true">
+                <span className="h-2 w-10 bg-[var(--highlight)]" />
+                <span className="h-2 w-2 rounded-full bg-[var(--accent)]" />
+                <span className="h-2 w-2 rounded-full bg-[var(--foreground)]/35" />
               </div>
-            ))}
+            </div>
           </div>
         </section>
         <SiteFooter
