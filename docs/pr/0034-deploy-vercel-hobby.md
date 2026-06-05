@@ -15,6 +15,7 @@ TypeScript完全移行が完了し、HogeDDをNode.jsとnpmだけでbuildでき�
 - GitHub repository `iwasawarenji954/hogedd-web`と連携する。
 - Production Branchは`main`とする。
 - `main`以外のbranchはPreview deploymentとする。
+- PreviewはVercel Authenticationで保護する。
 - 正規URLは`https://www.hogedd.com/`とする。
 - `https://hogedd.com/`は`www`へ308 redirectする。
 - Vercel固有backend serviceは導入しない。
@@ -26,6 +27,8 @@ VercelはNext.jsとの統合、GitHub連携、Preview deployment、HTTPS付きcu
 `www`をprimaryにするとCNAMEを利用できる。Vercel公式も、CDNがtrafficを制御しやすく信頼性、速度、security面で有利な構成として、apexから`www`へのredirectを推奨している。
 
 Productionを`main`へ限定することで、既存のIssue、PR、CI、release権限の流れと一致する。
+
+Previewは未公開の変更や将来のsecretを含む可能性があるため、常時公開しない。Vercelへ参加していない人への一時共有はngrokを使う。
 
 ## 検討した代替案
 
@@ -59,11 +62,13 @@ GitHubのPR、commit、CIとdeploymentの対応が追いにくい。初回bootst
 - Vercel上で`npm run build`が成功。
 - `/`、`/apps`、`/apps/chinchin`、`/apps/clean-tasks`が`200`。
 - Clean TasksのGET、POST、PATCHがVercel Functions上で成功。
+- Git pushからPreview deploymentが自動生成され、認証付きアクセスで主要ページとRoute Handlerが成功。
 - `www.hogedd.com`が`200`。
 - `hogedd.com`が`www.hogedd.com`へ`308` redirect。
 - domain ownershipとHTTPSがVercelでverified。
 - Production Branchが`main`であることをAPIから確認。
 - Productionに必須の環境変数がないことを確認。
+- スマホ相当のbrowser幅でhomeを確認し、overflowや重なりがないことを確認。
 
 ## 今後の見直し条件
 

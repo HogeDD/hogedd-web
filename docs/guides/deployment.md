@@ -34,6 +34,7 @@ feature/*, fix/*, docs/*, infra/*
 
 - `main`以外へのpushはPreview deploymentになる。
 - PRにはVercelのPreview URLが紐づく。
+- PreviewはVercel Authenticationで保護し、Vercelへ参加している開発者だけが確認する。
 - `main`へのmergeでProduction deploymentが作られる。
 - custom domainは最新のProduction deploymentを表示する。
 - 通常運用では`vercel --prod`を使わない。
@@ -73,6 +74,14 @@ feature/*, fix/*, docs/*, infra/*
 - browser consoleとVercel runtime logsに新しいerrorがないこと
 
 UIを変更していないPRでは、変更したserver処理と主要ページが表示できることを確認する。
+
+Preview URLはVercel Authenticationで保護されている。Vercelへ参加していない人や外部スマホへ一時共有する場合は、Preview protectionを常時解除せず、`docs/guides/local-dev.md`のngrok手順を使う。
+
+CLIから認証付きPreviewを確認する場合:
+
+```bash
+npx vercel@latest curl / --deployment <PREVIEW_URL>
+```
 
 ## Domain
 
@@ -160,6 +169,8 @@ Vercel Functionsでは次を保証できない。
 3. Vercel Runtime Logs
 4. browser consoleとNetwork
 5. custom domainではなくdeployment固有URLでも再現するか
+
+Preview deploymentをCLIで確認する場合は`vercel curl`を使う。bypass tokenはsecretとして扱い、出力やdocsへ保存しない。
 
 secretや個人情報をlogへ出さない。
 
