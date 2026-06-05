@@ -4,15 +4,16 @@ HogeDD は、思いついたアプリを小さく作って公開する Next.js �
 
 ## 現在の構成
 
-現在は TypeScript 完全移行の途中です。
+Next.jsプロジェクトはリポジトリ直下にあります。Go APIはTypeScriptへ機能移植するまで一時的に残します。
 
 ```text
-frontend/                   # 現在の Next.js プロジェクト
-backend/apps/clean-tasks/   # TypeScript へ移植予定の Go API
+app/                        # Next.js App Router
+public/                     # 静的ファイル
+backend/apps/clean-tasks/   # TypeScriptへ移植予定のGo API
 docs/                       # ガイド、ADR、decision log
 ```
 
-移行後は Next.js プロジェクトをリポジトリ直下へ置き、`frontend/` と `backend/` を廃止します。新しい Go 機能は追加しません。
+新しいGo機能は追加しません。既存Go APIの仕様をTypeScriptへ移した後に`backend/`を削除します。
 
 設計方針:
 
@@ -25,8 +26,8 @@ docs/                       # ガイド、ADR、decision log
 詳しい手順は `docs/guides/local-dev.md` を読んでください。ngrok を使って外部端末から確認する手順もここにまとめています。
 
 ```bash
-npm --prefix frontend install
-npm --prefix frontend run dev
+npm install
+npm run dev
 ```
 
 通常は http://localhost:3000 で確認します。Codex が検証用に起動する場合は、競合を避けるため `3100` を使います。
@@ -34,17 +35,16 @@ npm --prefix frontend run dev
 既存の Clean Tasks で Go API が必要な場合だけ、移行完了まで以下を使います。
 
 ```bash
-cd frontend
 npm run dev:api
 ```
 
 ## 検証
 
 ```bash
-npm --prefix frontend run format:check
-npm --prefix frontend run lint
-npm --prefix frontend run typecheck
-npm --prefix frontend run build
+npm run format:check
+npm run lint
+npm run typecheck
+npm run build
 ```
 
 既存 Go コードを変更した場合だけ、移行完了まで Go の検証も行います。
