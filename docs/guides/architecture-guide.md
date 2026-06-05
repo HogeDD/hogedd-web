@@ -231,6 +231,8 @@ test/
   e2e/
 ```
 
+- unit test runnerはVitestを使います。
+- 通常確認とCIは`npm test`、開発中の継続実行は`npm run test:watch`を使います。
 - unit test: domain、usecase、純粋関数。
 - integration test: repository、DB、Route Handler。
 - E2E test: ユーザーが画面上で行う重要な一連の操作。

@@ -226,7 +226,8 @@ infrastructure → usecase が必要とする port を実装
 - 重要な業務ルールはunit testで守る。
 - DB実装やRoute Handlerはintegration testを検討する。
 - 重要なユーザーフローはE2E testを検討する。
-- テストツールはTypeScript移行issueで導入し、scriptとCIまで整える。
+- unit test runnerはVitestを使う。
+- 通常確認とCIでは`npm test`を使う。継続実行は`npm run test:watch`を使う。
 
 想定配置:
 
@@ -264,13 +265,15 @@ npm run dev -- --port 3100
 npm run format:check
 npm run lint
 npm run typecheck
+npm test
 npm run build
 ```
 
 - ユーザーが`3000`を使うため、エージェントのdev serverは`3100`を使う。
 - 同じネットワーク外から確認する場合は`ngrok http 3100`を使う。
 - 詳細は`docs/guides/local-dev.md`を参照する。
-- test scriptはまだない。導入時は設定とCIを同じPRで整える。
+- unit testは`test/unit/**/*.test.ts`へ置く。
+- integration testは導入時に`test/integration/`へ置き、実行方法をscriptとCIへ追加する。
 
 既存Goコードを変更した場合だけ、移行完了まで以下も実行する。
 
@@ -360,6 +363,7 @@ decision logの最低項目:
 
 - 要求外の変更を混ぜていないか。
 - `format:check`、`lint`、`typecheck`が通るか。
+- `npm test`が通るか。
 - Next.jsの挙動に関わるなら`build`が通るか。
 - ユーザー操作に関わるならdesktopとmobileで確認したか。
 - secretや生成物を追加していないか。
