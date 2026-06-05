@@ -9,6 +9,7 @@ HogeDDをNext.jsとVercelへ一本化する方針を決めたが、Clean Tasks�
 - Go実装で確認したClean Tasksの仕様をTypeScriptのunit testへ移す。
 - domain、usecase、infrastructureの依存方向を分ける。
 - Next.jsのRoute HandlerからTypeScriptのusecaseを呼ぶ。
+- `npm run typecheck`は`next typegen`後に`tsc`を実行し、生成済みファイルへ依存しないようにする。
 - taskの保存先は、現在の挙動を保つため一時的にメモリ実装とする。
 - ローカル開発は`npm run dev`だけで起動できる状態にする。
 - 旧Go実装の削除は、移植と混ぜずに専用IssueとPRで行う。
@@ -18,6 +19,8 @@ HogeDDをNext.jsとVercelへ一本化する方針を決めたが、Clean Tasks�
 Go実装を先に削除せず、既存テストとHTTPの挙動を読んでからTypeScriptの失敗するテストを書いた。これにより、言語を変えてもtask作成、一覧、完了、エラーの仕様が変わっていないことを機械的に確認できる。
 
 Clean Architectureは全機能へ一律に適用せず、将来PostgreSQLへ交換する保存処理と、外部技術に依存しないtaskのルールを分離するために使う。Route HandlerはHTTPの変換だけを担当し、業務ルールを持たない。
+
+Next.jsの`RouteContext`は`next dev`、`next build`、`next typegen`で生成される。CIの実行順やローカルに残った生成物へ依存させないため、型検査コマンド自身が型生成を行う。
 
 ## 検討した代替案
 
