@@ -25,22 +25,22 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ## 現在の構成
 
-Next.jsプロジェクトはリポジトリ直下にある。Go APIはTypeScriptへ機能移植するまで一時的に残す。
+Next.jsプロジェクトはリポジトリ直下にある。Clean Tasksを含む実行中の機能はTypeScriptで動く。
 
 ```text
 app/                        # Next.js 16.2.6 / React 19.2.4
 public/                     # 静的ファイル
-backend/apps/clean-tasks/   # 移行前の Go API
+backend/apps/clean-tasks/   # 削除PRまで残す旧Go実装
 docs/
 test/                       # TypeScriptテスト導入後の配置
 package.json
 ```
 
 - Next.jsとnpmのコマンドはリポジトリ直下で実行する。
-- 既存 Go API は TypeScript へ移植するまで残す。
+- 通常の開発と動作確認ではGo APIを起動しない。
 - 新しい機能を Go 側へ追加しない。
-- Go コードを先に削除しない。テストで仕様を固定し、TypeScript へ移植してから削除する。
-- `backend/` は機能移植後に削除する。
+- 旧Goコードは移植結果を確認した後、専用IssueとPRで削除する。
+- Goコードの削除を他の機能変更と混ぜない。
 - `src/` は現時点では追加しない。
 
 設計理由は `docs/adr/0001-nextjs-modular-monolith.md` を参照する。
@@ -275,7 +275,7 @@ npm run build
 - unit testは`test/unit/**/*.test.ts`へ置く。
 - integration testは導入時に`test/integration/`へ置き、実行方法をscriptとCIへ追加する。
 
-既存Goコードを変更した場合だけ、移行完了まで以下も実行する。
+旧Goコードは削除PRまでCIの検証対象とする。Goコードを変更する場合は以下も実行する。
 
 ```bash
 cd backend/apps/clean-tasks

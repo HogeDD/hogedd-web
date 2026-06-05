@@ -4,16 +4,16 @@ HogeDD は、思いついたアプリを小さく作って公開する Next.js �
 
 ## 現在の構成
 
-Next.jsプロジェクトはリポジトリ直下にあります。Go APIはTypeScriptへ機能移植するまで一時的に残します。
+Next.jsプロジェクトはリポジトリ直下にあります。Clean Tasksを含む実行中の機能はTypeScriptで動きます。
 
 ```text
 app/                        # Next.js App Router
 public/                     # 静的ファイル
-backend/apps/clean-tasks/   # TypeScriptへ移植予定のGo API
+backend/apps/clean-tasks/   # 削除PRまで残す旧Go実装
 docs/                       # ガイド、ADR、decision log
 ```
 
-新しいGo機能は追加しません。既存Go APIの仕様をTypeScriptへ移した後に`backend/`を削除します。
+新しいGo機能は追加しません。旧Go実装は移植結果を確認できる状態で別PRから削除します。
 
 設計方針:
 
@@ -32,12 +32,6 @@ npm run dev
 
 通常は http://localhost:3000 で確認します。Codex が検証用に起動する場合は、競合を避けるため `3100` を使います。
 
-既存の Clean Tasks で Go API が必要な場合だけ、移行完了まで以下を使います。
-
-```bash
-npm run dev:api
-```
-
 ## 検証
 
 ```bash
@@ -48,7 +42,7 @@ npm test
 npm run build
 ```
 
-既存 Go コードを変更した場合だけ、移行完了まで Go の検証も行います。
+旧Goコードは削除PRまでCIで検証します。通常のローカル開発でGo APIを起動する必要はありません。
 
 ## Docs
 
