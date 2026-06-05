@@ -1,23 +1,21 @@
 # ローカル開発手順
 
-このリポジトリは `frontend` の Next.js と `backend/apps/clean-tasks` の Go API を別プロセスで起動する。
+このリポジトリは、ルートのNext.jsと`backend/apps/clean-tasks`のGo APIを別プロセスで起動する。
 
-> 現在は TypeScript 完全移行の途中です。新しい機能は Next.js / TypeScript で作り、Go API は既存の Clean Tasks を移植するまでだけ利用します。移行後は Next.js プロジェクトをリポジトリ直下へ移します。
+> Go APIは既存のClean TasksをTypeScriptへ移植するまでだけ利用します。新しい機能はNext.js / TypeScriptで作ります。
 
 ## 起動
 
 Terminal 1:
 
 ```bash
-cd frontend
 npm run dev:api
 ```
 
 Terminal 2:
 
 ```bash
-cd frontend
-npm run dev:web
+npm run dev
 ```
 
 デフォルトでは以下で起動する。
@@ -30,7 +28,7 @@ Codex が検証用に Web を起動する場合は、ユーザーが使う `3000
 同じネットワーク外の端末から確認する場合は、Codex は `3100` で Web を起動し、ngrok で公開する。
 
 ```bash
-npm --prefix frontend run dev -- --port 3100
+npm run dev -- --port 3100
 ngrok http 3100
 ```
 
@@ -66,7 +64,7 @@ ngrok config add-authtoken <YOUR_NGROK_AUTHTOKEN>
 Codex が検証する場合は、ユーザーが `3000` を使っている前提で `3100` を使う。
 
 ```bash
-npm --prefix frontend run dev -- --hostname 0.0.0.0 --port 3100
+npm run dev -- --hostname 0.0.0.0 --port 3100
 ```
 
 `--hostname 0.0.0.0` を付けると、同じネットワーク内の端末や ngrok からアクセスしやすい。
@@ -88,13 +86,13 @@ ngrok URL でアクセスすると、Next.js の dev origin 制限により拒�
 例:
 
 ```bash
-NEXT_ALLOWED_DEV_ORIGINS=xxxx.ngrok-free.app npm --prefix frontend run dev -- --hostname 0.0.0.0 --port 3100
+NEXT_ALLOWED_DEV_ORIGINS=xxxx.ngrok-free.app npm run dev -- --hostname 0.0.0.0 --port 3100
 ```
 
 既に LAN IP も許可している場合は comma 区切りにする。
 
 ```bash
-NEXT_ALLOWED_DEV_ORIGINS=192.168.10.102,xxxx.ngrok-free.app npm --prefix frontend run dev -- --hostname 0.0.0.0 --port 3100
+NEXT_ALLOWED_DEV_ORIGINS=192.168.10.102,xxxx.ngrok-free.app npm run dev -- --hostname 0.0.0.0 --port 3100
 ```
 
 `NEXT_ALLOWED_DEV_ORIGINS` を変更したら、dev server を再起動する。
@@ -104,7 +102,7 @@ NEXT_ALLOWED_DEV_ORIGINS=192.168.10.102,xxxx.ngrok-free.app npm --prefix fronten
 画面が BFF 経由で Go API を呼ぶ場合は、Go API もローカルで起動しておく。
 
 ```bash
-npm --prefix frontend run dev:api
+npm run dev:api
 ```
 
 Next.js から見た API の接続先は `API_BASE_URL` で決まる。ローカル端末上で Next.js と Go API を両方動かす場合は、通常 `http://localhost:8080` のままでよい。
@@ -127,7 +125,7 @@ Next.js から見た API の接続先は `API_BASE_URL` で決まる。ローカ
 
 ## 環境変数
 
-`frontend/.env.example` を参考に `frontend/.env.local` を作る。
+`.env.example`を参考に`.env.local`を作る。
 
 ```bash
 API_BASE_URL=http://localhost:8080
@@ -175,7 +173,7 @@ curl http://localhost:3000/apps/clean-tasks/api/tasks
 ## よくある失敗
 
 - `api server is not reachable`
-  - `frontend` で `npm run dev:api` が起動しているか確認する。
+  - repository rootで`npm run dev:api`が起動しているか確認する。
 - `EADDRINUSE`
   - 既に同じ port のプロセスが動いている。別 port にするか、既存プロセスを止める。
 - Web は動くが task が作れない

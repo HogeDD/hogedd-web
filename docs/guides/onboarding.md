@@ -96,15 +96,14 @@ git switch -c docs/16-onboarding-guide
 Web を起動する場合:
 
 ```bash
-npm --prefix frontend run dev
+npm run dev
 ```
 
-現在は TypeScript 完全移行の途中なので、Next.js はまだ `frontend/` にあります。
+Next.jsプロジェクトはリポジトリ直下にあります。コマンドはrepository rootで実行します。
 
 既存の Clean Tasks で Go API を起動する必要がある場合だけ:
 
 ```bash
-cd frontend
 npm run dev:api
 ```
 

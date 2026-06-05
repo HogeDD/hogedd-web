@@ -23,42 +23,25 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - 新しい抽象化や共有フォルダは、必要性が確認できてから作る。
 - 品質は注意書きだけに頼らず、テスト、型、lint、format、CI で守る。
 
-## 現在は移行期間
+## 現在の構成
 
-HogeDD 本体は、Go API を分離したモノレポから、TypeScript と Next.js に統一した構成へ移行する。
-
-### 現在の実体
+Next.jsプロジェクトはリポジトリ直下にある。Go APIはTypeScriptへ機能移植するまで一時的に残す。
 
 ```text
-frontend/                   # Next.js 16.2.6 / React 19.2.4
+app/                        # Next.js 16.2.6 / React 19.2.4
+public/                     # 静的ファイル
 backend/apps/clean-tasks/   # 移行前の Go API
 docs/
-```
-
-- 現在の Next.js コマンドは `frontend/` で実行する。
-- 既存 Go API は TypeScript へ移植するまで残す。
-- 新しい機能を Go 側へ追加しない。
-- Go コードを先に削除しない。テストで仕様を固定し、TypeScript へ移植してから削除する。
-
-### TypeScript 移行後の目標
-
-```text
-app/                  # Next.js App Router
-  _components/        # サイト全体で共有する UI
-  _lib/               # サイト全体で共有する小さな処理
-  apps/
-    <app-name>/       # アプリ固有コード
-docs/
-public/
-test/
+test/                       # TypeScriptテスト導入後の配置
 package.json
 ```
 
-- `frontend/` の内容はリポジトリ直下へ移す。
+- Next.jsとnpmのコマンドはリポジトリ直下で実行する。
+- 既存 Go API は TypeScript へ移植するまで残す。
+- 新しい機能を Go 側へ追加しない。
+- Go コードを先に削除しない。テストで仕様を固定し、TypeScript へ移植してから削除する。
 - `backend/` は機能移植後に削除する。
 - `src/` は現時点では追加しない。
-- ディレクトリ移動は TypeScript 機能移植と分けて行う。
-- この目標構成を、実際の移行前に存在するものとして扱わない。
 
 設計理由は `docs/adr/0001-nextjs-modular-monolith.md` を参照する。
 
@@ -262,30 +245,26 @@ test/
 
 ルーティング、metadata、cache、Server/Client Components、Server Actions、Route Handlers、config、file conventionsを触る前に、Next.jsのローカルdocsを読む。
 
-現在は`frontend/node_modules/next/dist/docs/`にある。ルート移行後は`node_modules/next/dist/docs/`になる。
-
 特に参照する場所:
 
 ```text
-frontend/node_modules/next/dist/docs/01-app/01-getting-started/02-project-structure.md
-frontend/node_modules/next/dist/docs/01-app/01-getting-started/05-server-and-client-components.md
-frontend/node_modules/next/dist/docs/01-app/01-getting-started/06-fetching-data.md
-frontend/node_modules/next/dist/docs/01-app/01-getting-started/07-mutating-data.md
-frontend/node_modules/next/dist/docs/01-app/01-getting-started/15-route-handlers.md
-frontend/node_modules/next/dist/docs/01-app/02-guides/data-security.md
+node_modules/next/dist/docs/01-app/01-getting-started/02-project-structure.md
+node_modules/next/dist/docs/01-app/01-getting-started/05-server-and-client-components.md
+node_modules/next/dist/docs/01-app/01-getting-started/06-fetching-data.md
+node_modules/next/dist/docs/01-app/01-getting-started/07-mutating-data.md
+node_modules/next/dist/docs/01-app/01-getting-started/15-route-handlers.md
+node_modules/next/dist/docs/01-app/02-guides/data-security.md
 ```
 
-## 現在の開発コマンド
-
-TypeScript完全移行が終わるまでは`frontend/`で実行する。
+## 開発コマンド
 
 ```bash
-npm --prefix frontend install
-npm --prefix frontend run dev -- --port 3100
-npm --prefix frontend run format:check
-npm --prefix frontend run lint
-npm --prefix frontend run typecheck
-npm --prefix frontend run build
+npm install
+npm run dev -- --port 3100
+npm run format:check
+npm run lint
+npm run typecheck
+npm run build
 ```
 
 - ユーザーが`3000`を使うため、エージェントのdev serverは`3100`を使う。
