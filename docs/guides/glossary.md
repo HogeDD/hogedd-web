@@ -75,5 +75,5 @@
 | 用語               | 意味                                                                               |
 | ------------------ | ---------------------------------------------------------------------------------- |
 | repository root    | `package.json`、`app/`、`public/`があるリポジトリ直下。npmコマンドを実行する場所。 |
-| `backend/`         | 移行前のGo API。仕様をTypeScriptへ移した後に削除する予定。                         |
+| `backend/`         | TypeScript移植後も削除専用PRまで残している旧Go実装。                               |
 | TypeScript完全移行 | Go APIの機能をTypeScriptへ移し、Next.jsだけで開発・deployできる状態にすること。    |

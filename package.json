@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "dev:api": "cd backend/apps/clean-tasks && go run ./cmd/server",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",

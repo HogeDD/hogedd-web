@@ -1,47 +1,45 @@
-import { NextResponse } from "next/server";
+import { EmptyTaskTitleError, type Task } from "@/app/apps/clean-tasks/_domain/task";
+import { taskService } from "@/app/apps/clean-tasks/_infrastructure/task-service";
 
-const defaultAPIBaseURL = "http://localhost:8080";
+type CreateTaskRequest = {
+  title?: unknown;
+};
 
-function getAPIBaseURL() {
-  return process.env.API_BASE_URL ?? defaultAPIBaseURL;
+function toTaskResponse(task: Task) {
+  return {
+    ...task,
+    createdAt: task.createdAt.toISOString(),
+  };
 }
 
 export async function GET() {
   try {
-    const response = await fetch(`${getAPIBaseURL()}/tasks`, {
-      cache: "no-store",
-    });
-
-    const body = await response.text();
-    return new Response(body, {
-      status: response.status,
-      headers: {
-        "Content-Type": response.headers.get("Content-Type") ?? "application/json",
-      },
-    });
+    const tasks = await taskService.listTasks();
+    return Response.json({ tasks: tasks.map(toTaskResponse) });
   } catch {
-    return NextResponse.json({ error: "api server is not reachable" }, { status: 503 });
+    return Response.json({ error: "internal server error" }, { status: 500 });
   }
 }
 
 export async function POST(request: Request) {
-  try {
-    const response = await fetch(`${getAPIBaseURL()}/tasks`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: await request.text(),
-    });
+  let body: CreateTaskRequest;
 
-    const body = await response.text();
-    return new Response(body, {
-      status: response.status,
-      headers: {
-        "Content-Type": response.headers.get("Content-Type") ?? "application/json",
-      },
-    });
+  try {
+    body = (await request.json()) as CreateTaskRequest;
   } catch {
-    return NextResponse.json({ error: "api server is not reachable" }, { status: 503 });
+    return Response.json({ error: "invalid json body" }, { status: 400 });
+  }
+
+  try {
+    const task = await taskService.createTask({
+      title: typeof body.title === "string" ? body.title : "",
+    });
+    return Response.json(toTaskResponse(task), { status: 201 });
+  } catch (error) {
+    if (error instanceof EmptyTaskTitleError) {
+      return Response.json({ error: "title must not be empty" }, { status: 400 });
+    }
+
+    return Response.json({ error: "internal server error" }, { status: 500 });
   }
 }
