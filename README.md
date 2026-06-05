@@ -9,11 +9,11 @@ Next.jsプロジェクトはリポジトリ直下にあります。Clean Tasks�
 ```text
 app/                        # Next.js App Router
 public/                     # 静的ファイル
-backend/apps/clean-tasks/   # 削除PRまで残す旧Go実装
 docs/                       # ガイド、ADR、decision log
+test/                       # TypeScriptテスト
 ```
 
-新しいGo機能は追加しません。旧Go実装は移植結果を確認できる状態で別PRから削除します。
+開発、検証、buildはNode.jsとnpmだけで完結します。
 
 設計方針:
 
@@ -41,8 +41,6 @@ npm run typecheck
 npm test
 npm run build
 ```
-
-旧Goコードは削除PRまでCIで検証します。通常のローカル開発でGo APIを起動する必要はありません。
 
 ## Docs
 

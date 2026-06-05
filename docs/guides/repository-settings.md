@@ -55,7 +55,6 @@ Repository settings の Pull Requests で、以下を確認する。
 - `Require a pull request before merging`: on
 - `Require status checks to pass before merging`: on
 - required checks:
-  - `API`
   - `Web`
 - `Require branches to be up to date before merging`: 最初は off
 - `Require approvals`: 最初は off でもよい
@@ -74,7 +73,6 @@ Repository settings の Pull Requests で、以下を確認する。
 - `Require a pull request before merging`: on
 - `Require status checks to pass before merging`: on
 - required checks:
-  - `API`
   - `Web`
 - `Require approvals`: on
 - `Restrict who can push to matching branches`: 必要になってから on
@@ -128,7 +126,6 @@ Secrets and variables は repository に実値を置き、コードには入れ�
 - Topics:
   - `nextjs`
   - `typescript`
-  - `go`
   - `clean-architecture`
   - `hogedd`
 
@@ -176,9 +173,9 @@ deploy が始まったら `preview`、`production` などを検討する。
 - [ ] Pull Requests で merge commit / rebase merge を無効にする。
 - [ ] Pull Requests で head branch 自動削除を有効にする。
 - [ ] `dev` に branch protection を設定する。
-- [ ] `dev` で `API` / `Web` checks を必須にする。
+- [ ] `dev` で `Web` check を必須にする。
 - [ ] `main` に branch protection を設定する。
-- [ ] `main` で approval と `API` / `Web` checks を必須にする。
+- [ ] `main` で approval と `Web` check を必須にする。
 - [ ] Actions の workflow permissions を確認する。
 - [ ] 必要な secrets を GitHub Secrets に入れる。
 - [ ] repository description / website / topics を設定する。

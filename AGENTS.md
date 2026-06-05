@@ -30,17 +30,14 @@ Next.jsプロジェクトはリポジトリ直下にある。Clean Tasksを含�
 ```text
 app/                        # Next.js 16.2.6 / React 19.2.4
 public/                     # 静的ファイル
-backend/apps/clean-tasks/   # 削除PRまで残す旧Go実装
 docs/
-test/                       # TypeScriptテスト導入後の配置
+test/                       # TypeScriptテスト
 package.json
 ```
 
 - Next.jsとnpmのコマンドはリポジトリ直下で実行する。
-- 通常の開発と動作確認ではGo APIを起動しない。
-- 新しい機能を Go 側へ追加しない。
-- 旧Goコードは移植結果を確認した後、専用IssueとPRで削除する。
-- Goコードの削除を他の機能変更と混ぜない。
+- アプリケーションコードはTypeScriptで実装する。
+- 開発、検証、buildはNode.jsとnpmだけで完結させる。
 - `src/` は現時点では追加しない。
 
 設計理由は `docs/adr/0001-nextjs-modular-monolith.md` を参照する。
@@ -274,15 +271,6 @@ npm run build
 - 詳細は`docs/guides/local-dev.md`を参照する。
 - unit testは`test/unit/**/*.test.ts`へ置く。
 - integration testは導入時に`test/integration/`へ置き、実行方法をscriptとCIへ追加する。
-
-旧Goコードは削除PRまでCIの検証対象とする。Goコードを変更する場合は以下も実行する。
-
-```bash
-cd backend/apps/clean-tasks
-test -z "$(gofmt -l .)"
-go vet ./...
-go test ./...
-```
 
 ## Lint / Format
 
