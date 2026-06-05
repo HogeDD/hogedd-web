@@ -6,192 +6,294 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 <!-- END:nextjs-agent-rules -->
 
-# エージェント向けプロジェクトガイド
+# HogeDD エージェント向け開発ガイド
 
-## 基本方針
+このファイルは、人間と AI エージェントが同じ判断基準で開発するための入口です。
 
-- このリポジトリはモノレポとして育てる。
-- フロントエンドは TypeScript で書く。
-- バックエンドは Go で書く。
-- アプリケーション全体はクリーンアーキテクチャを意識して設計する。
-- 基本はテスト駆動開発で進める。実装前に期待動作をテストで表現できるなら、先にテストを書く。
-- GitHub Actions で CI/CD を整備する。
-- lint と format は後回しにせず、各言語・各パッケージで丁寧に導入、維持する。
-- 小さく作って、短いフィードバックループで改善する。ミニマムにアジャイルで進める。
-- `CLAUDE.md` はこのファイルを参照しているため、エージェント向けの共通ルールは `AGENTS.md` に集約する。
-- 参考: https://nyosegawa.com/posts/harness-engineering-best-practices-2026/
+分からない用語があっても、最初から全て理解する必要はありません。まず「変更前の判断手順」と「保存場所」を確認してください。
 
-## 現在の構成
+## 最初に守ること
 
-- フロントエンドは `frontend/` にある Next.js `16.2.6` の App Router アプリ。
-- バックエンドは `backend/apps/clean-tasks/` にある Go API。これは最初の実装例であり、今後は app ごとに独立した Go API として育てる前提で考える。
-- React は `19.2.4`。
-- TypeScript は `strict: true`。
-- スタイリングは Tailwind CSS v4。`frontend/app/globals.css` で `@import "tailwindcss";` を使っている。
-- npm を使っている。依存関係を変更したら `frontend/package.json` と `frontend/package-lock.json` を必ず同期する。
+- 作業前に既存実装と関連 docs を読む。
+- Issue を起点に `dev` から作業 branch を切る。
+- 変更は Issue の範囲に絞る。
+- 基本はテスト駆動開発で進める。期待動作をテストで表現できるなら、実装より先にテストを書く。
+- secret、token、password、DB URL、private key を commit、Issue、PR、チャット、スクリーンショットへ載せない。
+- ユーザーの未コミット変更を勝手に戻さない。
+- 新しい抽象化や共有フォルダは、必要性が確認できてから作る。
+- 品質は注意書きだけに頼らず、テスト、型、lint、format、CI で守る。
 
-## 目指すモノレポ構成
+## 現在は移行期間
 
-このリポジトリは `frontend/` と `backend/` を分けた構成で進める。新しいディレクトリを前提にコードを書かない。導入時は、以下のような責務分離を基準にする。
+HogeDD 本体は、Go API を分離したモノレポから、TypeScript と Next.js に統一した構成へ移行する。
+
+### 現在の実体
 
 ```text
-frontend/     # TypeScript / Next.js フロントエンド
-backend/
+frontend/                   # Next.js 16.2.6 / React 19.2.4
+backend/apps/clean-tasks/   # 移行前の Go API
+docs/
+```
+
+- 現在の Next.js コマンドは `frontend/` で実行する。
+- 既存 Go API は TypeScript へ移植するまで残す。
+- 新しい機能を Go 側へ追加しない。
+- Go コードを先に削除しない。テストで仕様を固定し、TypeScript へ移植してから削除する。
+
+### TypeScript 移行後の目標
+
+```text
+app/                  # Next.js App Router
+  _components/        # サイト全体で共有する UI
+  _lib/               # サイト全体で共有する小さな処理
   apps/
-    <app-name>/  # Go バックエンド
-docs/         # ADR、PR decision log、設計判断の記録
+    <app-name>/       # アプリ固有コード
+docs/
+public/
+test/
+package.json
 ```
 
-- 共有パッケージは必要になってから追加する。早すぎる共通化は避ける。
-- フロントとバックエンドの境界は API 契約で明確にする。
-- API 契約は OpenAPI を単一の生成元にする。
-- ディレクトリ構成は拡張性と保守性を優先する。ただし、実体のない抽象化や早すぎる分割は避ける。
+- `frontend/` の内容はリポジトリ直下へ移す。
+- `backend/` は機能移植後に削除する。
+- `src/` は現時点では追加しない。
+- ディレクトリ移動は TypeScript 機能移植と分けて行う。
+- この目標構成を、実際の移行前に存在するものとして扱わない。
 
-backend 側も app 単位で切る。新しいアプリは 1 ディレクトリに閉じ、その中で clean architecture を完結させる。
+設計理由は `docs/adr/0001-nextjs-modular-monolith.md` を参照する。
+
+## 採用するアーキテクチャ
+
+**Next.js 中心のモジュラーモノリス + 必要な機能だけ Clean Architecture**を採用する。
+
+用語:
+
+- モジュラーモノリス: 一つのアプリとして動かしながら、機能ごとの境界を守る構成。
+- Clean Architecture: フォルダを増やす手法ではなく、重要なルールを Next.js、DB、Vercelなどの外部技術から守る依存ルール。
+- domain: アプリの中心にあるルールやデータ表現。
+- usecase: ユーザーが行う一つの操作を実現する処理。
+- infrastructure: DB、外部 API、時刻、ID生成など外部技術の具体実装。
+
+### 常に優先するNext.jsのルール
+
+- Server Components を基本にする。
+- `"use client"` は state、event handler、effect、browser API が必要なコンポーネントだけに付ける。
+- アプリ固有コードは `app/apps/<app-name>/` の近くへ置く。
+- private folder は `_components`、`_lib` のように `_` を付ける。
+- 読み取り処理は Server Component から server-side の関数または usecase を直接呼ぶ。
+- 画面からの更新処理は Server Actions を基本にする。
+- 同じ Next.js アプリ内の Server Component から、自分自身の Route Handler を `fetch` しない。
+- Route Handler は外部クライアント、Webhook、公開 REST API が必要な場合に使う。
+- Server Action と Route Handler のどちらでも、入力検証、認証、認可を処理の中で確認する。
+
+### Clean Architectureを追加する条件
+
+次の質問に一つでも「はい」があれば、`_domain`、`_usecases`、`_infrastructure` の導入を検討する。
+
+1. DB へ保存するか。
+2. 複数画面から使う重要な業務ルールがあるか。
+3. 外部 API を使うか。
+4. transaction が必要か。
+5. 外部技術を将来交換したいか。
+6. 単体テストで独立して守るべき判断があるか。
+
+全て「いいえ」なら、まず `_components` と `_lib` だけで作る。迷った場合も単純な構成から始める。
+
+### 単純な機能の例
+
+静的なリンク一覧、ローカルだけで完結するゲーム、表示用の変換処理など。
 
 ```text
-backend/
-  apps/
-    <app-name>/
-      cmd/server/               # 起動、DI、設定
-      internal/
-        domain/
-        usecase/
-        interface/http/
-        infrastructure/
-      test/
+app/apps/<app-name>/
+  page.tsx
+  _components/
+  _lib/
 ```
 
-- `backend/apps/clean-tasks` は現行の最初の例であり、今後は `backend/apps/<app-name>/` に寄せる前提で設計する。
-- app ごとのコードは app のディレクトリの外に漏らさない。
-- app をまたぐ共有は、必要になってから最小限で切り出す。
-- 共有コードは命名と責務を曖昧にしやすいので、最初から大量に作らない。
+置くもの:
 
-## クリーンアーキテクチャ方針
+- `page.tsx`: 画面の入口。
+- `_components/`: そのアプリだけで使う UI。
+- `_lib/`: 純粋関数、型、小さなデータ、表示用変換。
 
-このプロジェクトでは、特に Go バックエンドでクリーンアーキテクチャを前面に置いて開発する。単なるディレクトリ分けではなく、依存方向、型の境界、責務分離を守る。
+作らないもの:
 
-バックエンド Go では、依存方向を必ず内側へ向ける。
+- 実装が一つしかなく交換予定もない interface。
+- 処理を一つ呼ぶだけの usecase。
+- 内部処理を呼ぶためだけの Route Handler。
+
+### 複雑な機能の例
+
+DBへ保存するタスク管理、認証が必要な機能、外部APIと連携する機能など。
 
 ```text
-domain          # エンティティ、値オブジェクト、ドメインサービス
-usecase         # アプリケーション固有のユースケース、入力/出力 DTO、port interface
-interface       # HTTP handler、presenter、controller、OpenAPI 境界
-infrastructure  # DB、SQL、外部 API、具体的なフレームワーク実装
+app/apps/<app-name>/
+  page.tsx
+  _components/
+  _actions/
+  _domain/
+  _usecases/
+  _infrastructure/
+  api/                 # 外部HTTP APIが必要な場合だけ
 ```
 
-想定ディレクトリ例:
+役割:
+
+| 場所                       | 役割                                               | 置かないもの                      |
+| -------------------------- | -------------------------------------------------- | --------------------------------- |
+| `page.tsx` / `_components` | 表示とユーザー操作                                 | SQL、重要な業務ルール             |
+| `_actions`                 | FormDataや認証済み情報をusecaseへ渡すServer Action | SQL、再利用したい業務ルール       |
+| `_domain`                  | 外部技術が変わっても残るルール                     | React、Next.js、Vercel、DB driver |
+| `_usecases`                | ユーザー操作の流れ、port interface                 | JSX、HTTP status、具体的なSQL     |
+| `_infrastructure`          | DB、外部APIなどportの実装                          | UI、画面固有の状態                |
+| `api/**/route.ts`          | 外部HTTP境界、Webhook                              | 業務ロジック、SQL                 |
+
+依存方向:
 
 ```text
-backend/apps/<app-name>/
-  cmd/server/                 # 起動、DI、設定読み込み
-  internal/
-    domain/                   # 外部依存を持たない中心
-      <feature>/
-    usecase/                  # アプリケーション処理
-      <feature>/
-    interface/
-      http/                   # handler、routing、request/response 変換
-      openapi/                # OpenAPI 生成コードの受け皿
-    infrastructure/
-      postgres/               # SQL、repository 実装、transaction 実装
-      external/               # 外部 API client 実装
-      migration/              # migration files
+page / component / Server Action / Route Handler
+                         ↓
+                      usecase
+                         ↓
+                       domain
+
+infrastructure → usecase が必要とする port を実装
 ```
 
-依存ルール:
+- `_domain` と `_usecases` から、Next.js、React、Vercel、DB driverをimportしない。
+- repository interfaceは、それを必要とするusecase側に置く。
+- DB rowとdomain型を同じ型にしない。境界で明示的に変換する。
+- transaction境界はusecase単位で考える。
 
-- `domain` は外部依存ゼロを基本にする。HTTP、DB、SQL、OpenAPI、環境変数、logger、framework に依存させない。
-- `domain` には entity、value object、domain service、domain error を置く。
-- `usecase` は `domain` と port interface に依存する。具体的な DB client、SQL driver、HTTP framework、OpenAPI 生成型には依存させない。
-- repository interface、external service interface、clock、ID generator などの port は、原則としてそれを必要とする `usecase` 側に置く。
-- `interface/http` は request validation、認証済み user/context の取り出し、DTO 変換、status code 変換を担当する。業務ロジックを置かない。
-- `infrastructure` は port interface の実装を担当する。SQL、DB row model、外部 API client、framework 固有処理はここに閉じ込める。
-- `cmd/server` は composition root として DI を組み立てる。業務ロジックは置かない。
-- 小さな機能でも、便利だからという理由で内側の層から外側の層へ依存しない。
+## 保存場所の判断
 
-型の境界:
+新しいコードを追加するときは上から順に判断する。
 
-- domain entity と OpenAPI 生成型を混ぜない。
-- domain entity と DB row model を混ぜない。
-- request/response DTO と usecase input/output DTO を必要に応じて分ける。
-- OpenAPI 生成型は `interface` 層の境界型として扱い、`domain` や `usecase` へ漏らさない。
-- SQL の scan 先 struct は `infrastructure/postgres` に閉じ込め、domain entity へ明示的に変換する。
+1. 一つのアプリだけで使うか。
+   - はい: `app/apps/<app-name>/` 配下。
+   - いいえ: 次へ。
+2. サイト全体のUIか。
+   - はい: `app/_components/`。
+3. サイト全体で使う小さな純粋処理か。
+   - はい: `app/_lib/`。
+4. 複数アプリで実際に再利用済みか。
+   - いいえ: 先にアプリ内へ置く。
+   - はい: 責務が明確な共有場所を検討する。
 
-transaction / DB:
+共有化のためだけに `utils.ts`、`common/`、`shared/` を増やさない。名前で責務を説明できない共有コードは作らない。
 
-- transaction 境界は usecase 単位で設計する。
-- usecase が transaction を必要とする場合は、具体的な `*sql.Tx` ではなく transaction manager interface 経由で扱う。
-- repository 実装は context を受け取り、SQL は明示的に書く。
-- read/write の責務が複雑になったら、無理に汎用 repository へ寄せず、ユースケースに合った port を設計する。
+## データ取得と更新
 
-設計判断:
+### 読み取り
 
-- 新機能を追加するときは、まず domain と usecase の責務を考える。
-- framework、DB、OpenAPI から実装を始めない。外側の都合で内側のモデルを歪めない。
-- 迷ったら「このコードは外部技術が変わっても残るか」を基準に層を決める。
-- 依存方向が崩れそうな変更は、実装前にディレクトリ構成や interface を見直す。
+- Server Component から server-side の関数を呼ぶ。
+- 複雑な機能ではusecaseを呼ぶ。
+- DB clientをClient Componentへimportしない。
+- 遅い処理は必要に応じて`Suspense`や`loading.tsx`で待機表示を用意する。
+- cacheを使う前に、Next.js 16のローカルdocsを読む。
 
-フロントエンドでも、UI とドメイン寄りの処理を過度に混ぜない。
+### 更新
 
-- React コンポーネントは表示とユーザー操作を中心に保つ。
-- API 通信、変換処理、バリデーション、状態管理は責務が分かる場所に置く。
-- Server Components を基本とし、必要な場合のみ `"use client"` を付ける。
+- 画面内のformやbuttonからの更新はServer Actionを基本にする。
+- Server Actionは入力変換と境界処理に留め、重要な処理はusecaseへ渡す。
+- 外部からHTTPで呼ばれる必要がある場合だけRoute Handlerを追加する。
+- Server Actionは直接POST可能な入口なので、UI側の制御だけを信用しない。
 
-## API / DB 方針
+### REST / Route Handler
 
-- フロントエンドとバックエンドの通信は REST を基本にする。
-- API はリソース指向で設計し、HTTP method、status code、request/response schema を明確にする。
-- API 仕様は OpenAPI の spec-first を基本にする。実装と手書きドキュメントを別々に育てない。
-- OpenAPI spec は導入時に `docs/openapi/openapi.yaml` など、生成元が一つだと分かる場所に置く。
-- Go 側の server interface / request-response 型生成は `oapi-codegen` を第一候補にする。
-- TypeScript 側の API 型生成は `openapi-typescript` を第一候補にする。
-- 生成コードは手編集しない。変更が必要な場合は OpenAPI spec を直して再生成する。
-- DB は PostgreSQL を前提にする。ホスティングは Neon などの managed PostgreSQL を想定する。
-- ORM は原則使わない。SQL を明示的に書く。
-- SQL は呼び出し元に散らさず、repository / gateway など infrastructure 層に閉じ込める。
-- SQL injection を避けるため、必ずプレースホルダとパラメータバインディングを使う。
-- migration tool は無料 OSS の `golang-migrate/migrate` を第一候補にする。
-- schema 変更は手作業ではなく migration として管理する。
+- HogeDD内部だけで使う機能にRESTを強制しない。
+- 外部クライアント、Webhook、公開APIが必要ならRESTを使う。
+- Route Handlerではrequest validation、認証・認可、DTO変換、status code変換を行う。
+- API契約が複数クライアントに利用される段階でOpenAPI導入を検討する。最初から生成コードを増やさない。
+
+## DB / SQL
+
+- PostgreSQLを前提とする。ホスティングはNeonなどを候補にする。
+- ORMは原則使わず、SQLを明示的に書く。
+- SQLは`_infrastructure`へ閉じ込める。
+- SQL injectionを避けるため、必ずプレースホルダとパラメータバインディングを使う。
+- migrationは必ずファイルで管理する。
+- TypeScript用migration toolは、PostgreSQL導入issueで選定する。選定前に独自方式を作らない。
+- DB接続文字列はsecretとして扱い、`.env.example`にはキー名だけを書く。
+
+## Vercel方針
+
+- 初期はVercel Hobbyで非商用公開する。
+- 広告、アフィリエイト、有料機能を公開する前に最新規約を確認し、必要ならProへ移行する。
+- Vercelはホスティングと実行環境として使う。
+- Vercel固有のバックエンド機能へ依存しない。
+
+原則として採用しないもの:
+
+- Vercel Blob
+- Vercel KV
+- Edge Config
+- Vercel Queues
+- Vercel Workflow
+- domain / usecaseでVercel固有型を使うこと
+
+必要な外部サービスは、標準APIまたは交換可能なinterfaceを介して使う。
 
 ## テスト方針
 
-- 基本は TDD。失敗するテストで期待動作を固定してから実装する。
-- ユーザーが「テストはこちらで書く」と言った場合は、そのテストを先に確認し、テストが示す仕様に合わせて実装する。
-- エージェントが不具合を出した場合、同種の失敗を防ぐテストまたは lint ルールを追加する。
-- テストは仕様の生きたドキュメントとして扱う。腐りやすい説明文書より、実行できるテストを優先する。
-- Go は unit test を基本にし、DB を使う integration test は分離して実行できるようにする。
-- フロントエンドは必要に応じて unit / component / E2E を使い分ける。重要なユーザーフローは E2E の導入を検討する。
+- 基本はTDD。失敗するテストで期待動作を固定してから実装する。
+- テストは`test/`へ置き、本番コードと区別する。
+- ユーザーがテストを書く場合は、そのテストを仕様として先に読む。
+- 不具合修正では、同じ失敗を防ぐテストを追加する。
+- 重要な業務ルールはunit testで守る。
+- DB実装やRoute Handlerはintegration testを検討する。
+- 重要なユーザーフローはE2E testを検討する。
+- テストツールはTypeScript移行issueで導入し、scriptとCIまで整える。
 
-## Next.js を触る前の注意
+想定配置:
 
-- この Next.js は既知のバージョンと異なる可能性がある。ルーティング、metadata、config、cache、Server/Client Components、ファイル規約を触る前に、必ず `node_modules/next/dist/docs/` の該当ガイドを読む。
-- 古い Next.js の知識だけで実装しない。
-- `next/image`、`next/font`、その他 Next.js の組み込み API を使う場合も、ローカル docs を優先して確認する。
-
-## 開発コマンド
-
-現時点のフロントエンドでは `frontend/` で以下を使う。
-
-```bash
-npm install
-npm run dev
-npm run format:check
-npm run lint
-npm run typecheck
-npm run build
+```text
+test/
+  unit/
+    apps/<app-name>/
+  integration/
+    apps/<app-name>/
+  e2e/
 ```
 
-- format check では `npm run format:check` を実行する。
-- 通常の検証では `npm run lint` を実行する。
-- TypeScript の型検証では `npm run typecheck` を実行する。
-- ルーティング、レンダリング、metadata、Next.js config、ビルド設定を触った場合は `npm run build` も実行する。
-- 現時点では test script がない。テストを追加する場合は、スクリプト、設定、CI の実行手順まで揃える。
-- エージェントが検証用に Next.js dev server を起動する場合は、ユーザーの `3000` と競合しないよう `3100` を使う。
-- 同じネットワーク外の端末から確認する必要がある場合は、`3100` で起動した dev server を `ngrok http 3100` で公開する。
-- ngrok URL で確認する場合は、Next.js の dev origin 制限に注意し、必要に応じて `NEXT_ALLOWED_DEV_ORIGINS` に ngrok host を追加して dev server を再起動する。
+## Next.jsを触る前の注意
 
-Go バックエンドでは、少なくとも以下のコマンドを整備する。
+このリポジトリのNext.jsは`16.2.6`。古い知識だけで実装しない。
+
+ルーティング、metadata、cache、Server/Client Components、Server Actions、Route Handlers、config、file conventionsを触る前に、Next.jsのローカルdocsを読む。
+
+現在は`frontend/node_modules/next/dist/docs/`にある。ルート移行後は`node_modules/next/dist/docs/`になる。
+
+特に参照する場所:
+
+```text
+frontend/node_modules/next/dist/docs/01-app/01-getting-started/02-project-structure.md
+frontend/node_modules/next/dist/docs/01-app/01-getting-started/05-server-and-client-components.md
+frontend/node_modules/next/dist/docs/01-app/01-getting-started/06-fetching-data.md
+frontend/node_modules/next/dist/docs/01-app/01-getting-started/07-mutating-data.md
+frontend/node_modules/next/dist/docs/01-app/01-getting-started/15-route-handlers.md
+frontend/node_modules/next/dist/docs/01-app/02-guides/data-security.md
+```
+
+## 現在の開発コマンド
+
+TypeScript完全移行が終わるまでは`frontend/`で実行する。
+
+```bash
+npm --prefix frontend install
+npm --prefix frontend run dev -- --port 3100
+npm --prefix frontend run format:check
+npm --prefix frontend run lint
+npm --prefix frontend run typecheck
+npm --prefix frontend run build
+```
+
+- ユーザーが`3000`を使うため、エージェントのdev serverは`3100`を使う。
+- 同じネットワーク外から確認する場合は`ngrok http 3100`を使う。
+- 詳細は`docs/guides/local-dev.md`を参照する。
+- test scriptはまだない。導入時は設定とCIを同じPRで整える。
+
+既存Goコードを変更した場合だけ、移行完了まで以下も実行する。
 
 ```bash
 cd backend/apps/clean-tasks
@@ -200,153 +302,53 @@ go vet ./...
 go test ./...
 ```
 
-必要に応じて `golangci-lint` を導入する。
+## Lint / Format
 
-## Lint / Format 方針
+- TypeScript formatterはPrettierを使う。
+- ESLintとPrettierの責務を分ける。
+- TypeScriptは`strict: true`を維持する。
+- lintやformatterを、テストを通す目的だけで緩めない。
+- formatterだけの大きな差分を機能変更へ混ぜない。
+- 依存関係を変更したら`package.json`と`package-lock.json`を同期する。
 
-- フロントエンドの formatter は Prettier を使う。
-- フロントエンドは ESLint と Prettier の責務を明確に分ける。
-- ESLint flat config の既存方針を崩さない。
-- Go は `gofmt` を必須にする。追加で `go vet`、`golangci-lint` を検討する。
-- CI で lint、format check、test、build を落とせる状態にする。
-- formatter の結果だけの大きな差分は、機能変更と混ぜない。
-- lint / format / test / typecheck は、プロンプト上の注意ではなく機械的なガードレールとして整備する。
-- lint や formatter の設定を、テストを通す目的だけで緩めない。変更する場合は理由を明確にする。
+## UI実装
 
-## GitHub Actions / CI/CD 方針
+- mobile firstで考える。
+- Server Componentsを基本にし、Client Componentの範囲を小さくする。
+- ボタンと表示専用要素を見た目と操作で区別する。
+- テキストoverflowやUIの重なりを避ける。
+- カードや囲みを多用せず、余白、見出し、リスト、セクションのリズムで見せる。
+- 既存デザインとコンポーネントを先に確認する。
+- 大きなfrontend変更後は`3100`で実際の表示を確認する。
 
-GitHub Actions は段階的に整える。
+HogeDDのブランドコピーは`docs/guides/brand-copy.md`を参照する。
 
-- Pull Request では lint、format check、test、build を実行する。
-- CI は PR で必ず実行する。
-- フロントエンドとバックエンドは、可能なら path filter や job 分割で効率化する。
-- `main` への merge 後に deploy job を走らせる構成を検討する。
-- CI で通すコマンドは、ローカルでも同じコマンドで再現できるようにする。
-- secrets は GitHub Actions secrets に置き、リポジトリへコミットしない。
+## Git / Issue / PR
 
-## Branch / PR 方針
+- 長期branchは`main`と`dev`。
+- Issueごとに`dev`から作業branchを切る。
+- branch名にはIssue番号を含める。
+- 新機能は`feature/*`、修正は`fix/*`、docsは`docs/*`、infraは`infra/*`を基本にする。
+- PRは原則`dev`へ向ける。
+- CIが通ったらsquash mergeする。
+- merge後は作業branchを削除する。
+- `main`へのmerge / pushは`iwasawarenji954`が行う。
+- PRタイトル、本文、コメントは原則日本語。
+- PR本文には変更内容だけでなく、なぜその選択をしたかを書く。
+- 過去Issueの本文を後から書き換えず、方針変更はコメントで履歴を残す。
 
-- 長期ブランチは `main` と `dev` の 2 本を基本にする。
-- 通常の開発は `dev` から Issue に対応するブランチを切る。
-- PR は原則 `dev` に向ける。
-- `main` はリリース可能な状態を保つ。
-- PR は小さく保ち、レビューしやすい単位に分ける。
-- 大きな設計変更やディレクトリ移動は、機能実装と分けて PR にする。
-- PR ごとに、実装内容だけでなく意思決定理由を残す。
-- PR のタイトル、本文、コメントは原則として日本語で書く。
+詳しい操作は`docs/guides/onboarding.md`を参照する。
 
-## Issue / Branch / PR 運用
+## Docs / 意思決定
 
-今後の開発は Issue を起点にする。非エンジニアの参加者とエージェントが同じ前提を読めるように、Issue、Branch、PR は原則 1 対 1 対応にする。
+- 大きな技術判断は`docs/adr/`へADRとして残す。
+- acceptedになったADRは書き換えず、変更時は新しいADRでsupersedeする。
+- PRごとの判断は`docs/pr/`へdecision logとして残す。
+- decision logでは「何をしたか」より「なぜ決めたか」を厚く書く。
+- 現在の仕様は、テスト、型、migration、コードを正とする。
+- 古い方針のdocsは履歴として残してよいが、現在のガイドから明確に区別する。
 
-基本の流れ:
-
-```text
-Issue を作る
-  -> Issue 番号つきブランチを切る
-  -> 実装する
-  -> PR を Issue に紐づける
-  -> CI とレビューを通す
-  -> merge して branch を消す
-```
-
-- Issue なしで大きな作業を始めない。
-- PR は 1 Issue に対応させる。
-- PR 本文には `Closes #<issue-number>` を書く。
-- ブランチ名には Issue 番号を入れる。
-- ブランチ名は作業種別に合わせて `feature/`、`fix/`、`docs/`、`infra/` から始める。
-- 作業開始時は `dev` を最新化してからブランチを切る。
-- PR merge 後は対応ブランチを削除する。
-
-ブランチ名の例:
-
-```text
-feature/14-new-mini-app
-fix/15-mobile-card-tap
-docs/13-collaboration-rules
-infra/16-web-ci-typecheck
-```
-
-Issue の粒度:
-
-- 新しいアプリは、開発段階では「動くところまで」を 1 Issue にしてよい。
-- 新しいアプリの Issue は少し大きくてもよい。最初から細かく分けすぎない。
-- 修正 Issue は小さくする。1 Issue で 1 つの問題、1 つの改善に寄せる。
-- UI の微修正、文言修正、バグ修正、設定変更は分ける。
-- 途中で Issue が大きくなったら、新しい Issue に切り出す。
-- 「ついでに直す」は避ける。小さい修正なら別 Issue にする。
-- ブルドーザのように荒々しく進めてよいが、Issue と PR の対応だけは崩さない。
-
-Issue に最低限書くこと:
-
-```text
-## 背景
-なぜやるのか。困っていること、作りたいもの、思いついた理由。
-
-## やること
-- 今回やること
-
-## やらないこと
-- 今回は触らないこと
-
-## 完了条件
-- 何ができたら終わりか
-```
-
-- Issue は長文にしすぎない。
-- 迷ったら、背景 2〜3 行、やること 3 個以内、完了条件 3 個以内で書く。
-- 非エンジニアが書く Issue は、技術用語が曖昧でもよい。エージェントが実装前に読み替えて確認する。
-- エージェントは Issue の意図が曖昧な場合、実装前に短く確認する。
-- エージェントは Issue を読んだら、必要に応じて「やること / やらないこと / 完了条件」を PR 本文で補う。
-
-Issue の種類:
-
-- `app`: 新しいアプリを作る、またはアプリ単位で大きく育てる。
-- `fix`: 壊れている挙動を直す。
-- `ui`: 見た目、文言、情報設計、導線を整える。
-- `docs`: AGENTS、docs、運用ルール、意思決定記録を整える。
-- `infra`: CI、環境変数、deploy、開発環境を整える。
-
-Issue title の例:
-
-```text
-[app] タイピング練習アプリを動くところまで作る
-[ui] ホームの About 文言を整理する
-[fix] スマホでカードのボタンが押しづらい問題を直す
-[docs] Issue と PR の運用ルールを追加する
-[infra] Web CI に typecheck を追加する
-```
-
-PR の書き方:
-
-- PR title は Issue title に近い日本語にする。
-- PR 本文は長くしすぎない。
-- 最低限、概要、検証、`Closes #<issue-number>` を書く。
-- 大きな判断をした場合は `docs/pr/` に decision log を残す。
-- decision log は every PR 必須ではない。判断理由を残したい PR だけでよい。
-
-GitHub repository settings は `docs/guides/repository-settings.md` を参照する。共同開発者の招待、branch protection、merge 方法、Actions 権限、Secrets の扱いはこの guide に沿って確認する。
-
-## Docs / 意思決定記録
-
-docs は「現在の仕様説明」を長く書く場所ではなく、意思決定の理由と履歴を残す場所として使う。
-
-- PR ごとに、必要に応じて `docs/pr/` へ decision log を残す。
-- decision log では「何をしたか」よりも「なぜその選択をしたか」を厚めに書く。
-- 採用しなかった選択肢、トレードオフ、将来の見直し条件も書く。
-- 大きな技術選定やアーキテクチャ判断は `docs/adr/` に ADR として残す。
-- ADR は一度 accepted にしたら安易に書き換えない。変更する場合は新しい ADR で supersede する。
-- 実装と乖離しやすい詳細仕様は docs に重複して書かず、テスト、OpenAPI schema、migration、型定義を正とする。
-
-PR decision log の目安:
-
-```text
-docs/pr/
-  0001-initialize-project-policy.md
-  0002-add-api-skeleton.md
-```
-
-decision log には最低限、以下を書く。
+decision logの最低項目:
 
 - 背景
 - 決定したこと
@@ -358,77 +360,28 @@ decision log には最低限、以下を書く。
 
 ## Secrets / 環境変数
 
-- credentials、API key、DB URL、token、private key は絶対に commit / push しない。
-- `.env`、`.env.local`、`.env.*.local` は `.gitignore` で除外する。
-- 必要な環境変数は `.env.example` にキー名だけを記載する。実値は入れない。
-- Neon など PostgreSQL の接続文字列は secret として扱う。
-- GitHub Actions では secrets / environment secrets を使う。
-- ログ、テスト出力、スクリーンショットに secret が出ないよう注意する。
-
-## Harness Engineering 方針
-
-参考記事の方針を、リポジトリ運用では次のように扱う。
-
-- AGENTS.md は巨大な設計書にしない。詳細はテスト、ADR、lint 設定、CI、コードに寄せる。
-- 品質はエージェントへのお願いではなく、テスト、型チェック、lint、format、CI で強制する。
-- ADR は `docs/adr/` に置き、決定理由とステータスを残す。古い ADR は書き換えず、新しい ADR で supersede する。
-- PR 単位の判断は `docs/pr/` の decision log に残す。
-- 古い説明文書を増やしすぎない。仕様は可能な限りテスト、schema、型、migration、CI で表現する。
-- 最初から全部を導入しない。最小のハーネスから始め、ミスが起きたらテストやルールを追加して強化する。
-
-## コーディング規約
-
-- TypeScript と React function components を使う。
-- `frontend/app/` 配下では Server Components をデフォルトにする。
-- `"use client"` は browser API、state、effect、event handler が必要なコンポーネントに限定する。
-- `tsconfig.json` の `@/*` alias は、可読性が上がる場合に使う。
-- グローバル CSS は `frontend/app/globals.css` に限定し、コンポーネント固有の見た目は Tailwind class を優先する。
-- 生成物の `.next/`、`next-env.d.ts`、`node_modules/`、`out/`、`build/` は編集しない。
-
-## UI 実装方針
-
-- 現在は create-next-app の初期状態に近い。UI を作る場合はスターター文言を残さず、要求された体験を最初の画面として実装する。
-- モバイルからデスクトップまで破綻しないレスポンシブレイアウトにする。
-- 装飾よりも、ユーザーが目的を達成しやすい情報設計を優先する。
-- テキストの overflow や UI 要素の重なりを避ける。
-
-## HogeDD サイト方針
-
-このリポジトリは `https://www.hogedd.com/` を今後育てる前提で、実際のサイト要素を拾いながら UI を整える。
-
-- ベースは mobile first で考える。スマホ、タブレット、PC の全幅で破綻しないことを前提にする。
-- 画面サイズごとに別物にせず、同じ情報設計をレスポンシブに拡張する。
-- グラデーションは最小限にする。必要なら薄いアクセント程度に留め、主役にはしない。
-- 軽いサイトを優先する。重いアニメーションや過剰な視覚効果は避ける。
-- ただし、軽量な motion は使ってよい。例えば hover、focus、load、sheet、menu の状態遷移は短く自然にする。
-- コンテンツは実際のサイト要素を基準に拾う。
-  - ロゴとブランド名
-  - About
-  - お知らせ・リリース
-  - SNS
-  - Contents
-  - Contact
-  - 共有や URL コピーのような導線
-- 既存サイトの雰囲気を単純コピーするのではなく、情報のまとまりを整理して現代的に見せる。
-- カードやタイルを多用しすぎず、余白、見出し、リスト、セクションのリズムで見せる。
-- 小さく作りながら、モバイルでの操作性を先に確認する。
-
-## Frontend ディレクトリ方針
-
-- サイト全体で使うものは `frontend/app/_components` と `frontend/app/_lib` に置く。
-- アプリ固有のコードは `frontend/app/apps/<app-name>/` に閉じる。
-- そのアプリだけで使う components / lib / data / BFF は、できるだけそのアプリ配下に置く。
-- 一時的な実験コードや置き場は `_drafts`、`_tmp` のように `_` で始めて分かるようにする。
-- ルーティングに見せたくない code は private folder を使う。Next.js の private folder は `_folder` で表す。
-- 共有にするか app 内に閉じるか迷ったら、まず app 内に置き、複数アプリで再利用が確定してから外へ出す。
+- `.env`、`.env.local`、`.env.*.local`をcommitしない。
+- 必要な環境変数は`.env.example`へキー名だけ記載する。
+- VercelではProject Environment Variablesを使う。
+- GitHub ActionsではGitHub SecretsまたはEnvironment Secretsを使う。
+- ログ、テスト出力、スクリーンショットにsecretを出さない。
+- secretを公開した場合は、履歴修正より先にrevoke / rotateする。
 
 ## 変更前後の確認
 
-- 変更前に既存実装を読む。
-- 変更は要求された範囲に絞る。
-- ユーザーの未コミット変更を勝手に戻さない。
-- 関連する Next.js local docs を確認したか説明できる状態にする。
-- `npm run lint` が通ることを確認する。失敗した場合は理由を説明する。
-- Next.js の挙動に関わる変更では `npm run build` も確認する。
-- Go 導入後は `go test ./...`、`go vet ./...`、format check を確認する。
-- 新しい依存関係は理由を明確にし、lockfile を含めて更新する。
+変更前:
+
+- Issueの範囲を確認したか。
+- 関連コードとdocsを読んだか。
+- Next.js変更ならローカルdocsを読んだか。
+- 単純な構成で始められないか確認したか。
+- 新しい共有化やinterfaceが本当に必要か確認したか。
+
+変更後:
+
+- 要求外の変更を混ぜていないか。
+- `format:check`、`lint`、`typecheck`が通るか。
+- Next.jsの挙動に関わるなら`build`が通るか。
+- ユーザー操作に関わるならdesktopとmobileで確認したか。
+- secretや生成物を追加していないか。
+- 判断理由をPRまたはdocsへ残したか。

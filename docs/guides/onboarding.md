@@ -96,16 +96,19 @@ git switch -c docs/16-onboarding-guide
 Web を起動する場合:
 
 ```bash
-cd frontend
-npm run dev:web
+npm --prefix frontend run dev
 ```
 
-Go API を起動する場合:
+現在は TypeScript 完全移行の途中なので、Next.js はまだ `frontend/` にあります。
+
+既存の Clean Tasks で Go API を起動する必要がある場合だけ:
 
 ```bash
 cd frontend
 npm run dev:api
 ```
+
+新しい機能を Go 側へ追加しません。
 
 詳しいローカル開発手順は `docs/guides/local-dev.md` を見てください。
 
@@ -150,12 +153,14 @@ Closes #16
 
 PR を作ると GitHub Actions の CI が動きます。
 
-今は主にこの check を見ます。
+移行期間中は主にこの check を見ます。
 
 - `API`
 - `Web`
 
 どちらも pass していることを確認します。fail している場合は、PR 画面で失敗内容を確認します。分からないときは PR にコメントしてください。
+
+TypeScript 完全移行後は Go 用の `API` check を削除する予定です。
 
 ### 7. `dev` に squash merge する
 
