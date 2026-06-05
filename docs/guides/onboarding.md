@@ -161,6 +161,8 @@ PR を作ると GitHub Actions の CI が動きます。
 
 TypeScript 完全移行後は Go 用の `API` check を削除する予定です。
 
+Webの変更では、`npm test`でTypeScriptのunit testも実行されます。
+
 ### 7. `dev` に squash merge する
 
 CI が通ったら、PR を `dev` に squash merge します。
