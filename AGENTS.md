@@ -272,6 +272,19 @@ npm run build
 - unit testは`test/unit/**/*.test.ts`へ置く。
 - integration testは導入時に`test/integration/`へ置き、実行方法をscriptとCIへ追加する。
 
+## Deploy
+
+- hostingはVercel Hobbyを使う。
+- Vercel projectは`hogedd-web`、Root Directoryはrepository root、Node.jsは`.node-version`と同じ`24.x`。
+- Production Branchは`main`。`main`以外のbranchはPreviewとして扱う。
+- 通常の開発ではCLIからProductionへ直接deployしない。
+- `dev`から`main`へのrelease PRを作り、`iwasawarenji954`がmergeするとProduction deploymentが作られる。
+- Productionの正規URLは`https://www.hogedd.com/`。`https://hogedd.com/`は`www`へ308 redirectする。
+- Vercelの環境変数はProject SettingsでPreview / Productionを分けて管理する。secretをrepositoryへ置かない。
+- Hobby利用中は広告、affiliate、有料機能を掲載しない。収益化前に最新規約とPro移行を確認する。
+- Vercel固有backend serviceは導入しない。
+- deployとrollbackの手順は`docs/guides/deployment.md`を正とする。
+
 ## Lint / Format
 
 - TypeScript formatterはPrettierを使う。

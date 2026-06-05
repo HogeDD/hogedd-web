@@ -45,6 +45,7 @@ npm run build
 ## Docs
 
 - `docs/guides/local-dev.md`
+- `docs/guides/deployment.md`
 - `docs/guides/architecture-guide.md`
 - `docs/guides/glossary.md`
 - `docs/guides/onboarding.md`
