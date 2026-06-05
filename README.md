@@ -1,60 +1,63 @@
 # hogedd-clean
 
-Next.js frontend and Go API for practicing Clean Architecture in a small monorepo.
+HogeDD は、思いついたアプリを小さく作って公開する Next.js プロジェクトです。
 
-## Layout
+## 現在の構成
+
+現在は TypeScript 完全移行の途中です。
 
 ```text
-frontend/     # Next.js app and BFF
-backend/apps/clean-tasks/  # Go API
-docs/         # Guides and decision logs
+frontend/                   # 現在の Next.js プロジェクト
+backend/apps/clean-tasks/   # TypeScript へ移植予定の Go API
+docs/                       # ガイド、ADR、decision log
 ```
 
-## Local Development
+移行後は Next.js プロジェクトをリポジトリ直下へ置き、`frontend/` と `backend/` を廃止します。新しい Go 機能は追加しません。
+
+設計方針:
+
+- `docs/adr/0001-nextjs-modular-monolith.md`
+- `docs/guides/architecture-guide.md`
+- `AGENTS.md`
+
+## ローカル開発
 
 詳しい手順は `docs/guides/local-dev.md` を読んでください。ngrok を使って外部端末から確認する手順もここにまとめています。
 
-Start the Go API:
+```bash
+npm --prefix frontend install
+npm --prefix frontend run dev
+```
+
+通常は http://localhost:3000 で確認します。Codex が検証用に起動する場合は、競合を避けるため `3100` を使います。
+
+既存の Clean Tasks で Go API が必要な場合だけ、移行完了まで以下を使います。
 
 ```bash
 cd frontend
 npm run dev:api
 ```
 
-Start the Next.js app:
+## 検証
 
 ```bash
-cd frontend
-npm run dev:web
+npm --prefix frontend run format:check
+npm --prefix frontend run lint
+npm --prefix frontend run typecheck
+npm --prefix frontend run build
 ```
 
-Open http://localhost:3000. If the port is already in use, Next.js may choose another available port.
-
-## Validation
-
-```bash
-cd frontend
-npm run format:check
-npm run lint
-npm run typecheck
-npm run build
-```
-
-```bash
-cd backend/apps/clean-tasks
-test -z "$(gofmt -l .)"
-go vet ./...
-go test ./...
-```
+既存 Go コードを変更した場合だけ、移行完了まで Go の検証も行います。
 
 ## Docs
 
 - `docs/guides/local-dev.md`
-- `docs/guides/clean-architecture-operations.md`
+- `docs/guides/architecture-guide.md`
 - `docs/guides/glossary.md`
 - `docs/guides/onboarding.md`
 - `docs/guides/brand-copy.md`
 - `docs/guides/repository-settings.md`
+- `docs/adr/`
 - `docs/pr/`
 
 ## 開発の基本ルール

@@ -2,6 +2,8 @@
 
 このリポジトリは `frontend` の Next.js と `backend/apps/clean-tasks` の Go API を別プロセスで起動する。
 
+> 現在は TypeScript 完全移行の途中です。新しい機能は Next.js / TypeScript で作り、Go API は既存の Clean Tasks を移植するまでだけ利用します。移行後は Next.js プロジェクトをリポジトリ直下へ移します。
+
 ## 起動
 
 Terminal 1:
