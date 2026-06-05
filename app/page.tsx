@@ -1,65 +1,202 @@
-import Image from "next/image";
+import Link from "next/link";
+import type { Metadata } from "next";
+import { CopyLinkButton } from "@/app/_components/copy-link-button";
+import { HeroImpulsePanel } from "@/app/_components/hero-impulse-panel";
+import { HomeAppCarousel } from "@/app/_components/home-app-carousel";
+import { SiteFooter } from "@/app/_components/site-footer";
+import { SiteHeader } from "@/app/_components/site-header";
+import { appLinks } from "@/app/apps/_lib/app-links";
+
+export const metadata: Metadata = {
+  title: "HogeDD",
+  description: "欲望と衝動をきっかけに、アプリを作って見せていく HogeDD の公式サイト",
+};
+
+const navItems = [
+  { href: "#apps", label: "Apps" },
+  { href: "#about", label: "About" },
+];
+
+const appLinksArray = [...appLinks];
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+    <main className="min-h-screen bg-[var(--background)]">
+      <SiteHeader
+        title="HogeDD"
+        subtitle="Hoge Driven Development"
+        navItems={navItems}
+        actions={<CopyLinkButton value="https://www.hogedd.com/" label="URLをコピー" />}
+      />
+
+      <div className="mx-auto flex w-full max-w-6xl flex-col px-4 pb-14 pt-8 sm:px-6 lg:px-8">
+        <section className="grid min-h-[calc(100svh-5.5rem)] gap-12 border-b border-[var(--border)] py-14 lg:grid-cols-[0.96fr_1.04fr] lg:items-center lg:py-16">
+          <div className="space-y-9">
+            <div className="space-y-5">
+              <p className="w-fit rounded-full bg-[var(--highlight)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-[var(--foreground)]">
+                HogeDD
+              </p>
+              <h1 className="max-w-4xl text-6xl font-semibold leading-[0.88] tracking-tight text-[var(--foreground)] sm:text-7xl lg:text-[6.4rem]">
+                <span className="block">Hoge</span>
+                <span className="block">
+                  <span className="text-[var(--accent)]">D</span>riven
+                </span>
+                <span className="block">
+                  <span className="text-[var(--accent)]">D</span>evelopment
+                </span>
+              </h1>
+              <p className="max-w-2xl text-2xl leading-9 text-[var(--foreground)]/85 sm:text-[2.3rem] sm:leading-[2.75rem]">
+                人は欲望によって進歩する。
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              <Link
+                href="/apps"
+                className="rounded-full bg-[var(--accent)] px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90"
+              >
+                Apps を見る
+              </Link>
+              <Link
+                href="#about"
+                className="rounded-full border border-transparent px-6 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--surface)]"
+              >
+                HogeDD について
+              </Link>
+            </div>
+          </div>
+
+          <div className="relative">
+            <div className="relative overflow-hidden rounded-[40px] bg-[var(--foreground)] p-5 text-white shadow-[0_24px_60px_rgba(20,24,22,0.16)] sm:p-7">
+              <div
+                className="absolute inset-x-0 top-0 h-28 bg-[var(--highlight)]"
+                aria-hidden="true"
+              />
+              <div
+                className="absolute bottom-8 right-8 h-28 w-28 rounded-full border border-white/20"
+                aria-hidden="true"
+              />
+              <div
+                className="absolute -bottom-20 -left-16 h-48 w-48 rounded-full border border-white/10"
+                aria-hidden="true"
+              />
+
+              <div className="relative min-h-[31rem]">
+                <HeroImpulsePanel />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section
+          id="apps"
+          className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden bg-[var(--accent)] px-4 py-28 text-white sm:px-6 sm:py-32 lg:px-8 lg:py-36"
+        >
+          <div className="relative mx-auto max-w-6xl">
+            <div
+              className="absolute -right-36 -top-36 h-80 w-80 rounded-full border border-white/10"
+              aria-hidden="true"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+            <div
+              className="absolute -bottom-32 left-2 h-64 w-64 rounded-full border border-[var(--highlight)]/25"
+              aria-hidden="true"
+            />
+            <div
+              className="absolute left-1/2 top-4 h-px w-64 -translate-x-1/2 bg-white/10"
+              aria-hidden="true"
+            />
+
+            <div className="relative flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between">
+              <div className="max-w-xl space-y-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--highlight)]">
+                  Apps
+                </p>
+                <h2 className="text-4xl font-semibold tracking-tight sm:text-5xl">
+                  公開中のアプリ
+                </h2>
+              </div>
+              <Link
+                href="/apps"
+                className="w-fit rounded-full border border-white/20 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+              >
+                一覧を見る
+              </Link>
+            </div>
+
+            <HomeAppCarousel items={appLinksArray} />
+          </div>
+        </section>
+
+        <section id="about" className="py-32 sm:py-40">
+          <div className="space-y-12">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent)]">
+              About
+            </p>
+            <div className="flex flex-wrap items-baseline justify-center gap-x-6 gap-y-5 border-y border-[var(--border)] py-10 text-center">
+              {[
+                { text: "モテたい。", size: "text-4xl sm:text-6xl", opacity: "opacity-100" },
+                { text: "暇を潰したい。", size: "text-3xl sm:text-5xl", opacity: "opacity-85" },
+                { text: "驚かせたい。", size: "text-4xl sm:text-6xl", opacity: "opacity-95" },
+                { text: "笑わせたい。", size: "text-3xl sm:text-5xl", opacity: "opacity-90" },
+                { text: "自慢したい。", size: "text-2xl sm:text-4xl", opacity: "opacity-80" },
+                { text: "助けたい。", size: "text-3xl sm:text-5xl", opacity: "opacity-95" },
+                {
+                  text: "好奇心を満たしたい。",
+                  size: "text-2xl sm:text-4xl",
+                  opacity: "opacity-85",
+                },
+                { text: "忘れたくない。", size: "text-3xl sm:text-5xl", opacity: "opacity-90" },
+                { text: "愛したい。", size: "text-2xl sm:text-4xl", opacity: "opacity-80" },
+                { text: "神になりたい。", size: "text-4xl sm:text-6xl", opacity: "opacity-100" },
+                { text: "推しを布教したい。", size: "text-3xl sm:text-5xl", opacity: "opacity-85" },
+                { text: "なんとなく。", size: "text-2xl sm:text-4xl", opacity: "opacity-90" },
+              ].map((item, index) => (
+                <span
+                  key={item.text}
+                  className={`${item.size} ${item.opacity} font-semibold leading-none tracking-tight ${
+                    index % 3 === 1 ? "text-[var(--accent)]" : "text-[var(--foreground)]"
+                  }`}
+                >
+                  {item.text}
+                </span>
+              ))}
+            </div>
+            <div className="flex flex-col items-center gap-6 text-center">
+              <p className="text-5xl font-semibold tracking-tight text-[var(--accent)] sm:text-7xl">
+                <span>理由はそれで</span>
+                <br className="sm:hidden" />
+                <span>十分だ。</span>
+              </p>
+              <div className="flex items-center gap-2" aria-hidden="true">
+                <span className="h-2 w-10 bg-[var(--highlight)]" />
+                <span className="h-2 w-2 rounded-full bg-[var(--accent)]" />
+                <span className="h-2 w-2 rounded-full bg-[var(--foreground)]/35" />
+              </div>
+            </div>
+          </div>
+        </section>
+        <SiteFooter
+          title="Contact"
+          description="共有や問い合わせはここから。必要なら X で見つけてもらい、URL はワンクリックでコピーできるようにしてあります。"
+          links={[
+            { href: "/apps", label: "Apps" },
+            { href: "#about", label: "About" },
+          ]}
+          actions={
+            <>
+              <a
+                href="https://x.com/intent/tweet?text=HogeDD&url=https%3A%2F%2Fwww.hogedd.com%2F"
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-full bg-[var(--surface)] px-4 py-2.5 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--surface-strong)]"
+              >
+                Xで共有
+              </a>
+              <CopyLinkButton value="https://www.hogedd.com/" />
+            </>
+          }
+        />
+      </div>
+    </main>
   );
 }

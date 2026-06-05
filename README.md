@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# hogedd-clean
 
-## Getting Started
+HogeDD は、思いついたアプリを小さく作って公開する Next.js プロジェクトです。
 
-First, run the development server:
+## 現在の構成
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Next.jsプロジェクトはリポジトリ直下にあります。Clean Tasksを含む実行中の機能はTypeScriptで動きます。
+
+```text
+app/                        # Next.js App Router
+public/                     # 静的ファイル
+docs/                       # ガイド、ADR、decision log
+test/                       # TypeScriptテスト
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+開発、検証、buildはNode.jsとnpmだけで完結します。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+設計方針:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `docs/adr/0001-nextjs-modular-monolith.md`
+- `docs/guides/architecture-guide.md`
+- `AGENTS.md`
 
-## Learn More
+## ローカル開発
 
-To learn more about Next.js, take a look at the following resources:
+詳しい手順は `docs/guides/local-dev.md` を読んでください。ngrok を使って外部端末から確認する手順もここにまとめています。
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm install
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+通常は http://localhost:3000 で確認します。Codex が検証用に起動する場合は、競合を避けるため `3100` を使います。
 
-## Deploy on Vercel
+## 検証
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm run format:check
+npm run lint
+npm run typecheck
+npm test
+npm run build
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Docs
+
+- `docs/guides/local-dev.md`
+- `docs/guides/deployment.md`
+- `docs/guides/architecture-guide.md`
+- `docs/guides/glossary.md`
+- `docs/guides/onboarding.md`
+- `docs/guides/brand-copy.md`
+- `docs/guides/repository-settings.md`
+- `docs/adr/`
+- `docs/pr/`
+
+## 開発の基本ルール
+
+HogeDD は Issue 起点で開発します。AI 駆動で開発する場合も、人間が GitHub の画面で操作する場合も、この流れを守ります。
+
+1. Issue を作る
+2. Issue を元に `dev` から branch を切る
+3. 基本ローカルで開発する
+4. PR が作れる状態になったら remote に push して PR を作る
+5. CI が通っていたら `dev` に squash merge する
+6. 用が済んだ remote branch は削除する
+
+`main` への merge / push は `iwasawarenji954` が行います。詳しい手順は `docs/guides/onboarding.md` を読んでください。
