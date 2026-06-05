@@ -2,7 +2,7 @@
 
 このリポジトリは、ルートのNext.jsだけを起動すれば開発できる。
 
-Clean TasksのAPIもNext.js内で動く。Go APIを別プロセスで起動する必要はない。
+Clean TasksのAPIもNext.js内で動く。別のAPI serverを起動する必要はない。
 
 ## 最初の起動
 

@@ -101,7 +101,7 @@ npm run dev
 
 Next.jsプロジェクトはリポジトリ直下にあります。コマンドはrepository rootで実行します。
 
-Clean TasksもNext.js内で動くため、Go APIを別に起動する必要はありません。新しい機能をGo側へ追加しません。
+Clean TasksのAPIもNext.js内で動きます。別のAPI serverを起動する必要はありません。
 
 詳しいローカル開発手順は `docs/guides/local-dev.md` を見てください。
 
