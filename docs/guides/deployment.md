@@ -57,11 +57,48 @@ feature/*, fix/*, docs/*, infra/*
 1. `dev`から`main`へのrelease PRを作る。
 2. 差分とGitHub Actionsの`Web` checkを確認する。
 3. release PRのPreviewで主要ページを確認する。
-4. `iwasawarenji954`が`main`へmergeする。
+4. `iwasawarenji954`が`Create a merge commit`で`main`へmergeする。
 5. VercelのProduction deploymentがReadyになるまで待つ。
 6. `https://www.hogedd.com/`で主要ページとRoute Handlerを確認する。
 
 `main`へ直接pushしない。Productionを急いで直す場合も、原則としてfix branch、`dev`、release PRの履歴を残す。
+
+### mainへmergeするときのGitHub操作
+
+開発PRとrelease PRではmerge方法が異なる。
+
+| PR             | 向き先             | 選ぶ操作                |
+| -------------- | ------------------ | ----------------------- |
+| 通常の開発PR   | 作業branch → `dev` | `Squash and merge`      |
+| 本番release PR | `dev` → `main`     | `Create a merge commit` |
+
+release PRをmergeするとき:
+
+1. PRのbaseが`main`、compareが`dev`であることを確認する。
+2. `Web`とVercelのcheckが成功していることを確認する。
+3. mergeボタン右側の選択肢を開く。
+4. `Create a merge commit`を選ぶ。
+5. 表示が`Merge pull request`になったことを確認する。
+6. `Merge pull request`、`Confirm merge`の順に押す。
+7. `Squash and merge`は選ばない。
+
+`dev`から`main`をsquash mergeすると、`main`に元の`dev` commitとの親子関係が残らない。次回のrelease PRで同じ変更が再表示され、conflictの原因になる。releaseではmerge commitを使い、`dev`の履歴を`main`へ引き継ぐ。
+
+release後も`dev`を削除しない。`dev`は長期branchであり、次の開発を続ける場所である。
+
+### release PRがconflictしたとき
+
+次の操作は行わない。
+
+- `main`へ直接pushする。
+- ローカル`main`で`git pull --rebase`を続ける。
+- `dev`を`main`へrebaseする。
+- conflictをGitHub画面だけで推測して解決する。
+- rulesetを一時的に無効化する。
+
+まず作業を止め、release PRへconflictしていることをコメントする。過去にreleaseをsquash mergeしたことが原因なら、`main`起点の一時的な`release/*` branchで`dev`をmergeし、内容を`dev`と一致させたmerge commitを作る。そのbranchから`main`へPRを作り、`Create a merge commit`でmergeする。
+
+この復旧操作は履歴とファイル内容の両方を確認する必要があるため、慣れていない場合は手作業で進めずAIまたは経験者へ依頼する。
 
 ## Preview確認項目
 

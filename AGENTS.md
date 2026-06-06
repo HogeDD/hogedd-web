@@ -23,6 +23,18 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - 新しい抽象化や共有フォルダは、必要性が確認できてから作る。
 - 品質は注意書きだけに頼らず、テスト、型、lint、format、CI で守る。
 
+## 合意しながら進める
+
+HogeDDは、特定の一人やAIだけの成果物ではなく、参加する全員のプロダクトである。開発速度だけを優先せず、手戻りを減らすための意思確認も開発作業の一部として扱う。
+
+- UI、機能、設計など選択肢が複数ある変更は、小さな単位で実装し、節目ごとに確認する。
+- ユーザーから「一気に進めてよい」と明示されていない限り、一度に複数の判断や変更を確定しない。
+- 「修正したら止まる」「ここまで確認する」などの区切りが指定された場合は、その地点で止まり、次の作業へ進まない。
+- 確認待ちの間に、関連する別機能、追加改善、commit、push、PR作成を勝手に進めない。
+- 実装前に認識のずれが手戻りにつながりそうな場合は、短く具体的に完成イメージを共有する。
+- 実装後は、変更したこと、確認できたこと、まだ決めていないことを簡潔に伝える。
+- 合意済みの範囲は自信を持って進める。ただし、作業中に前提が変わった場合は一度止まって共有する。
+
 ## 現在の構成
 
 Next.jsプロジェクトはリポジトリ直下にある。Clean Tasksを含む実行中の機能はTypeScriptで動く。
@@ -278,7 +290,9 @@ npm run build
 - Vercel projectは`hogedd-web`、Root Directoryはrepository root、Node.jsは`.node-version`と同じ`24.x`。
 - Production Branchは`main`。`main`以外のbranchはPreviewとして扱う。
 - 通常の開発ではCLIからProductionへ直接deployしない。
-- `dev`から`main`へのrelease PRを作り、`iwasawarenji954`がmergeするとProduction deploymentが作られる。
+- `dev`から`main`へのrelease PRを作り、`iwasawarenji954`がmerge commitでmergeするとProduction deploymentが作られる。
+- 作業branchから`dev`へのPRはsquash mergeし、`dev`から`main`へのrelease PRはmerge commitを使う。
+- release PRでconflictした場合、`main`や`dev`をrebaseせず、`docs/guides/deployment.md`の復旧手順に従う。
 - Productionの正規URLは`https://www.hogedd.com/`。`https://hogedd.com/`は`www`へ308 redirectする。
 - Vercelの環境変数はProject SettingsでPreview / Productionを分けて管理する。secretをrepositoryへ置かない。
 - Hobby利用中は広告、affiliate、有料機能を掲載しない。収益化前に最新規約とPro移行を確認する。
@@ -302,6 +316,7 @@ npm run build
 - テキストoverflowやUIの重なりを避ける。
 - カードや囲みを多用せず、余白、見出し、リスト、セクションのリズムで見せる。
 - 既存デザインとコンポーネントを先に確認する。
+- 見た目や操作感の変更は一度に作り込みすぎず、確認可能な単位で反映する。
 - 大きなfrontend変更後は`3100`で実際の表示を確認する。
 
 HogeDDのブランドコピーは`docs/guides/brand-copy.md`を参照する。
@@ -313,8 +328,11 @@ HogeDDのブランドコピーは`docs/guides/brand-copy.md`を参照する。
 - branch名にはIssue番号を含める。
 - 新機能は`feature/*`、修正は`fix/*`、docsは`docs/*`、infraは`infra/*`を基本にする。
 - PRは原則`dev`へ向ける。
-- CIが通ったらsquash mergeする。
+- 作業branchから`dev`へのPRは、CIが通ったらsquash mergeする。
+- `dev`から`main`へのrelease PRは、履歴をつなぐためmerge commitでmergeする。
 - merge後は作業branchを削除する。
+- `main`と`dev`はGitHub rulesetで保護されている。直接push、force push、branch削除をしない。
+- `main`と`dev`への変更はPRと`Web` CI成功が必須。
 - `main`へのmerge / pushは`iwasawarenji954`が行う。
 - PRタイトル、本文、コメントは原則日本語。
 - PR本文には変更内容だけでなく、なぜその選択をしたかを書く。
