@@ -1,12 +1,28 @@
 import type { Metadata } from "next";
+import { siteDescription, siteName, siteUrl } from "@/app/_lib/site-metadata";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
+  applicationName: siteName,
   title: {
-    default: "HogeDD",
-    template: "%s | HogeDD",
+    default: siteName,
+    template: `%s | ${siteName}`,
   },
-  description: "真面目な顔で、くだらないアプリを紹介する HogeDD の公式サイト",
+  description: siteDescription,
+  openGraph: {
+    type: "website",
+    locale: "ja_JP",
+    siteName,
+    title: siteName,
+    description: siteDescription,
+    url: "/",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteName,
+    description: siteDescription,
+  },
 };
 
 export default function RootLayout({
