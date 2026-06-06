@@ -30,17 +30,17 @@ export function SiteHeader() {
       ].join(" ")}
     >
       <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between gap-3 px-3 sm:h-18 sm:px-6 lg:px-8">
-        <Link href="/" aria-label="HogeDD ホーム" className="flex min-w-0 items-center gap-2.5">
+        <Link href="/" aria-label="HogeDD ホーム" className="flex min-w-0 items-center gap-2">
           <Image
-            src="/HogeDDLogo.png"
-            width={1096}
-            height={1098}
+            src="/HogeDD.png"
+            width={720}
+            height={1030}
             alt=""
-            className="h-9 w-9 shrink-0 rounded-[10px] sm:h-11 sm:w-11 sm:rounded-[13px]"
-            sizes="(max-width: 639px) 36px, 44px"
+            className="h-10 w-auto shrink-0 sm:h-12"
+            sizes="(max-width: 639px) 28px, 34px"
             preload
           />
-          <span className="truncate text-sm font-semibold text-[var(--foreground)] sm:text-base">
+          <span className="truncate text-lg font-semibold leading-7 text-[var(--foreground)] sm:text-xl sm:leading-8">
             HogeDD
           </span>
         </Link>
