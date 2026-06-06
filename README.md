@@ -50,6 +50,7 @@ npm run build
 - `docs/guides/glossary.md`
 - `docs/guides/onboarding.md`
 - `docs/guides/brand-copy.md`
+- `docs/guides/assets.md`
 - `docs/guides/repository-settings.md`
 - `docs/adr/`
 - `docs/pr/`
