@@ -34,15 +34,16 @@ Repository settings の Pull Requests で、以下を確認する。
 推奨:
 
 - `Allow squash merging`: on
-- `Allow merge commits`: off
+- `Allow merge commits`: on
 - `Allow rebase merging`: off
 - `Automatically delete head branches`: on
 - `Allow auto-merge`: 必要になってから on
 - `Always suggest updating pull request branches`: on
 
-理由:
+使い分け:
 
-- 履歴を読みやすくするため、merge 方法は squash に寄せる。
+- 作業branchから`dev`への開発PRはsquash mergeする。
+- `dev`から`main`へのrelease PRはmerge commitを使い、branch間の親子関係を維持する。
 - PR merge 後の branch 削除を忘れにくくする。
 
 ### Branch Ruleset
@@ -59,7 +60,7 @@ Repository settings の Pull Requests で、以下を確認する。
 - branchの削除を禁止する。
 - force pushを禁止する。
 - pull request経由の変更を必須にする。
-- merge方法はsquashだけを許可する。
+- merge方法はsquashとmerge commitを許可する。
 - GitHub Actionsの`Web` check成功を必須にする。
 - branchを最新状態へ更新することは必須にしない。
 - approvalは0人とし、少人数開発の速度を落とさない。
@@ -72,10 +73,13 @@ Issue
   ↓
 PR + Web CI
   ↓
-squash merge
+開発PR: squash merge
+release PR: merge commit
 ```
 
 `main`はVercelのProduction Branchである。`dev`から`main`へのrelease PRがmergeされた場合だけ、本番へ自動deployされる。
+
+GitHubの設定上は両方のmerge方法を選べるため、PRの向き先を見て使い分ける。`dev`向けPRでmerge commitを使わず、`main`向けrelease PRでsquash mergeを使わない。
 
 approvalを必須にしていない理由:
 

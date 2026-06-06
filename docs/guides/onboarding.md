@@ -167,7 +167,7 @@ GitHub の PR 画面で:
 2. merge message を確認する
 3. `Confirm squash and merge` を押す
 
-merge 方法は基本 `Squash and merge` です。`Merge commit` や `Rebase merge` は使いません。
+`dev`向けの開発PRでは`Squash and merge`を使う。`Merge commit`は`dev`から`main`への本番release PRだけで使い、`Rebase merge`は使わない。
 
 ### 8. 用が済んだ remote branch を削除する
 
@@ -180,6 +180,10 @@ branch は作業が終わったら消して大丈夫です。必要な内容は 
 `main` は公開・本番に近い branch です。
 
 `main` への merge / push は `iwasawarenji954` が行います。共同開発者は、基本的に `dev` への PR までを担当します。
+
+管理者は`dev`から`main`へのrelease PRを作り、CI成功後に`Create a merge commit`を選ぶ。`Squash and merge`を選ぶと次回releaseでconflictしやすくなる。
+
+GitHub画面での詳しい操作とconflict時の対応は`docs/guides/deployment.md`を参照する。
 
 ## AI 駆動で開発する場合
 
