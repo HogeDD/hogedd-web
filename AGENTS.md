@@ -315,6 +315,8 @@ HogeDDのブランドコピーは`docs/guides/brand-copy.md`を参照する。
 - PRは原則`dev`へ向ける。
 - CIが通ったらsquash mergeする。
 - merge後は作業branchを削除する。
+- `main`と`dev`はGitHub rulesetで保護されている。直接push、force push、branch削除をしない。
+- `main`と`dev`への変更はPRと`Web` CI成功が必須。
 - `main`へのmerge / pushは`iwasawarenji954`が行う。
 - PRタイトル、本文、コメントは原則日本語。
 - PR本文には変更内容だけでなく、なぜその選択をしたかを書く。
