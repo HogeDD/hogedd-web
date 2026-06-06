@@ -4,12 +4,15 @@ import { HeroImpulsePanel } from "@/app/_components/hero-impulse-panel";
 import { HomeAppCarousel } from "@/app/_components/home-app-carousel";
 import { SiteFooter } from "@/app/_components/site-footer";
 import { SiteHeader } from "@/app/_components/site-header";
+import { createPageMetadata, siteDescription, siteName } from "@/app/_lib/site-metadata";
 import { appLinks } from "@/app/apps/_lib/app-links";
 
-export const metadata: Metadata = {
-  title: "HogeDD",
-  description: "欲望と衝動をきっかけに、アプリを作って見せていく HogeDD の公式サイト",
-};
+export const metadata: Metadata = createPageMetadata({
+  title: siteName,
+  description: siteDescription,
+  path: "/",
+  absoluteTitle: true,
+});
 
 const appLinksArray = [...appLinks];
 

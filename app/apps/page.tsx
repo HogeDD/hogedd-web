@@ -2,12 +2,14 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { SiteFooter } from "@/app/_components/site-footer";
 import { SiteHeader } from "@/app/_components/site-header";
+import { createPageMetadata } from "@/app/_lib/site-metadata";
 import { appLinks } from "@/app/apps/_lib/app-links";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: "Apps",
   description: "HogeDD のアプリ紹介動画リンク集",
-};
+  path: "/apps",
+});
 
 export default function AppsPage() {
   return (
