@@ -16,7 +16,7 @@
 
 共同開発者を repository collaborator として招待する。
 
-推奨:
+現在の設定:
 
 - 非エンジニア共同開発者: `Write`
 - 管理者: `Admin`
@@ -34,53 +34,75 @@ Repository settings の Pull Requests で、以下を確認する。
 推奨:
 
 - `Allow squash merging`: on
-- `Allow merge commits`: off
+- `Allow merge commits`: on
 - `Allow rebase merging`: off
 - `Automatically delete head branches`: on
 - `Allow auto-merge`: 必要になってから on
 - `Always suggest updating pull request branches`: on
 
-理由:
+使い分け:
 
-- 履歴を読みやすくするため、merge 方法は squash に寄せる。
+- 作業branchから`dev`への開発PRはsquash mergeする。
+- `dev`から`main`へのrelease PRはmerge commitを使い、branch間の親子関係を維持する。
 - PR merge 後の branch 削除を忘れにくくする。
 
-### Branch Protection
+### Branch Ruleset
 
-`dev` に branch protection rule を設定する。
+2026年6月6日に、repository ruleset `protect-main-dev`を有効化した。
 
-推奨:
+対象:
 
-- 対象 branch: `dev`
-- `Require a pull request before merging`: on
-- `Require status checks to pass before merging`: on
-- required checks:
-  - `Web`
-- `Require branches to be up to date before merging`: 最初は off
-- `Require approvals`: 最初は off でもよい
-- `Restrict who can push to matching branches`: 必要になってから on
+- default branchの`main`
+- `dev`
 
-理由:
+現在のrule:
 
-- `dev` は共同開発の入口なので、PR と CI を必須にする。
-- 最初から approval 必須にすると速度が落ちる可能性があるため、運用に慣れてから強化する。
+- branchの削除を禁止する。
+- force pushを禁止する。
+- pull request経由の変更を必須にする。
+- merge方法はsquashとmerge commitを許可する。
+- GitHub Actionsの`Web` check成功を必須にする。
+- branchを最新状態へ更新することは必須にしない。
+- approvalは0人とし、少人数開発の速度を落とさない。
+- bypass actorを設定せず、管理者もruleを迂回しない。
 
-`main` にも branch protection rule を設定する。
+```text
+Issue
+  ↓
+作業branch
+  ↓
+PR + Web CI
+  ↓
+開発PR: squash merge
+release PR: merge commit
+```
 
-推奨:
+`main`はVercelのProduction Branchである。`dev`から`main`へのrelease PRがmergeされた場合だけ、本番へ自動deployされる。
 
-- 対象 branch: `main`
-- `Require a pull request before merging`: on
-- `Require status checks to pass before merging`: on
-- required checks:
-  - `Web`
-- `Require approvals`: on
-- `Restrict who can push to matching branches`: 必要になってから on
+GitHubの設定上は両方のmerge方法を選べるため、PRの向き先を見て使い分ける。`dev`向けPRでmerge commitを使わず、`main`向けrelease PRでsquash mergeを使わない。
 
-理由:
+approvalを必須にしていない理由:
 
-- `main` は release 可能な状態を保つ。
-- `main` への merge は `dev` より慎重に扱う。
+- 現在は少人数で、自己approvalできない状況を避ける。
+- CIとPR差分の確認を先に機械的な必須条件にする。
+- 共同開発者が増えたら、1人approvalまたはCODEOWNERSを再検討する。
+
+`main`へのmerge権限:
+
+- 現在のrepository collaboratorは管理者`iwasawarenji954`だけなので、実質的に本人だけがmergeできる。
+- Write権限のcollaboratorを追加すると、その人もruleを満たしたPRをmergeできる可能性がある。
+- collaborator追加前に、organization化、approval必須化、role設計のどれを採用するか見直す。
+
+#### GitHub画面で確認する
+
+1. repositoryの`Settings`を開く。
+2. 左menuの`Rules`を開く。
+3. `Rulesets`または`Rules`から`protect-main-dev`を開く。
+4. Enforcement statusが`Active`であることを確認する。
+5. Target branchesにdefault branchと`dev`が含まれることを確認する。
+6. Pull request、required status checks、deletion、non-fast-forwardのruleを確認する。
+
+rulesetを変更した場合は、設定理由をIssueとdecision logへ残す。
 
 ### Actions
 
@@ -133,20 +155,12 @@ Secrets and variables は repository に実値を置き、コードには入れ�
 
 ### Review 必須化
 
-最初は必須にしすぎない。共同開発に慣れてから、必要なら `dev` でも approval 必須にする。
+現在はapprovalを必須にしない。共同開発に慣れてから、必要なら`main`または`dev`で必須にする。
 
 保留理由:
 
 - 開発速度を落としすぎないため。
 - 非エンジニア参加者が PR 作成に慣れるまでは、CI と会話レビューを優先する。
-
-### Repository Rulesets
-
-branch protection で足りなくなったら検討する。
-
-保留理由:
-
-- 最初から rulesets まで使うと、設定の理解コストが上がる。
 
 ### Environments
 
@@ -169,13 +183,14 @@ deploy が始まったら `preview`、`production` などを検討する。
 ## 手作業設定チェックリスト
 
 - [ ] 共同開発者を collaborator に招待する。
-- [ ] Pull Requests で squash merge を有効にする。
-- [ ] Pull Requests で merge commit / rebase merge を無効にする。
-- [ ] Pull Requests で head branch 自動削除を有効にする。
-- [ ] `dev` に branch protection を設定する。
-- [ ] `dev` で `Web` check を必須にする。
-- [ ] `main` に branch protection を設定する。
-- [ ] `main` で approval と `Web` check を必須にする。
+- [x] Pull Requests で squash merge を有効にする。
+- [x] Pull Requests で merge commit / rebase merge を無効にする。
+- [x] Pull Requests で head branch 自動削除を有効にする。
+- [x] `dev`をrulesetで保護する。
+- [x] `dev`で`Web` checkを必須にする。
+- [x] `main`をrulesetで保護する。
+- [x] `main`で`Web` checkを必須にする。
+- [x] force pushとbranch deletionを禁止する。
 - [ ] Actions の workflow permissions を確認する。
 - [ ] 必要な secrets を GitHub Secrets に入れる。
 - [ ] repository description / website / topics を設定する。
@@ -183,6 +198,7 @@ deploy が始まったら `preview`、`production` などを検討する。
 ## 見直し条件
 
 - 共同開発者が増えたとき。
+- Write権限のcollaboratorを追加するとき。
 - production deploy を始めるとき。
 - secret を使う外部サービスが増えたとき。
 - PR の merge 事故や CI すり抜けが起きたとき。

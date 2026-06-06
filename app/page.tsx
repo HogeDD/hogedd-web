@@ -1,6 +1,5 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { CopyLinkButton } from "@/app/_components/copy-link-button";
 import { HeroImpulsePanel } from "@/app/_components/hero-impulse-panel";
 import { HomeAppCarousel } from "@/app/_components/home-app-carousel";
 import { SiteFooter } from "@/app/_components/site-footer";
@@ -12,22 +11,12 @@ export const metadata: Metadata = {
   description: "欲望と衝動をきっかけに、アプリを作って見せていく HogeDD の公式サイト",
 };
 
-const navItems = [
-  { href: "#apps", label: "Apps" },
-  { href: "#about", label: "About" },
-];
-
 const appLinksArray = [...appLinks];
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-[var(--background)]">
-      <SiteHeader
-        title="HogeDD"
-        subtitle="Hoge Driven Development"
-        navItems={navItems}
-        actions={<CopyLinkButton value="https://www.hogedd.com/" label="URLをコピー" />}
-      />
+      <SiteHeader />
 
       <div className="mx-auto flex w-full max-w-6xl flex-col px-4 pb-14 pt-8 sm:px-6 lg:px-8">
         <section className="grid min-h-[calc(100svh-5.5rem)] gap-12 border-b border-[var(--border)] py-14 lg:grid-cols-[0.96fr_1.04fr] lg:items-center lg:py-16">
@@ -53,13 +42,13 @@ export default function Home() {
             <div className="flex flex-wrap gap-3">
               <Link
                 href="/apps"
-                className="rounded-full bg-[var(--accent)] px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90"
+                className="rounded-full bg-[var(--accent)] px-6 py-3 text-sm font-semibold text-white shadow-sm transition duration-200 hover:bg-[var(--foreground)] hover:shadow-md motion-safe:hover:-translate-y-0.5"
               >
                 Apps を見る
               </Link>
               <Link
                 href="#about"
-                className="rounded-full border border-transparent px-6 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--surface)]"
+                className="rounded-full border border-transparent px-6 py-3 text-sm font-semibold text-[var(--foreground)] transition duration-200 hover:border-[var(--border)] hover:bg-[var(--surface)] hover:shadow-sm motion-safe:hover:-translate-y-0.5"
               >
                 HogeDD について
               </Link>
@@ -117,7 +106,7 @@ export default function Home() {
               </div>
               <Link
                 href="/apps"
-                className="w-fit rounded-full border border-white/20 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+                className="w-fit rounded-full border border-white/20 px-5 py-3 text-sm font-semibold text-white transition duration-200 hover:border-[var(--highlight)] hover:bg-[var(--highlight)] hover:text-[var(--foreground)] hover:shadow-md motion-safe:hover:-translate-y-0.5"
               >
                 一覧を見る
               </Link>
@@ -175,27 +164,7 @@ export default function Home() {
             </div>
           </div>
         </section>
-        <SiteFooter
-          title="Contact"
-          description="共有や問い合わせはここから。必要なら X で見つけてもらい、URL はワンクリックでコピーできるようにしてあります。"
-          links={[
-            { href: "/apps", label: "Apps" },
-            { href: "#about", label: "About" },
-          ]}
-          actions={
-            <>
-              <a
-                href="https://x.com/intent/tweet?text=HogeDD&url=https%3A%2F%2Fwww.hogedd.com%2F"
-                target="_blank"
-                rel="noreferrer"
-                className="rounded-full bg-[var(--surface)] px-4 py-2.5 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--surface-strong)]"
-              >
-                Xで共有
-              </a>
-              <CopyLinkButton value="https://www.hogedd.com/" />
-            </>
-          }
-        />
+        <SiteFooter />
       </div>
     </main>
   );
