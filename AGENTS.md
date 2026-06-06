@@ -290,7 +290,9 @@ npm run build
 - Vercel projectは`hogedd-web`、Root Directoryはrepository root、Node.jsは`.node-version`と同じ`24.x`。
 - Production Branchは`main`。`main`以外のbranchはPreviewとして扱う。
 - 通常の開発ではCLIからProductionへ直接deployしない。
-- `dev`から`main`へのrelease PRを作り、`iwasawarenji954`がmergeするとProduction deploymentが作られる。
+- `dev`から`main`へのrelease PRを作り、`iwasawarenji954`がmerge commitでmergeするとProduction deploymentが作られる。
+- 作業branchから`dev`へのPRはsquash mergeし、`dev`から`main`へのrelease PRはmerge commitを使う。
+- release PRでconflictした場合、`main`や`dev`をrebaseせず、`docs/guides/deployment.md`の復旧手順に従う。
 - Productionの正規URLは`https://www.hogedd.com/`。`https://hogedd.com/`は`www`へ308 redirectする。
 - Vercelの環境変数はProject SettingsでPreview / Productionを分けて管理する。secretをrepositoryへ置かない。
 - Hobby利用中は広告、affiliate、有料機能を掲載しない。収益化前に最新規約とPro移行を確認する。
@@ -326,7 +328,8 @@ HogeDDのブランドコピーは`docs/guides/brand-copy.md`を参照する。
 - branch名にはIssue番号を含める。
 - 新機能は`feature/*`、修正は`fix/*`、docsは`docs/*`、infraは`infra/*`を基本にする。
 - PRは原則`dev`へ向ける。
-- CIが通ったらsquash mergeする。
+- 作業branchから`dev`へのPRは、CIが通ったらsquash mergeする。
+- `dev`から`main`へのrelease PRは、履歴をつなぐためmerge commitでmergeする。
 - merge後は作業branchを削除する。
 - `main`と`dev`はGitHub rulesetで保護されている。直接push、force push、branch削除をしない。
 - `main`と`dev`への変更はPRと`Web` CI成功が必須。
