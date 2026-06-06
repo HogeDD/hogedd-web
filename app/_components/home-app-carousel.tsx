@@ -73,8 +73,8 @@ export function HomeAppCarousel({ items }: HomeAppCarouselProps) {
   }
 
   return (
-    <Carousel opts={{ align: "start", loop: true }} className="mt-14 sm:mt-16">
-      <CarouselContent>
+    <Carousel opts={{ align: "start", loop: true }} className="mt-12 sm:mt-14">
+      <CarouselContent className="pt-4">
         {slides.map((slide) => (
           <CarouselItem key={slide.key} className="basis-[86%] sm:basis-[58%] lg:basis-1/3">
             <CarouselCard slide={slide} />
@@ -83,9 +83,9 @@ export function HomeAppCarousel({ items }: HomeAppCarouselProps) {
       </CarouselContent>
 
       <div className="mt-8 flex items-center justify-center gap-4">
-        <CarouselPrevious className="text-white" />
+        <CarouselPrevious className="text-white hover:bg-white/10 hover:shadow-sm motion-safe:hover:-translate-y-0.5" />
         <span className="h-px w-14 bg-white/30" aria-hidden="true" />
-        <CarouselNext className="text-white" />
+        <CarouselNext className="text-white hover:bg-white/10 hover:shadow-sm motion-safe:hover:-translate-y-0.5" />
       </div>
     </Carousel>
   );
@@ -93,13 +93,13 @@ export function HomeAppCarousel({ items }: HomeAppCarouselProps) {
 
 function CarouselCard({ slide }: { slide: Slide }) {
   return (
-    <article className="group h-full overflow-hidden rounded-[24px] border border-white/14 bg-white shadow-[0_18px_42px_rgba(9,18,15,0.18)] transition hover:-translate-y-0.5 hover:border-[var(--highlight)]">
+    <article className="group h-full overflow-hidden rounded-[24px] border border-white/14 bg-white shadow-[0_18px_42px_rgba(9,18,15,0.18)] transition duration-300 hover:border-[var(--highlight)] hover:shadow-[0_26px_56px_rgba(9,18,15,0.28)] motion-safe:hover:-translate-y-3">
       <div className="flex h-full min-h-[18rem] w-full flex-col overflow-hidden sm:min-h-[19rem]">
         <div className="aspect-video flex-none overflow-hidden bg-[var(--surface-strong)]">
           {slide.kind === "app" ? (
             slide.status === "published" ? (
               <div
-                className="h-full bg-cover bg-center"
+                className="h-full bg-cover bg-center transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.035]"
                 aria-label={`${slide.title} の YouTube サムネイル`}
                 style={{ backgroundImage: `url(${slide.thumbnailUrl})` }}
               />
@@ -127,7 +127,7 @@ function CarouselCard({ slide }: { slide: Slide }) {
               <>
                 <Link
                   href={slide.appHref}
-                  className="rounded-full bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90"
+                  className="rounded-full bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white shadow-sm transition duration-200 hover:bg-[var(--foreground)] hover:shadow-md motion-safe:hover:-translate-y-0.5"
                 >
                   アプリを見る
                 </Link>
@@ -136,7 +136,7 @@ function CarouselCard({ slide }: { slide: Slide }) {
                     href={slide.youtubeUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="rounded-full border border-transparent px-4 py-2 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--surface-strong)]"
+                    className="rounded-full border border-transparent px-4 py-2 text-sm font-semibold text-[var(--foreground)] transition duration-200 hover:border-[var(--border)] hover:bg-[var(--surface-strong)] hover:shadow-sm motion-safe:hover:-translate-y-0.5"
                   >
                     YouTube
                   </a>

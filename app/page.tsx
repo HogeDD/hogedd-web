@@ -42,13 +42,13 @@ export default function Home() {
             <div className="flex flex-wrap gap-3">
               <Link
                 href="/apps"
-                className="rounded-full bg-[var(--accent)] px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90"
+                className="rounded-full bg-[var(--accent)] px-6 py-3 text-sm font-semibold text-white shadow-sm transition duration-200 hover:bg-[var(--foreground)] hover:shadow-md motion-safe:hover:-translate-y-0.5"
               >
                 Apps を見る
               </Link>
               <Link
                 href="#about"
-                className="rounded-full border border-transparent px-6 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--surface)]"
+                className="rounded-full border border-transparent px-6 py-3 text-sm font-semibold text-[var(--foreground)] transition duration-200 hover:border-[var(--border)] hover:bg-[var(--surface)] hover:shadow-sm motion-safe:hover:-translate-y-0.5"
               >
                 HogeDD について
               </Link>
@@ -106,7 +106,7 @@ export default function Home() {
               </div>
               <Link
                 href="/apps"
-                className="w-fit rounded-full border border-white/20 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+                className="w-fit rounded-full border border-white/20 px-5 py-3 text-sm font-semibold text-white transition duration-200 hover:border-[var(--highlight)] hover:bg-[var(--highlight)] hover:text-[var(--foreground)] hover:shadow-md motion-safe:hover:-translate-y-0.5"
               >
                 一覧を見る
               </Link>
