@@ -1,31 +1,20 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
-import type { ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
+import { primaryNavigation } from "@/app/_lib/site-navigation";
 
-type NavItem = {
-  href: string;
-  label: string;
-};
-
-type SiteHeaderProps = {
-  title: string;
-  subtitle: string;
-  navItems: readonly NavItem[];
-  actions?: ReactNode;
-};
-
-export function SiteHeader({ title, subtitle, navItems, actions }: SiteHeaderProps) {
-  const [isVisible, setIsVisible] = useState(true);
+export function SiteHeader() {
+  const [isMobileVisible, setIsMobileVisible] = useState(false);
   const lastScrollYRef = useRef(0);
 
   useEffect(() => {
     function handleScroll() {
       const currentScrollY = window.scrollY;
-      const isScrollingDown = currentScrollY > lastScrollYRef.current;
+      const isScrollingUp = currentScrollY < lastScrollYRef.current;
 
-      setIsVisible(currentScrollY < 80 || !isScrollingDown);
+      setIsMobileVisible(currentScrollY > 48 && isScrollingUp);
       lastScrollYRef.current = currentScrollY;
     }
 
@@ -36,38 +25,42 @@ export function SiteHeader({ title, subtitle, navItems, actions }: SiteHeaderPro
   return (
     <header
       className={[
-        "sticky top-0 z-20 border-b border-[var(--border)] bg-[rgba(245,247,245,0.86)] backdrop-blur-sm transition-transform duration-300 ease-out",
-        isVisible ? "translate-y-0" : "-translate-y-full",
+        "fixed inset-x-0 top-0 z-30 border-b border-[var(--border)] bg-[rgba(245,247,245,0.92)] backdrop-blur-md transition-transform duration-300 ease-out sm:sticky sm:translate-y-0",
+        isMobileVisible ? "translate-y-0" : "-translate-y-full",
       ].join(" ")}
     >
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
-        <Link href="/" className="flex items-center gap-3">
-          <span className="flex h-11 w-11 items-center justify-center rounded-[14px] bg-[var(--accent)] text-sm font-semibold text-white">
-            H
-          </span>
-          <span className="flex flex-col">
-            <span className="text-[11px] uppercase tracking-[0.22em] text-[var(--muted)]">
-              {title}
-            </span>
-            <span className="text-sm font-semibold text-[var(--foreground)]">{subtitle}</span>
+      <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between gap-3 px-3 sm:h-18 sm:px-6 lg:px-8">
+        <Link href="/" aria-label="HogeDD ホーム" className="flex min-w-0 items-center gap-2.5">
+          <Image
+            src="/HogeDDLogo.png"
+            width={1096}
+            height={1098}
+            alt=""
+            className="h-9 w-9 shrink-0 rounded-[10px] sm:h-11 sm:w-11 sm:rounded-[13px]"
+            sizes="(max-width: 639px) 36px, 44px"
+            preload
+          />
+          <span className="truncate text-sm font-semibold text-[var(--foreground)] sm:text-base">
+            HogeDD
           </span>
         </Link>
 
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-end">
-          <nav className="flex flex-wrap items-center gap-1.5 text-sm">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="rounded-full px-3 py-2 text-[var(--muted)] transition hover:bg-[var(--surface)] hover:text-[var(--foreground)]"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-
-          {actions ? <div className="flex flex-wrap gap-2">{actions}</div> : null}
-        </div>
+        <nav
+          aria-label="主要ナビゲーション"
+          className="flex shrink-0 items-center gap-0.5 sm:gap-1"
+        >
+          {primaryNavigation.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              target={item.external ? "_blank" : undefined}
+              rel={item.external ? "noreferrer" : undefined}
+              className="px-2 py-2 text-xs font-medium text-[var(--muted)] transition hover:text-[var(--foreground)] sm:rounded-full sm:px-3 sm:text-sm sm:hover:bg-[var(--surface)]"
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
       </div>
     </header>
   );

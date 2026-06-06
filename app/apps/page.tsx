@@ -1,6 +1,5 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { CopyLinkButton } from "@/app/_components/copy-link-button";
 import { SiteFooter } from "@/app/_components/site-footer";
 import { SiteHeader } from "@/app/_components/site-header";
 import { appLinks } from "@/app/apps/_lib/app-links";
@@ -14,15 +13,7 @@ export default function AppsPage() {
   return (
     <main className="min-h-screen bg-[var(--background)]">
       <div className="mx-auto flex w-full max-w-6xl flex-col px-4 pb-12 pt-4 sm:px-6 lg:px-8">
-        <SiteHeader
-          title="HogeDD"
-          subtitle="アプリ紹介動画"
-          navItems={[
-            { href: "/", label: "Home" },
-            { href: "#apps", label: "Apps" },
-          ]}
-          actions={<CopyLinkButton value="https://www.hogedd.com/apps" label="URLをコピー" />}
-        />
+        <SiteHeader />
 
         <section className="grid gap-6 py-14 lg:grid-cols-[1fr_0.95fr] lg:items-end lg:py-16">
           <div className="space-y-5">
@@ -158,15 +149,7 @@ export default function AppsPage() {
           )}
         </section>
 
-        <SiteFooter
-          title="Apps"
-          description="動画で見て、気になったら触ってみる。HogeDD の作品はここから増えていきます。"
-          links={[
-            { href: "/", label: "Home" },
-            { href: "#apps", label: "Apps" },
-          ]}
-          actions={<CopyLinkButton value="https://www.hogedd.com/apps" />}
-        />
+        <SiteFooter />
       </div>
     </main>
   );
