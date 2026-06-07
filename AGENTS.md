@@ -72,6 +72,7 @@ package.json
 - `"use client"` は state、event handler、effect、browser API が必要なコンポーネントだけに付ける。
 - アプリ固有コードは `app/apps/<app-name>/` の近くへ置く。
 - private folder は `_components`、`_lib` のように `_` を付ける。
+- 各アプリのroute segmentには`layout.tsx`を置き、`AppPageShell`でサイト共通のHeaderとFooterを表示する。
 - 読み取り処理は Server Component から server-side の関数または usecase を直接呼ぶ。
 - 画面からの更新処理は Server Actions を基本にする。
 - 同じ Next.js アプリ内の Server Component から、自分自身の Route Handler を `fetch` しない。
