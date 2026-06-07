@@ -105,6 +105,8 @@ Clean TasksのAPIもNext.js内で動きます。別のAPI serverを起動する�
 
 詳しいローカル開発手順は `docs/guides/local-dev.md` を見てください。
 
+新しいアプリを作る場合は、MVPと公開準備を一つのIssueへ詰め込まず、`docs/guides/app-development-cycle.md`の流れに従います。まずMVP Issueで最低限動かし、実物を確認してから改善Issueを作り、最後に公開準備Issueでアプリ本体とYouTube動画を同時公開します。
+
 ### 4. PR が作れる状態になったら push する
 
 作業がある程度まとまったら、remote に push します。
@@ -195,7 +197,8 @@ AI に頼む場合も、流れは同じです。
 4. PR を作る
 5. CI を確認する
 6. `dev` に squash merge する
-7. branch を消す
+7. Issue が閉じたことを確認する
+8. branch を消す
 
 AI に頼むときは、Issue の URL とやってほしいことを伝えると進めやすいです。
 
