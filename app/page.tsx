@@ -5,7 +5,7 @@ import { HomeAppCarousel } from "@/app/_components/home-app-carousel";
 import { SiteFooter } from "@/app/_components/site-footer";
 import { SiteHeader } from "@/app/_components/site-header";
 import { createPageMetadata, siteDescription, siteName } from "@/app/_lib/site-metadata";
-import { appLinks } from "@/app/apps/_lib/app-links";
+import { publishedAppLinks } from "@/app/apps/_lib/app-links";
 
 export const metadata: Metadata = createPageMetadata({
   title: siteName,
@@ -14,7 +14,7 @@ export const metadata: Metadata = createPageMetadata({
   absoluteTitle: true,
 });
 
-const appLinksArray = [...appLinks];
+const appLinksArray = [...publishedAppLinks];
 
 export default function Home() {
   return (

@@ -15,6 +15,7 @@ type AppLinkBase = {
 
 export type PublishedAppLink = AppLinkBase & {
   status: "published";
+  developmentDrive: string;
   youtubeUrl: string;
   xShareUrl: string;
   videoId: string;
@@ -38,7 +39,14 @@ type DefineAppLinkOptions = {
   shareText?: string;
 };
 
-export function defineAppLink(youtubeUrl: string, options: DefineAppLinkOptions): AppLink {
+type DefinePublishedAppLinkOptions = DefineAppLinkOptions & {
+  developmentDrive: string;
+};
+
+export function defineAppLink(
+  youtubeUrl: string,
+  options: DefinePublishedAppLinkOptions,
+): PublishedAppLink {
   const videoId = getYouTubeVideoId(youtubeUrl);
   const normalizedYouTubeUrl = getYouTubeWatchUrl(videoId);
   const shareText = options.shareText ?? `${options.title} を見ました`;
@@ -75,6 +83,7 @@ export const appLinks: readonly AppLink[] = [
     description: "Clean Architecture の練習として作った、最小構成のタスクアプリ。",
     appHref: "/apps/clean-tasks",
     publishedAt: "2026-05-30",
+    developmentDrive: "学習DD",
     shareText: "Clean Architecture の練習アプリ Clean Tasks を見ました",
     tags: ["Next.js", "Go", "Clean Architecture"],
   }),
@@ -87,3 +96,7 @@ export const appLinks: readonly AppLink[] = [
     tags: ["Game", "Online Match", "Next.js"],
   }),
 ];
+
+export const publishedAppLinks: readonly PublishedAppLink[] = appLinks.filter(
+  (app): app is PublishedAppLink => app.status === "published",
+);

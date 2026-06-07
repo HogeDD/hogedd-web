@@ -337,6 +337,8 @@ HogeDDのブランドコピーは`docs/guides/brand-copy.md`を参照する。
 - PRタイトル、本文、コメントは原則日本語。
 - PR本文には変更内容だけでなく、なぜその選択をしたかを書く。
 - 過去Issueの本文を後から書き換えず、方針変更はコメントで履歴を残す。
+- 作業は`commit → push → PR作成 → CI成功 → merge → Issue close確認`の順で完了させる。
+- 新しいアプリは`docs/guides/app-development-cycle.md`のMVP、改善、公開準備の流れに従う。
 
 詳しい操作は`docs/guides/onboarding.md`を参照する。
 
