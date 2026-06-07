@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { SiteFooter } from "@/app/_components/site-footer";
 import { SiteHeader } from "@/app/_components/site-header";
 import { createPageMetadata } from "@/app/_lib/site-metadata";
-import { appLinks } from "@/app/apps/_lib/app-links";
+import { publishedAppLinks } from "@/app/apps/_lib/app-links";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Apps",
@@ -55,7 +55,7 @@ export default function AppsPage() {
         </section>
 
         <section id="apps" className="grid gap-6 md:grid-cols-2">
-          {appLinks.length === 0 ? (
+          {publishedAppLinks.length === 0 ? (
             <div className="rounded-[24px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[0_8px_24px_rgba(20,24,22,0.03)]">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
                 準備中
@@ -66,84 +66,38 @@ export default function AppsPage() {
               </p>
             </div>
           ) : (
-            appLinks.map((app) => (
+            publishedAppLinks.map((app) => (
               <article
                 key={app.slug}
                 className="overflow-hidden rounded-[24px] border border-[var(--border)] bg-[var(--surface)] shadow-[0_10px_28px_rgba(20,24,22,0.04)]"
               >
-                {app.status === "published" ? (
-                  <div
-                    aria-label={`${app.title} の YouTube サムネイル`}
-                    className="aspect-[16/10] border-b border-[var(--border)] bg-cover bg-center"
-                    style={{ backgroundImage: `url(${app.thumbnailUrl})` }}
-                  />
-                ) : (
-                  <div className="flex aspect-[16/10] items-end border-b border-[var(--border)] bg-[linear-gradient(135deg,rgba(23,63,52,0.12),rgba(23,63,52,0.02))] p-6">
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
-                        動画準備中
-                      </p>
-                      <p className="mt-2 text-xl font-semibold tracking-tight text-[var(--foreground)]">
-                        {app.title}
-                      </p>
-                    </div>
-                  </div>
-                )}
+                <div
+                  aria-label={`${app.title} の YouTube サムネイル`}
+                  className="aspect-video border-b border-[var(--border)] bg-cover bg-center"
+                  style={{ backgroundImage: `url(${app.thumbnailUrl})` }}
+                />
 
-                <div className="p-5 sm:p-6">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="rounded-full border border-[var(--border)] bg-[var(--background)] px-3 py-1 text-xs font-medium text-[var(--muted)]">
-                      {app.status === "published" ? "公開中" : "準備中"}
-                    </span>
-                    <span className="rounded-full border border-[var(--border)] bg-[var(--background)] px-3 py-1 text-xs font-medium text-[var(--muted)]">
-                      {app.publishedAt}
-                    </span>
-                  </div>
-
-                  <h2 className="mt-4 text-2xl font-semibold tracking-tight">{app.title}</h2>
-                  <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--muted)]">
-                    {app.description}
+                <div className="flex min-h-56 flex-col p-5 sm:p-6">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--accent)]">
+                    {app.developmentDrive}
                   </p>
+                  <h2 className="mt-4 text-3xl font-semibold tracking-tight">{app.title}</h2>
 
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {app.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="rounded-full border border-[var(--border)] bg-[var(--background)] px-3 py-1 text-xs font-medium text-[var(--muted)]"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-
-                  <div className="mt-5 flex flex-wrap gap-3">
+                  <div className="mt-auto flex flex-wrap gap-3 pt-10">
                     <Link
                       href={app.appHref}
-                      className="rounded-full bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
+                      className="rounded-full bg-[var(--accent)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--foreground)]"
                     >
                       アプリを見る
                     </Link>
-                    {app.status === "published" ? (
-                      <>
-                        <a
-                          href={app.youtubeUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="rounded-full border border-[var(--border)] bg-[var(--surface)] px-4 py-2.5 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--surface-strong)]"
-                        >
-                          YouTube
-                        </a>
-                        <a
-                          href={app.xShareUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          aria-label={`${app.title} の YouTube リンクを X で共有`}
-                          className="rounded-full border border-[var(--border)] bg-[var(--surface)] px-4 py-2.5 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--surface-strong)]"
-                        >
-                          Xで共有
-                        </a>
-                      </>
-                    ) : null}
+                    <a
+                      href={app.youtubeUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="rounded-full border border-[var(--border)] bg-[var(--surface)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--surface-strong)]"
+                    >
+                      YouTube
+                    </a>
                   </div>
                 </div>
               </article>
