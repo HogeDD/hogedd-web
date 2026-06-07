@@ -74,6 +74,8 @@ Issue本文の例:
 
 実装前に`AGENTS.md`の保存場所とClean Architecture導入条件を確認する。単純なアプリは`page.tsx`、`_components`、`_lib`から始め、必要性が確認できる前に層を増やさない。
 
+各アプリのroute segmentには`layout.tsx`を置き、`app/apps/_components/app-page-shell.tsx`の`AppPageShell`で`children`を囲む。これにより、アプリ固有のUIへサイト共通のHeaderとFooterを重複実装せず追加する。
+
 MVP PRは通常どおり`dev`へ向け、CI成功後にsquash mergeする。Issueはmergeによる自動close、またはmerge確認後の手動closeで完了させる。
 
 ## 3. devで確認し、改善Issueを分ける
