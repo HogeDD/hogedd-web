@@ -25,7 +25,7 @@ export function AppNavigation({
       <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
         <Link
           href="/apps"
-          className="text-sm font-semibold text-[var(--muted)] transition hover:text-[var(--foreground)]"
+          className="rounded-sm text-sm font-semibold text-[var(--muted)] transition hover:text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]"
         >
           ← Apps
         </Link>
@@ -36,7 +36,7 @@ export function AppNavigation({
               const isAvailable = availablePages.includes(item.id);
               const isActive = activePage === item.id;
               const className = [
-                "rounded-full px-4 py-2 text-sm font-semibold transition",
+                "rounded-full px-4 py-2 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)]",
                 isActive
                   ? "bg-[var(--accent)] text-white shadow-sm"
                   : isAvailable

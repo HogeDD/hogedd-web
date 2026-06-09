@@ -76,6 +76,16 @@ Issue本文の例:
 
 各アプリのroute segmentには`layout.tsx`を置き、`app/apps/_components/app-page-shell.tsx`の`AppPageShell`で`children`を囲む。これにより、アプリ固有のUIへサイト共通のHeaderとFooterを重複実装せず追加する。
 
+アプリごとの雰囲気は、共通レイアウトを変えず色テーマで表現する。`app/apps/_lib/app-theme.ts`の`appThemePresets`から選び、アプリの`layout.tsx`で`AppPageShell`の`theme`へ渡す。テーマ未指定時は、緑と黄色を組み合わせた`defaultAppTheme`が使われる。
+
+```tsx
+import { appThemePresets } from "@/app/apps/_lib/app-theme";
+
+<AppPageShell theme={appThemePresets.ocean}>{children}</AppPageShell>;
+```
+
+プリセットにない配色が必要な場合は`createAppTheme`で必要な色だけ差し替える。任意classやCSSを`AppPageShell`へ渡してレイアウト、余白、フォントをアプリごとに変更しない。独自色を追加したら、通常文字、補助文字、accent上の白文字がWCAG AAのcontrast比`4.5:1`以上になることを確認する。
+
 MVP PRは通常どおり`dev`へ向け、CI成功後にsquash mergeする。Issueはmergeによる自動close、またはmerge確認後の手動closeで完了させる。
 
 ## 3. devで確認し、改善Issueを分ける
