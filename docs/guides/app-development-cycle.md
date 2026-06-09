@@ -86,6 +86,46 @@ import { appThemePresets } from "@/app/apps/_lib/app-theme";
 
 プリセットにない配色が必要な場合は`createAppTheme`で必要な色だけ差し替える。任意classやCSSを`AppPageShell`へ渡してレイアウト、余白、フォントをアプリごとに変更しない。独自色を追加したら、通常文字、補助文字、accent上の白文字がWCAG AAのcontrast比`4.5:1`以上になることを確認する。
 
+### Aboutページの作り方
+
+`app/apps/<app-name>/about/page.tsx`は`app/apps/_components/app-about-shell.tsx`の`AppAboutShell`を使う。`AppAboutShell`は次の情報を受け取り、共通のレイアウトとして表示する。
+
+- `appName` / `ddLabel`: アプリ名と〇〇DD
+- `paragraphs`: 制作経緯やパッションを語る段落（文字列の配列）
+- `youtubeUrl` / `youtubeThumbnailUrl`: YouTube導線（`app-links.ts`の値を使う）
+- `referenceLinks`: 参考にした作品やコンテンツへの通常リンク（`label` / `href` / 任意の`description`）
+
+```tsx
+import { AppAboutShell } from "@/app/apps/_components/app-about-shell";
+import { appLinks } from "@/app/apps/_lib/app-links";
+
+// ↓ ここを編集する
+const paragraphs = ["..."] as const;
+const referenceLinks = [{ label: "...", href: "...", description: "..." }] as const;
+// ↑ ここまで
+
+const appLink = appLinks.find((a) => a.slug === "<app-name>");
+
+export default function ExampleAboutPage() {
+  return (
+    <AppAboutShell
+      appName="Example"
+      ddLabel="〇〇DD"
+      paragraphs={paragraphs}
+      youtubeUrl={appLink?.status === "published" ? appLink.youtubeUrl : undefined}
+      youtubeThumbnailUrl={appLink?.status === "published" ? appLink.thumbnailUrl : undefined}
+      referenceLinks={referenceLinks}
+    />
+  );
+}
+```
+
+`paragraphs`と`referenceLinks`はファイル冒頭の定数としてまとめ、編集箇所を狭くする。ここに書く文章はAIが代筆せず、人間が自分の言葉で書く・確認する。実装例は`app/apps/clean-tasks/about/page.tsx`を参照する。
+
+参考リンクへの画像表示やアフィリエイトリンクは、Vercel Hobby利用中は追加しない。収益化のタイミングで`docs/pr/0072-decide-app-page-information-architecture.md`を踏まえた別Issueで扱う。
+
+`layout.tsx`の`availablePages`へ`"about"`を追加すると、アプリ内ナビのAboutタブが有効になる。
+
 MVP PRは通常どおり`dev`へ向け、CI成功後にsquash mergeする。Issueはmergeによる自動close、またはmerge確認後の手動closeで完了させる。
 
 ## 3. devで確認し、改善Issueを分ける
