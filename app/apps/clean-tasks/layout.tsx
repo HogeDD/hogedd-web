@@ -6,7 +6,7 @@ export default function CleanTasksLayout({ children }: { children: ReactNode }) 
     <AppPageShell
       appName="Clean Tasks"
       appHref="/apps/clean-tasks"
-      availablePages={["app", "about"]}
+      availablePages={["app", "about", "guide"]}
     >
       {children}
     </AppPageShell>

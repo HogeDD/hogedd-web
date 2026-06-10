@@ -128,6 +128,47 @@ export default function ExampleAboutPage() {
 
 MVP PRは通常どおり`dev`へ向け、CI成功後にsquash mergeする。Issueはmergeによる自動close、またはmerge確認後の手動closeで完了させる。
 
+### Guideページの作り方
+
+`app/apps/<app-name>/guide/page.tsx`は`app/apps/_components/app-guide-shell.tsx`の`AppGuideShell`を使う。`AppGuideShell`は次の5セクションを必ず受け取り、共通のレイアウトとして表示する。いずれも省略や空表示はできない（型レベルで1要素以上を必須にしている）。
+
+- `firstSteps`: 最初に行う操作（番号付きリストで表示）
+- `basicControls`: 基本操作
+- `screenGuide`: 画面の見方（他より少し大きい文字で表示）
+- `rules`: ルール
+- `tips`: 困ったときは（深刻な注意点が無い場合は、ふざけた一言でもよい）
+
+```tsx
+import { AppGuideShell } from "@/app/apps/_components/app-guide-shell";
+
+// ↓ ここを編集する
+const firstSteps = ["...", "..."] as const;
+const basicControls = ["...", "..."] as const;
+const screenGuide = ["...", "..."] as const;
+const rules = ["...", "..."] as const;
+const tips = ["..."] as const;
+// ↑ ここまで
+
+export default function ExampleGuidePage() {
+  return (
+    <AppGuideShell
+      appName="Example"
+      firstSteps={firstSteps}
+      basicControls={basicControls}
+      screenGuide={screenGuide}
+      rules={rules}
+      tips={tips}
+    />
+  );
+}
+```
+
+各配列はファイル冒頭の定数としてまとめ、編集箇所を狭くする。実装例は`app/apps/clean-tasks/guide/page.tsx`を参照する。
+
+図や画像が必要になった場合は`app/apps/<app-name>/_assets/`へ置き、静的importで読み込む（`docs/guides/assets.md`参照）。
+
+`layout.tsx`の`availablePages`へ`"guide"`を追加すると、アプリ内ナビのGuideタブが有効になる。
+
 ## 3. devで確認し、改善Issueを分ける
 
 MVPを`dev`へmergeしたら、実物をdesktopとmobileで触る。
