@@ -23,6 +23,43 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - 新しい抽象化や共有フォルダは、必要性が確認できてから作る。
 - 品質は注意書きだけに頼らず、テスト、型、lint、format、CI で守る。
 
+## ドキュメント索引
+
+作業内容に応じて、着手前に以下のdocsを確認する。各docsの内容はここへ複製せず、このファイルからは「いつ読むか」だけを示す。
+
+| 作業内容                                                                                    | 読むdoc                                         |
+| ------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| 新しいアプリ・アプリページ(App/About/Guide)を作る、開発サイクルの流れを知る                 | `docs/guides/app-development-cycle.md`          |
+| 機能の置き場所(`_components`/`_lib`/`_domain`/`_usecases`/`_infrastructure`)に迷う          | `docs/guides/architecture-guide.md`             |
+| 画像・動画などの素材を追加する                                                              | `docs/guides/assets.md`                         |
+| ホームやアプリ紹介文のトーン・コピーを書く                                                  | `docs/guides/brand-copy.md`                     |
+| 本番deploy、release PR、conflict対応をする                                                  | `docs/guides/deployment.md`                     |
+| 設計・Next.js・Gitの用語が分からない                                                        | `docs/guides/glossary.md`                       |
+| ローカル環境構築、別端末からの確認(ngrok)をする                                             | `docs/guides/local-dev.md`                      |
+| HogeDDに新しく参加する、Issue/PR/branchの流れが分からない                                   | `docs/guides/onboarding.md`                     |
+| GitHub repository設定(collaborator、branch保護など)を変更する                               | `docs/guides/repository-settings.md`            |
+| Next.jsのrouting、cache、Server/Client Components、Server Actions、Route Handlersを変更する | 「Next.jsを触る前の注意」に列挙したローカルdocs |
+| アーキテクチャ全体の前提を確認する                                                          | `docs/adr/0001-nextjs-modular-monolith.md`      |
+| 過去の判断の経緯(なぜそう決めたか)を調べる                                                  | `docs/pr/<番号>-*.md`(decision log)             |
+
+decision logを参照する際、複数の番号が同じトピックを扱っている場合は、番号が新しい方を現在の方針として優先する(ADRのsupersedeと同じ考え方)。古い番号は経緯の記録として残るが、現在のルールはこのファイルと番号が新しいdecision logを正とする。
+
+## 既知のハマりどころ
+
+過去に実際にぶつかり、明文化しないと再発する判断をまとめる。初対面でも同じ精度で動けるよう、着手前にここを確認する。
+
+運用:
+
+- `dev`向けPRに`Closes #<番号>`を書いても、mergeした時点ではIssueは自動closeされない。GitHubが自動closeするのはdefault branchへのmerge時で、このリポジトリのdefault branchは`main`、作業PRの向き先は`dev`のため。`dev`へmergeしたらIssueの状態を確認し、必要なら手動で閉じる(公開準備Issueの扱いは別。`docs/guides/app-development-cycle.md`参照)。
+- ユーザーが`3000`でdev serverを起動している間、エージェントは`3100`で別のdev serverを起動できない(Next.jsが同じプロジェクトに対して1つしか許可しないため、`Another next dev server is already running`で止まる)。その場合は起動中の`3000`で表示を確認するか、ユーザーへ依頼する。
+- 新規・編集したファイルは、commit前に`npm run format`で整形する。整形せずに`npm run format:check`を実行すると落ちる。
+
+実装(やってはいけないこと):
+
+- 外部画像(YouTubeサムネイルなど)を表示するために`next.config.ts`へ画像ホストを追加しない。`next/image`ではなくCSSの`background-image`で表示する。アプリ内に保存する画像は`_assets/`へ静的importする(`docs/guides/assets.md`)。表示目的で`next.config.ts`を汚さない。
+- Tailwind Typographyプラグインは未導入。`prose`系のclassは効かないので使わない。文字組みは個別のutility classで作る。
+- About/Guideに載せる本人の言葉(制作経緯、パッション、注意書き)はAIが代筆しない。可変テキストの置き場所(`const`)だけ整え、中身は人間が書く・確認する。
+
 ## 合意しながら進める
 
 HogeDDは、特定の一人やAIだけの成果物ではなく、参加する全員のプロダクトである。開発速度だけを優先せず、手戻りを減らすための意思確認も開発作業の一部として扱う。
@@ -78,6 +115,24 @@ package.json
 - 同じ Next.js アプリ内の Server Component から、自分自身の Route Handler を `fetch` しない。
 - Route Handler は外部クライアント、Webhook、公開 REST API が必要な場合に使う。
 - Server Action と Route Handler のどちらでも、入力検証、認証、認可を処理の中で確認する。
+
+### アプリ共通ページ構成(App/About/Guide)
+
+`docs/pr/0072-decide-app-page-information-architecture.md`の決定に基づき、各アプリは次の3ページ構成を基本とする。
+
+- `app/apps/<app-name>/page.tsx`(App): 開いてすぐ操作できる本体。長い説明やYouTube導線は置かない。
+- `app/apps/<app-name>/about/page.tsx`(About): 制作経緯、参考にしたもの、YouTube導線。`app/apps/_components/app-about-shell.tsx`の`AppAboutShell`を使う。
+- `app/apps/<app-name>/guide/page.tsx`(Guide): 操作方法。`app/apps/_components/app-guide-shell.tsx`の`AppGuideShell`を使う。「最初に行う操作」「基本操作」「画面の見方」「ルール」「困ったときは」の5セクションは省略・空表示しない。
+
+各route segmentの`layout.tsx`で`AppPageShell`を呼び、`availablePages`に実装済みページ(`"app" | "about" | "guide"`)を列挙する。共通ナビ(App/About/Guide)と現在地表示は`AppPageShell`が担当するため、各ページ側では実装しない。
+
+配色は`layout.tsx`の`AppPageShell`へ`theme`(`app/apps/_lib/app-theme.ts`の`appThemePresets`、または`createAppTheme`)を渡す。CSS custom propertiesとして子コンポーネントへ自動的に伝わるため、`_components`側でテーマを意識する必要はない。独自色を使う場合は、通常文字・補助文字・accent上の白文字がWCAG AAのcontrast比`4.5:1`以上になることを確認する。
+
+ホームと`/apps`への表示は`app/apps/_lib/app-links.ts`の`status`(`"published" | "preparing"`)で制御する。`"preparing"`のアプリはカードを表示しない。`/apps`のおすすめ枠は`app/apps/_lib/apps-page-sections.ts`のslug配列で人力管理する。
+
+ユーザーが今後編集する文章やデータは、ファイル冒頭の`const`へまとめ(`// ↓ ここを編集する`で囲む)、JSXを触らず`const`の差し替えだけで更新できる形にする。新しい共通shellを作るときも、可変コンテンツはpropsで受け取り、見た目はshellへ閉じ込める。
+
+実装例は`app/apps/clean-tasks/`、テンプレートは`docs/guides/app-development-cycle.md`を参照する。`app/apps/clean-tasks/`は各shellの参照実装として意図的に残している。近い将来このアプリ自体は削除する予定だが、テンプレートとして有用なため、cleanupと称して消したり作り替えたりしない。
 
 ### Clean Architectureを追加する条件
 
@@ -320,6 +375,17 @@ npm run build
 - 見た目や操作感の変更は一度に作り込みすぎず、確認可能な単位で反映する。
 - 大きなfrontend変更後は`3100`で実際の表示を確認する。
 
+### アプリページのハウススタイル(具体トークン)
+
+App/About/Guideの見た目は`AppAboutShell` / `AppGuideShell`が体現している。新しい節やページを手で組む前に、まず既存shellで足りないかを確認する。shellを正とし、下記トークンはshellに合わせて手書きする場合の指針とする。
+
+- 色は必ずテーマのCSS変数を使い、直書きしない。使える変数は`--background` / `--foreground` / `--surface` / `--surface-strong` / `--border` / `--muted` / `--accent` / `--accent-soft` / `--highlight`(`app/apps/_lib/app-theme.ts`)。
+- コンテンツ幅は`max-w-2xl`の中央寄せ、左右paddingは`px-4 sm:px-6 lg:px-8`。
+- 縦の余白は広めに取る(節は`py-16 sm:py-20`、ヘッダーは`py-20 sm:py-28`程度)。
+- 見出しは`text-6xl sm:text-7xl font-semibold tracking-tight`。節ラベルは`text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent)]`。
+- 節の区切りに罫線(`border-t`)を使わない。背景色の濃淡(accentヘッダー / 通常 / `bg-[var(--surface-strong)]`)でリズムを作る。
+- 奥行きは`aria-hidden`の円や線(`absolute ... rounded-full border border-…/X`)で出す。
+
 HogeDDのブランドコピーは`docs/guides/brand-copy.md`を参照する。
 
 ## Git / Issue / PR
@@ -340,6 +406,9 @@ HogeDDのブランドコピーは`docs/guides/brand-copy.md`を参照する。
 - 過去Issueの本文を後から書き換えず、方針変更はコメントで履歴を残す。
 - 作業は`commit → push → PR作成 → CI成功 → merge → Issue close確認`の順で完了させる。
 - 新しいアプリは`docs/guides/app-development-cycle.md`のMVP、改善、公開準備の流れに従う。
+  - MVP Issueでは「最低限動く」状態に絞り、見つかった改善点は目的ごとに別Issueへ分ける。
+  - MVPが`dev`へ入った時点から、そのアプリの公開準備が完了するまで、そのアプリに関する`dev`から`main`へのrelease PRは作らない。
+  - 公開準備Issueは`dev`へのmerge時点では閉じず、Production公開とYouTube公開の両方を確認してから手動で閉じる。
 
 詳しい操作は`docs/guides/onboarding.md`を参照する。
 
@@ -361,6 +430,20 @@ decision logの最低項目:
 - トレードオフ
 - テスト・検証内容
 - 今後の見直し条件
+
+## このファイル自体の運用
+
+このファイルは、人間とAIエージェントの全員が毎回読む唯一のdocsである。誰が読んでも同じ判断へ着地する状態を保つため、内容を増やすことより構造を守ることを優先する。
+
+- このファイルの記述と現実(コード、テスト、CI、GitHubの挙動)が食い違ったら、現実を正とする。気づいた食い違いはその場でユーザーへ共有し、このファイルを直すPRまたはIssueを残す。
+- 明文化されていない問題で手が止まったら(エラー、想定外の挙動、docsに無い判断)、解決後に「既知のハマりどころ」への追記を提案する。再発防止をコードとこのファイルの両方で行う。
+- 新しい知識の置き場所は次で判断する。
+  - 全作業に影響する判断・禁止事項: このファイルへ1〜3行で書く。
+  - 特定の作業でだけ必要な長い手順: `docs/guides/`へ書き、「ドキュメント索引」へ1行追加する。
+  - 決定の経緯と理由: `docs/pr/`のdecision logへ書く。このファイルには現在のルールだけを残す。
+- 一つの節が育ちすぎたら、詳細を`docs/guides/`へ切り出し、ここには要点と参照だけを残す。
+- 推測を書かない。実際に確認した挙動だけを書き、可能なら確認方法(コマンド、参照先)を添える。
+- このファイルの変更も通常のIssue / PRの流れで行い、なぜ変えたかをdecision logへ残す。
 
 ## Secrets / 環境変数
 
@@ -390,3 +473,4 @@ decision logの最低項目:
 - ユーザー操作に関わるならdesktopとmobileで確認したか。
 - secretや生成物を追加していないか。
 - 判断理由をPRまたはdocsへ残したか。
+- 明文化されていないハマりどころにぶつかったなら、「既知のハマりどころ」への追記を提案したか。
