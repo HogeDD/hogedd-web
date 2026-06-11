@@ -95,6 +95,14 @@ export const appLinks: readonly AppLink[] = [
     publishedAt: "動画準備中",
     tags: ["Game", "Online Match", "Next.js"],
   }),
+  definePreparingAppLink({
+    slug: "lala-typing",
+    title: "ララ打",
+    description: "ラランドの語彙で遊ぶ、ローマ字タイピングゲーム。",
+    appHref: "/apps/lala-typing",
+    publishedAt: "動画準備中",
+    tags: ["Game", "Typing", "Next.js"],
+  }),
 ];
 
 export const publishedAppLinks: readonly PublishedAppLink[] = appLinks.filter(
