@@ -86,6 +86,21 @@ import { appThemePresets } from "@/app/apps/_lib/app-theme";
 
 プリセットにない配色が必要な場合は`createAppTheme`で必要な色だけ差し替える。任意classやCSSを`AppPageShell`へ渡してレイアウト、余白、フォントをアプリごとに変更しない。独自色を追加したら、通常文字、補助文字、accent上の白文字がWCAG AAのcontrast比`4.5:1`以上になることを確認する。
 
+### 参照実装を写してから作る
+
+新しいアプリは、ゼロから構成を考えず、参照実装の形を写してから中身を差し替える。
+
+単純な構成(`_components` + `_lib`)の手本は`app/apps/lala-typing/`(タイピングゲーム)。各ファイルが示している判断:
+
+- `page.tsx`: Server Componentの入口。metadataを定義し、Client Componentをマウントするだけ。
+- `layout.tsx`: `AppPageShell`にテーマと`availablePages`を渡す唯一の場所。
+- `_components/typing-game-client.tsx`: アプリで唯一の`"use client"`。キー入力もタップも同じ状態遷移関数(`handleKey`)へ流し、遷移ロジックを描画から分離する。
+- `_lib/`: 判定エンジン、スコア計算、データ(変換表・単語)。ReactやNext.jsをimportしない純関数とデータだけを置く。ロジックよりデータに寄せるほど壊れにくい(変換表が良い例)。
+- `test/unit/apps/lala-typing/`: `_lib`の仕様を固定するテスト。実装より先に書く。データの妥当性(全単語が変換可能か)もテストで守る。
+- ユーザーが編集する文章・データは`// ↓ ここを編集する`で囲んだ`const`にまとめる。
+
+DBや外部APIを使う複雑な構成(`_domain` / `_usecases` / `_infrastructure`、Route Handler)の手本は`app/apps/clean-tasks/`を参照する。
+
 ### Aboutページの作り方
 
 `app/apps/<app-name>/about/page.tsx`は`app/apps/_components/app-about-shell.tsx`の`AppAboutShell`を使う。`AppAboutShell`は次の情報を受け取り、共通のレイアウトとして表示する。
