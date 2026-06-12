@@ -93,7 +93,7 @@ export const appLinks: readonly AppLink[] = [
     description: "5x5 の盤面で「ち」と「ん」を交互に置く2人対戦ゲーム。",
     appHref: "/apps/chinchin",
     publishedAt: "動画準備中",
-    tags: ["Game", "Online Match", "Next.js"],
+    tags: ["Game", "Local Multiplayer", "Next.js"],
   }),
   definePreparingAppLink({
     slug: "lala-typing",
