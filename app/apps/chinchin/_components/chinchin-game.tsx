@@ -18,6 +18,7 @@ export function ChinchinGame() {
   const [board, setBoard] = useState<Board>(() => createEmptyBoard());
   const [currentPlayer, setCurrentPlayer] = useState<Player>(1);
   const [status, setStatus] = useState<GameStatus>({ type: "playing" });
+  const [lastMoveIndex, setLastMoveIndex] = useState<number | null>(null);
 
   const winningCellSet = useMemo(() => {
     return new Set(status.type === "won" ? status.winningCells : []);
@@ -33,6 +34,7 @@ export function ChinchinGame() {
 
     setBoard(nextBoard);
     setStatus(nextStatus);
+    setLastMoveIndex(index);
 
     if (nextStatus.type === "playing") {
       setCurrentPlayer((player) => getNextPlayer(player));
@@ -43,6 +45,7 @@ export function ChinchinGame() {
     setBoard(createEmptyBoard());
     setCurrentPlayer(1);
     setStatus({ type: "playing" });
+    setLastMoveIndex(null);
   }
 
   const statusLabel = getStatusLabel(status, currentPlayer);
@@ -79,8 +82,18 @@ export function ChinchinGame() {
         </header>
 
         <section className="grid gap-4 sm:gap-6 lg:grid-cols-[minmax(0,30rem)_15rem] lg:items-start lg:justify-center">
-          <aside className="flex items-center justify-between rounded-2xl bg-[var(--accent)] px-5 py-4 text-white shadow-lg lg:col-start-2 lg:row-start-1 lg:block lg:rounded-3xl lg:px-6 lg:py-7">
-            <div>
+          <aside
+            aria-live="polite"
+            aria-atomic="true"
+            className={[
+              "flex items-center justify-between rounded-2xl bg-[var(--accent)] px-5 py-4 text-white shadow-lg transition-shadow lg:col-start-2 lg:row-start-1 lg:block lg:rounded-3xl lg:px-6 lg:py-7",
+              status.type === "won" ? "ring-4 ring-[var(--highlight)]/35" : "",
+            ].join(" ")}
+          >
+            <div
+              key={statusLabel}
+              className="motion-safe:animate-[chinchin-status-in_240ms_ease-out]"
+            >
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/70">
                 Status
               </p>
@@ -94,7 +107,15 @@ export function ChinchinGame() {
                   {currentMark}
                 </p>
               </div>
-            ) : null}
+            ) : (
+              <button
+                type="button"
+                onClick={resetGame}
+                className="rounded-full bg-[var(--highlight)] px-4 py-2.5 text-sm font-semibold text-[var(--foreground)] shadow-sm transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--accent)] lg:mt-8"
+              >
+                もう一度
+              </button>
+            )}
           </aside>
 
           <div className="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-2.5 shadow-xl sm:p-4 lg:col-start-1 lg:row-start-1">
@@ -106,6 +127,8 @@ export function ChinchinGame() {
                 const { row, col } = toPosition(index);
                 const isWinningCell = winningCellSet.has(index);
                 const isDisabled = status.type !== "playing" || mark !== null;
+                const winningCellIndex =
+                  status.type === "won" ? status.winningCells.indexOf(index) : -1;
 
                 return (
                   <button
@@ -115,21 +138,36 @@ export function ChinchinGame() {
                     disabled={isDisabled}
                     aria-label={`${row + 1}行${col + 1}列`}
                     className={[
-                      "relative flex aspect-square touch-manipulation items-center justify-center rounded-xl border text-3xl font-semibold transition sm:rounded-2xl sm:text-5xl",
+                      "relative flex aspect-square touch-manipulation items-center justify-center rounded-xl border text-3xl font-semibold transition duration-200 sm:rounded-2xl sm:text-5xl",
                       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)]",
                       isWinningCell
-                        ? "border-[var(--highlight)] bg-[var(--accent-soft)]"
-                        : "border-[var(--border)] bg-[var(--surface-strong)] hover:border-[var(--accent)] hover:bg-[var(--surface)]",
-                      isDisabled ? "cursor-default" : "cursor-pointer",
+                        ? "z-10 border-[var(--accent)] bg-[var(--highlight)] text-[var(--foreground)] shadow-lg motion-safe:animate-[chinchin-win_620ms_ease-out_both]"
+                        : "border-[var(--border)] bg-[var(--surface-strong)]",
+                      isDisabled
+                        ? "cursor-default"
+                        : "cursor-pointer hover:border-[var(--accent)] hover:bg-[var(--surface)] motion-safe:active:scale-95",
                     ].join(" ")}
+                    style={
+                      winningCellIndex >= 0
+                        ? { animationDelay: `${winningCellIndex * 90}ms` }
+                        : undefined
+                    }
                   >
+                    {mark ? (
+                      <span
+                        key={`${index}-${mark}-${index === lastMoveIndex ? "latest" : "placed"}`}
+                        className={[
+                          isWinningCell ? "select-none blur-sm" : "",
+                          index === lastMoveIndex && !isWinningCell
+                            ? "motion-safe:animate-[chinchin-mark-in_240ms_ease-out]"
+                            : "",
+                        ].join(" ")}
+                      >
+                        {mark}
+                      </span>
+                    ) : null}
                     {isWinningCell ? (
-                      <span className="select-none blur-sm">{mark}</span>
-                    ) : (
-                      <span>{mark}</span>
-                    )}
-                    {isWinningCell ? (
-                      <span className="pointer-events-none absolute inset-2 rounded bg-[rgba(255,255,255,0.22)] backdrop-blur-[2px]" />
+                      <span className="pointer-events-none absolute inset-2 rounded-lg bg-white/20 backdrop-blur-[2px] sm:rounded-xl" />
                     ) : null}
                   </button>
                 );
