@@ -68,13 +68,34 @@ describe("app theme", () => {
     });
   });
 
-  it("provides five palettes with readable text and active navigation", () => {
-    expect(Object.keys(appThemePresets)).toHaveLength(5);
+  it("provides at least 15 distinct palettes", () => {
+    expect(Object.keys(appThemePresets).length).toBeGreaterThanOrEqual(15);
 
-    for (const theme of Object.values(appThemePresets)) {
-      expect(getContrastRatio(theme.foreground, theme.background)).toBeGreaterThanOrEqual(4.5);
-      expect(getContrastRatio(theme.muted, theme.background)).toBeGreaterThanOrEqual(4.5);
-      expect(getContrastRatio("#ffffff", theme.accent)).toBeGreaterThanOrEqual(4.5);
+    const accents = Object.values(appThemePresets).map((theme) => theme.accent);
+    expect(new Set(accents).size).toBe(accents.length);
+  });
+
+  it("keeps every palette readable", () => {
+    for (const [name, theme] of Object.entries(appThemePresets)) {
+      const expectAtLeast = (value: number, min: number, pair: string) => {
+        expect(value, `${name}: ${pair}`).toBeGreaterThanOrEqual(min);
+      };
+
+      // AGENTS.mdのルール: 通常文字・補助文字・accent上の白文字はWCAG AAの4.5:1以上。
+      expectAtLeast(getContrastRatio(theme.foreground, theme.background), 4.5, "fg/bg");
+      expectAtLeast(getContrastRatio(theme.muted, theme.background), 4.5, "muted/bg");
+      expectAtLeast(getContrastRatio("#ffffff", theme.accent), 4.5, "white/accent");
+
+      // 文字はsurfaceStrongの節背景にも載る。
+      expectAtLeast(getContrastRatio(theme.foreground, theme.surfaceStrong), 4.5, "fg/strong");
+      expectAtLeast(getContrastRatio(theme.muted, theme.surfaceStrong), 4.5, "muted/strong");
+
+      // accentは節ラベルの文字色としてbackground上で使う。
+      expectAtLeast(getContrastRatio(theme.accent, theme.background), 4.5, "accent/bg");
+
+      // highlightはaccent背景のヘッダーでラベルに使う。既存presetの実績(最小3.88)を
+      // 踏まえ、WCAG AAの大きい文字・UI部品の基準(3:1)以上を最低ラインとする。
+      expectAtLeast(getContrastRatio(theme.highlight, theme.accent), 3.0, "highlight/accent");
     }
   });
 });
