@@ -22,4 +22,15 @@ describe("Chinchin local game", () => {
       existsSync(path.join(appDirectory, "api", "matches", "[matchId]", "moves", "route.ts")),
     ).toBe(false);
   });
+
+  it("uses the shared coral theme without duplicating the page shell", async () => {
+    const [layout, gameComponent] = await Promise.all([
+      readFile(path.join(appDirectory, "layout.tsx"), "utf8"),
+      readFile(path.join(appDirectory, "_components", "chinchin-game.tsx"), "utf8"),
+    ]);
+
+    expect(layout).toContain("theme={appThemePresets.coral}");
+    expect(gameComponent).not.toContain("min-h-screen");
+    expect(gameComponent).not.toMatch(/#[0-9a-f]{3,8}/i);
+  });
 });

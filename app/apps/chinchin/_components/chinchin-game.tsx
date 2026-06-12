@@ -49,35 +49,57 @@ export function ChinchinGame() {
   const currentMark = getPlayerMark(currentPlayer);
 
   return (
-    <main className="min-h-screen bg-[var(--background)]">
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 pb-16 pt-4 sm:px-6 lg:px-8">
-        <header className="flex flex-col gap-4 border-b border-[var(--border)] pb-5 sm:flex-row sm:items-end sm:justify-between">
+    <main className="relative overflow-hidden">
+      <div
+        className="absolute -right-24 top-16 h-64 w-64 rounded-full border border-[var(--accent)]/10 sm:h-80 sm:w-80"
+        aria-hidden="true"
+      />
+      <div
+        className="absolute -left-20 bottom-20 h-52 w-52 rounded-full bg-[var(--accent-soft)]/60"
+        aria-hidden="true"
+      />
+
+      <div className="relative mx-auto w-full max-w-4xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-10">
+        <header className="mb-6 flex items-end justify-between gap-4 sm:mb-8 lg:mx-auto lg:w-full lg:max-w-[46.5rem]">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
-              /apps/chinchin
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent)]">
+              Board
             </p>
-            <h1 className="mt-2 text-2xl font-semibold tracking-tight sm:text-4xl">
+            <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-5xl">
               ちんちんゲーム
             </h1>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--muted)] sm:text-base sm:leading-8">
-              5x5 の盤面で、Player 1 は「ち」、Player 2 は「ん」を交互に置きます。
-              4マス連続で対象の並びを作ったプレイヤーが勝利です。
-            </p>
           </div>
-
           <button
             type="button"
             onClick={resetGame}
-            className="w-fit rounded-md border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-semibold transition hover:bg-[var(--surface-strong)]"
+            className="shrink-0 rounded-full border border-[var(--border)] bg-[var(--surface)] px-4 py-2.5 text-sm font-semibold text-[var(--foreground)] shadow-sm transition hover:-translate-y-0.5 hover:border-[var(--accent)] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] motion-reduce:hover:translate-y-0"
           >
             リセット
           </button>
         </header>
 
-        <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-start">
-          <div className="rounded-md border border-[var(--border)] bg-[var(--surface)] p-3 sm:p-4">
+        <section className="grid gap-4 sm:gap-6 lg:grid-cols-[minmax(0,30rem)_15rem] lg:items-start lg:justify-center">
+          <aside className="flex items-center justify-between rounded-2xl bg-[var(--accent)] px-5 py-4 text-white shadow-lg lg:col-start-2 lg:row-start-1 lg:block lg:rounded-3xl lg:px-6 lg:py-7">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/70">
+                Status
+              </p>
+              <p className="mt-1 text-lg font-semibold lg:mt-3 lg:text-xl">{statusLabel}</p>
+            </div>
+
+            {status.type === "playing" ? (
+              <div className="flex items-center gap-3 lg:mt-8 lg:block">
+                <p className="text-xs font-medium text-white/70 lg:text-sm">置く文字</p>
+                <p className="text-4xl font-semibold leading-none text-[var(--highlight)] lg:mt-2 lg:text-7xl">
+                  {currentMark}
+                </p>
+              </div>
+            ) : null}
+          </aside>
+
+          <div className="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-2.5 shadow-xl sm:p-4 lg:col-start-1 lg:row-start-1">
             <div
-              className="grid aspect-square w-full gap-2"
+              className="grid aspect-square w-full gap-1.5 sm:gap-2"
               style={{ gridTemplateColumns: `repeat(${BOARD_SIZE}, minmax(0, 1fr))` }}
             >
               {board.map((mark, index) => {
@@ -93,11 +115,11 @@ export function ChinchinGame() {
                     disabled={isDisabled}
                     aria-label={`${row + 1}行${col + 1}列`}
                     className={[
-                      "relative flex aspect-square touch-manipulation items-center justify-center rounded-md border text-3xl font-semibold transition sm:text-5xl",
+                      "relative flex aspect-square touch-manipulation items-center justify-center rounded-xl border text-3xl font-semibold transition sm:rounded-2xl sm:text-5xl",
                       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)]",
                       isWinningCell
-                        ? "border-[#b58a64] bg-[#d5b28e]"
-                        : "border-[var(--border)] bg-[var(--surface-strong)] hover:border-[var(--accent)] hover:bg-white",
+                        ? "border-[var(--highlight)] bg-[var(--accent-soft)]"
+                        : "border-[var(--border)] bg-[var(--surface-strong)] hover:border-[var(--accent)] hover:bg-[var(--surface)]",
                       isDisabled ? "cursor-default" : "cursor-pointer",
                     ].join(" ")}
                   >
@@ -114,25 +136,6 @@ export function ChinchinGame() {
               })}
             </div>
           </div>
-
-          <aside className="rounded-md border border-[var(--border)] bg-[var(--surface)] p-5">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
-              Status
-            </p>
-            <p className="mt-2 text-xl font-semibold">{statusLabel}</p>
-
-            {status.type === "playing" ? (
-              <div className="mt-5 rounded-md border border-[var(--border)] bg-[var(--surface-strong)] p-4">
-                <p className="text-sm text-[var(--muted)]">置く文字</p>
-                <p className="mt-2 text-5xl font-semibold">{currentMark}</p>
-              </div>
-            ) : null}
-
-            <div className="mt-5 space-y-3 text-sm leading-6 text-[var(--muted)]">
-              <p>縦、横、斜めのどの方向でも勝利判定します。</p>
-              <p>完成した4マスだけ、薄茶色とブラーで隠します。</p>
-            </div>
-          </aside>
         </section>
       </div>
     </main>
