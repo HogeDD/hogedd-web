@@ -6,7 +6,7 @@ export default function ChinchinLayout({ children }: { children: ReactNode }) {
     <AppPageShell
       appName="ちんちんゲーム"
       appHref="/apps/chinchin"
-      availablePages={["app", "about"]}
+      availablePages={["app", "about", "guide"]}
     >
       {children}
     </AppPageShell>

@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 type NonEmptyStringList = readonly [string, ...string[]];
 
 export function AppGuideShell({
@@ -6,6 +8,7 @@ export function AppGuideShell({
   basicControls,
   screenGuide,
   rules,
+  ruleExample,
   tips,
 }: {
   appName: string;
@@ -13,6 +16,7 @@ export function AppGuideShell({
   basicControls: NonEmptyStringList;
   screenGuide: NonEmptyStringList;
   rules: NonEmptyStringList;
+  ruleExample?: ReactNode;
   tips: NonEmptyStringList;
 }) {
   return (
@@ -41,7 +45,9 @@ export function AppGuideShell({
       <GuideSection label="最初に行う操作" items={firstSteps} ordered />
       <GuideSection label="基本操作" items={basicControls} tone="strong" />
       <GuideSection label="画面の見方" items={screenGuide} size="large" />
-      <GuideSection label="ルール" items={rules} tone="strong" />
+      <GuideSection label="ルール" items={rules} tone="strong">
+        {ruleExample}
+      </GuideSection>
       <GuideSection label="困ったときは" items={tips} />
     </main>
   );
@@ -53,12 +59,14 @@ function GuideSection({
   ordered = false,
   tone = "default",
   size = "default",
+  children,
 }: {
   label: string;
   items: NonEmptyStringList;
   ordered?: boolean;
   tone?: "default" | "strong";
   size?: "default" | "large";
+  children?: ReactNode;
 }) {
   const itemTextClassName =
     size === "large"
@@ -96,6 +104,8 @@ function GuideSection({
             ))}
           </ul>
         )}
+
+        {children}
       </div>
     </section>
   );
