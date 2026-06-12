@@ -187,7 +187,7 @@ secretをIssue、PR、docs、log、screenshotへ載せない。漏洩した場�
 
 ## 現在の制約
 
-Clean Tasksとちんちんゲームのランダム対戦は、server memoryへ状態を保存している。
+Clean Tasksは、server memoryへ状態を保存している。
 
 Vercel Functionsでは次を保証できない。
 
@@ -195,7 +195,7 @@ Vercel Functionsでは次を保証できない。
 - 複数instanceで同じ状態を共有すること
 - deploy後も状態が残ること
 
-そのため、Clean Tasksはdemo扱い、ランダム対戦は試験機能として扱う。永続性や安定したonline対戦が必要になったら、交換可能なrepository境界を保ったままPostgreSQLなどへ移す。
+そのため、Clean Tasksはdemo扱いとする。永続性が必要になったら、交換可能なrepository境界を保ったままPostgreSQLなどへ移す。
 
 ## Logsと障害確認
 
