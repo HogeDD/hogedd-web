@@ -107,7 +107,7 @@ export function JudoRouletteClient() {
         className="touch-none text-left"
         aria-label="柔道ルーレット"
       >
-        <span className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent)]">
+        <span className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent-text)]">
           Judo Roulette
         </span>
         <span className="mt-4 block text-5xl font-semibold tracking-tight sm:text-6xl">
@@ -150,7 +150,7 @@ export function JudoRouletteClient() {
           type="button"
           onClick={spin}
           disabled={isSpinning}
-          className="rounded-full bg-[var(--accent)] px-12 py-4 text-base font-semibold text-white transition hover:opacity-85 disabled:cursor-wait disabled:opacity-55"
+          className="rounded-full bg-[var(--accent)] px-12 py-4 text-base font-semibold text-[var(--accent-foreground)] transition hover:opacity-85 disabled:cursor-wait disabled:opacity-55"
         >
           {isSpinning ? "回転中..." : "回す"}
         </button>
@@ -160,7 +160,7 @@ export function JudoRouletteClient() {
       </div>
 
       <div className="mt-14 bg-[var(--surface-strong)] px-5 py-6 sm:px-7">
-        <h2 className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent)]">
+        <h2 className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent-text)]">
           選択肢
         </h2>
         <form onSubmit={addChoice} className="mt-5 flex gap-2">
@@ -176,7 +176,7 @@ export function JudoRouletteClient() {
           <button
             type="submit"
             disabled={!newChoice.trim() || isSpinning || choices.length >= MAX_CHOICES}
-            className="rounded-full border border-[var(--accent)] px-5 py-3 text-sm font-semibold text-[var(--accent)] disabled:opacity-40"
+            className="rounded-full border border-[var(--accent)] px-5 py-3 text-sm font-semibold text-[var(--accent-text)] disabled:opacity-40"
           >
             追加
           </button>
@@ -209,7 +209,7 @@ export function JudoRouletteClient() {
             aria-labelledby="rigging-title"
             className="w-full max-w-sm bg-[var(--surface)] p-7 text-[var(--foreground)] shadow-2xl"
           >
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent)]">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent-text)]">
               Secret
             </p>
             <h2 id="rigging-title" className="mt-3 text-2xl font-semibold">

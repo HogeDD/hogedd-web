@@ -65,7 +65,7 @@ export function ChinchinGame() {
       <div className="relative mx-auto w-full max-w-4xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-10">
         <header className="mb-6 flex items-end justify-between gap-4 sm:mb-8 lg:mx-auto lg:w-full lg:max-w-[46.5rem]">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent)]">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent-text)]">
               Board
             </p>
             <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-5xl">
@@ -86,7 +86,7 @@ export function ChinchinGame() {
             aria-live="polite"
             aria-atomic="true"
             className={[
-              "flex items-center justify-between rounded-2xl bg-[var(--accent)] px-5 py-4 text-white shadow-lg transition-shadow lg:col-start-2 lg:row-start-1 lg:block lg:rounded-3xl lg:px-6 lg:py-7",
+              "flex items-center justify-between rounded-2xl bg-[var(--accent)] px-5 py-4 text-[var(--accent-foreground)] shadow-lg transition-shadow lg:col-start-2 lg:row-start-1 lg:block lg:rounded-3xl lg:px-6 lg:py-7",
               status.type === "won" ? "ring-4 ring-[var(--highlight)]/35" : "",
             ].join(" ")}
           >
@@ -94,7 +94,7 @@ export function ChinchinGame() {
               key={statusLabel}
               className="motion-safe:animate-[chinchin-status-in_240ms_ease-out]"
             >
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/70">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--accent-foreground)]/70">
                 Status
               </p>
               <p className="mt-1 text-lg font-semibold lg:mt-3 lg:text-xl">{statusLabel}</p>
@@ -102,7 +102,9 @@ export function ChinchinGame() {
 
             {status.type === "playing" ? (
               <div className="flex items-center gap-3 lg:mt-8 lg:block">
-                <p className="text-xs font-medium text-white/70 lg:text-sm">置く文字</p>
+                <p className="text-xs font-medium text-[var(--accent-foreground)]/70 lg:text-sm">
+                  置く文字
+                </p>
                 <p className="text-4xl font-semibold leading-none text-[var(--highlight)] lg:mt-2 lg:text-7xl">
                   {currentMark}
                 </p>
