@@ -17,6 +17,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - 作業前に既存実装と関連 docs を読む。
 - Issue を起点に `dev` から作業 branch を切る。
 - 変更は Issue の範囲に絞る。
+- 作業中に見つけた範囲外の改善、不整合、技術的負債は放置せず、既存Issueとの重複を確認して必要なら別Issueへ分ける。
 - 基本はテスト駆動開発で進める。期待動作をテストで表現できるなら、実装より先にテストを書く。
 - secret、token、password、DB URL、private key を commit、Issue、PR、チャット、スクリーンショットへ載せない。
 - ユーザーの未コミット変更を勝手に戻さない。
@@ -407,6 +408,8 @@ HogeDDのブランドコピーは`docs/guides/brand-copy.md`を参照する。
 - PRタイトル、本文、コメントは原則日本語。
 - PR本文には変更内容だけでなく、なぜその選択をしたかを書く。
 - 過去Issueの本文を後から書き換えず、方針変更はコメントで履歴を残す。
+- 作業中に要求外の改善、不整合、技術的負債を見つけたら、既存Issueを検索し、重複がなければ目的ごとに小さいIssueとして追加する。再現根拠、やること、やらないこと、完了条件を書き、未確認の推測だけではIssueを作らない。
+- 新しくIssue化した内容は、ユーザーが現在のIssueへ含めると合意しない限り、そのbranchへ実装を混ぜない。追加したIssue番号を作業報告またはdecision logへ残す。
 - 作業は`commit → push → PR作成 → CI成功 → merge → Issue close確認`の順で完了させる。
 - 新しいアプリは`docs/guides/app-development-cycle.md`のMVP、改善、公開準備の流れに従う。
   - MVP Issueでは「最低限動く」状態に絞り、見つかった改善点は目的ごとに別Issueへ分ける。
