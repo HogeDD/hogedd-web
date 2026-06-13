@@ -5,8 +5,9 @@
 HogeDDはVercel Hobbyで公開する。
 
 ```text
-GitHub: iwasawarenji954/hogedd-web
+GitHub: HogeDD/hogedd-web
 Vercel project: hogedd-web
+Vercel owner: iwasawa-renjis-projects
 Framework: Next.js
 Root Directory: repository root
 Node.js: 24.x
@@ -16,6 +17,17 @@ Apex domain: https://hogedd.com/ -> wwwへ308 redirect
 ```
 
 VercelはhostingとNext.jsの実行環境として使う。Vercel Blob、KV、Edge Config、Queues、Workflowなどをアプリケーションの標準backendとして使わない。
+
+GitHub OrganizationとVercel teamは別の所有境界である。GitHub repositoryをOrganizationへ移管しても、Vercel project ownerを同名teamへ移す必要はない。現在はHobby team`iwasawa-renjis-projects`でproject、domain、deploymentを維持し、Git integrationだけを`HogeDD/hogedd-web`へ接続する。
+
+GitHub repositoryの移管後は、Organization SettingsのInstalled GitHub AppsでVercelへ対象repositoryのaccessを付与する。その後、Vercel Project SettingsのGitまたはCLIでrepositoryを再接続する。
+
+```bash
+npx vercel@latest git connect https://github.com/HogeDD/hogedd-web.git \
+  --scope iwasawa-renjis-projects
+```
+
+接続後はVercel project APIの`link.org`が`HogeDD`、`productionBranch`が`main`であることを確認する。
 
 ## Branchとdeployの対応
 
