@@ -414,6 +414,7 @@ HogeDDのブランドコピーは`docs/guides/brand-copy.md`を参照する。
 - 新しいアプリは`docs/guides/app-development-cycle.md`のMVP、改善、公開準備の流れに従う。
   - MVP Issueでは「最低限動く」状態に絞り、見つかった改善点は目的ごとに別Issueへ分ける。
   - MVPが`dev`へ入った時点から、そのアプリの公開準備が完了するまで、そのアプリに関する`dev`から`main`へのrelease PRは作らない。
+  - 公開準備へ入ったら、本人へ`1200×630`のPNG形式のOG画像を1枚依頼する。受領後、同じ画像とaltをアプリsegmentの`opengraph-image.*`と`twitter-image.*`へ格納する。画像未準備でも`dev`へmergeできるが、`main`向けrelease PRのCIは失敗する。
   - 公開準備Issueは`dev`へのmerge時点では閉じず、Production公開とYouTube公開の両方を確認してから手動で閉じる。
 
 詳しい操作は`docs/guides/onboarding.md`を参照する。

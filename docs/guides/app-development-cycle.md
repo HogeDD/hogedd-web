@@ -243,7 +243,8 @@ Issue titleの例:
 
 - アプリ名、説明、開発DD、公開日を確定する。
 - routeのmetadataを確認する。
-- アプリ専用のOpen Graph画像とaltを用意する。
+- 本人へ`1200×630`のPNG形式のOpen Graph画像を依頼する。
+- 受け取った画像とaltを同じ内容で`opengraph-image.*`と`twitter-image.*`へ格納する。
 - YouTube動画を公開できる状態にする。
 - `app/apps/_lib/app-links.ts`へ公開情報を登録する。
 - 必要な場合は`app/apps/_lib/apps-page-sections.ts`のおすすめslugを変更する。
@@ -266,6 +267,8 @@ Issue titleの例:
 YouTube URLが確定するまでは、公開情報を推測で登録しない。secret、限定公開URL、公開前に共有できない情報をIssueやPRへ載せない。
 
 公開準備Issueは本番確認までrelease停止の目印として残す。公開準備PRの本文では`Closes`を使わず`Refs #<issue-number>`で関連付け、`dev`へのmerge時には閉じない。
+
+公開metadataの厳格検査は`main`向けrelease PRで実行する。OG画像が未準備でも途中の変更を`dev`へmergeできるが、画像、alt、公開情報が揃うまでrelease PRのCIは成功しない。
 
 ## 6. YouTubeとアプリを同時に本番公開する
 
