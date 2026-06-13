@@ -103,6 +103,14 @@ export const appLinks: readonly AppLink[] = [
     publishedAt: "動画準備中",
     tags: ["Game", "Typing", "Next.js"],
   }),
+  definePreparingAppLink({
+    slug: "judo-roulette",
+    title: "柔道ルーレット",
+    description: "選択肢を追加して回せる、仕込み可能なルーレット。",
+    appHref: "/apps/judo-roulette",
+    publishedAt: "動画準備中",
+    tags: ["Game", "Roulette", "Next.js"],
+  }),
 ];
 
 export const publishedAppLinks: readonly PublishedAppLink[] = appLinks.filter(
