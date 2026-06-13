@@ -4,7 +4,8 @@
 
 ## 前提
 
-- repository: `iwasawarenji954/hogedd-web`
+- organization: `HogeDD`
+- repository: `HogeDD/hogedd-web`
 - 長期ブランチ: `main`, `dev`
 - 通常の PR target: `dev`
 - release / production target: `main`
@@ -14,12 +15,12 @@
 
 ### Collaborators
 
-共同開発者を repository collaborator として招待する。
+共同開発者をOrganization memberとして招待し、repository roleを付与する。
 
 現在の設定:
 
-- 非エンジニア共同開発者: `Write`
-- 管理者: `Admin`
+- 非エンジニア共同開発者: Organization member + repository `Write`
+- 管理者: Organization owner + repository `Admin`
 - 外部に review だけ頼む人: 必要になってから追加
 
 理由:
@@ -89,9 +90,9 @@ approvalを必須にしていない理由:
 
 `main`へのmerge権限:
 
-- 現在のrepository collaboratorは管理者`iwasawarenji954`だけなので、実質的に本人だけがmergeできる。
-- Write権限のcollaboratorを追加すると、その人もruleを満たしたPRをmergeできる可能性がある。
-- collaborator追加前に、organization化、approval必須化、role設計のどれを採用するか見直す。
+- Organization memberへrepositoryの`Write`以上を付与すると、ruleを満たしたPRをmergeできる可能性がある。
+- member追加時はOrganization roleとrepository roleの両方を確認する。
+- approval必須化やCODEOWNERSは共同開発者が増えたときに見直す。
 
 #### GitHub画面で確認する
 
@@ -201,7 +202,7 @@ deploy が始まったら `preview`、`production` などを検討する。
 
 ## 手作業設定チェックリスト
 
-- [ ] 共同開発者を collaborator に招待する。
+- [ ] 共同開発者をOrganization memberとして招待し、repository roleを付与する。
 - [x] Pull Requests で squash merge を有効にする。
 - [x] Pull Requests で merge commit / rebase merge を無効にする。
 - [x] Pull Requests で head branch 自動削除を有効にする。
