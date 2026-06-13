@@ -171,6 +171,8 @@ Secrets and variables は repository に実値を置き、コードには入れ�
   - `clean-architecture`
   - `hogedd`
 
+Organization profileはHogeDD全体の入口として、名前`HogeDD`、説明`Hoge Driven Development`、website`https://www.hogedd.com/`を設定する。repositoryのAbout欄は個別repositoryの用途と技術構成、Organization profileはプロジェクト全体の説明を担当する。
+
 ## 今は保留する項目
 
 ### Review 必須化
@@ -222,7 +224,8 @@ deploy が始まったら `preview`、`production` などを検討する。
 - [x] Dependabot alertsとsecurity updatesを有効にする。
 - [ ] Actions の workflow permissions を確認する。
 - [ ] 必要な secrets を GitHub Secrets に入れる。
-- [ ] repository description / website / topics を設定する。
+- [x] repository description / website / topics を設定する。
+- [x] Organization profileのname / description / websiteを設定する。
 
 ## 見直し条件
 
