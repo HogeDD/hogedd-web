@@ -84,7 +84,7 @@ import { appThemePresets } from "@/app/apps/_lib/app-theme";
 <AppPageShell theme={appThemePresets.ocean}>{children}</AppPageShell>;
 ```
 
-プリセットにない配色が必要な場合は`createAppTheme`で必要な色だけ差し替える。任意classやCSSを`AppPageShell`へ渡してレイアウト、余白、フォントをアプリごとに変更しない。独自色を追加したら、通常文字、補助文字、accent上の白文字がWCAG AAのcontrast比`4.5:1`以上になることを確認する。
+プリセットにない配色が必要な場合は`createAppTheme`で必要な色だけ差し替える。任意classやCSSを`AppPageShell`へ渡してレイアウト、余白、フォントをアプリごとに変更しない。明るいaccentを使う場合は、通常背景上の小さい文字を`accentText`、accent背景上の文字を`accentForeground`として分ける。通常サイズの文字は背景と`4.5:1`以上、装飾・UI境界として使うaccentは背景と`3:1`以上を確認する。
 
 ### 参照実装を写してから作る
 

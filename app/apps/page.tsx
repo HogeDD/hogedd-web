@@ -39,7 +39,7 @@ export default function AppsPage() {
       {sections.map((section) => (
         <section
           key={section.id}
-          className="relative overflow-hidden bg-[var(--accent)] py-20 text-white sm:py-28"
+          className="relative overflow-hidden bg-[var(--accent)] py-20 text-[var(--accent-foreground)] sm:py-28"
         >
           <div
             className="absolute -left-28 -top-36 h-80 w-80 rounded-full border border-white/15"
@@ -139,7 +139,7 @@ function AppCard({ app, size }: { app: PublishedAppLink; size: "featured" | "com
       <div className={["flex flex-col", isCompact ? "px-3 py-2" : "min-h-56 p-5 sm:p-6"].join(" ")}>
         <p
           className={[
-            "font-semibold uppercase text-[var(--accent)]",
+            "font-semibold uppercase text-[var(--accent-text)]",
             isCompact ? "text-[9px] leading-3 tracking-[0.14em]" : "text-xs tracking-[0.2em]",
           ].join(" ")}
         >
@@ -158,7 +158,7 @@ function AppCard({ app, size }: { app: PublishedAppLink; size: "featured" | "com
           <div className="mt-auto flex flex-wrap gap-3 pt-10">
             <Link
               href={app.appHref}
-              className="rounded-full bg-[var(--accent)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--foreground)]"
+              className="rounded-full bg-[var(--accent)] px-5 py-3 text-sm font-semibold text-[var(--accent-foreground)] transition hover:bg-[var(--foreground)] hover:text-white"
             >
               アプリを見る
             </Link>

@@ -8,6 +8,8 @@ export type AppTheme = Readonly<{
   border: string;
   muted: string;
   accent: string;
+  accentText?: string;
+  accentForeground?: string;
   accentSoft: string;
   highlight: string;
 }>;
@@ -20,6 +22,8 @@ export const defaultAppTheme: AppTheme = {
   border: "#d6ddd6",
   muted: "#5f6761",
   accent: "#173f34",
+  accentText: "#173f34",
+  accentForeground: "#ffffff",
   accentSoft: "#dde8e3",
   highlight: "#e5b841",
 };
@@ -90,7 +94,9 @@ export const appThemePresets = {
     surfaceStrong: "#f8e7e0",
     border: "#ecd0c4",
     muted: "#6e564c",
-    accent: "#a23c28",
+    accent: "#d16f23",
+    accentText: "#a23c28",
+    accentForeground: "#221511",
     accentSoft: "#f7ddd4",
     highlight: "#e3aa33",
   },
@@ -304,6 +310,8 @@ type AppThemeStyle = CSSProperties &
     | "--border"
     | "--muted"
     | "--accent"
+    | "--accent-text"
+    | "--accent-foreground"
     | "--accent-soft"
     | "--highlight",
     string
@@ -318,6 +326,8 @@ export function getAppThemeStyle(theme: AppTheme): AppThemeStyle {
     "--border": theme.border,
     "--muted": theme.muted,
     "--accent": theme.accent,
+    "--accent-text": theme.accentText ?? theme.accent,
+    "--accent-foreground": theme.accentForeground ?? "#ffffff",
     "--accent-soft": theme.accentSoft,
     "--highlight": theme.highlight,
   };

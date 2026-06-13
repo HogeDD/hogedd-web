@@ -38,7 +38,7 @@ export function AppNavigation({
               const className = [
                 "rounded-full px-4 py-2 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)]",
                 isActive
-                  ? "bg-[var(--accent)] text-white shadow-sm"
+                  ? "bg-[var(--accent)] text-[var(--accent-foreground)] shadow-sm"
                   : isAvailable
                     ? "text-[var(--muted)] hover:bg-[var(--surface-strong)] hover:text-[var(--foreground)]"
                     : "cursor-not-allowed text-[var(--muted)]/40",

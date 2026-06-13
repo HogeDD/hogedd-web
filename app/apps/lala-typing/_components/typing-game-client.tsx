@@ -141,7 +141,7 @@ function TouchKeyboard({ onKey }: { onKey: (key: string) => void }) {
               key={key}
               type="button"
               onClick={() => onKey(key)}
-              className="h-12 max-w-9 flex-1 basis-0 touch-manipulation rounded-md bg-[var(--surface-strong)] font-mono text-sm font-semibold text-[var(--foreground)] active:bg-[var(--accent)] active:text-white"
+              className="h-12 max-w-9 flex-1 basis-0 touch-manipulation rounded-md bg-[var(--surface-strong)] font-mono text-sm font-semibold text-[var(--foreground)] active:bg-[var(--accent)] active:text-[var(--accent-foreground)]"
             >
               {key}
             </button>
@@ -155,7 +155,7 @@ function TouchKeyboard({ onKey }: { onKey: (key: string) => void }) {
 function IdleScreen({ onStart }: { onStart: () => void }) {
   return (
     <div>
-      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent)]">
+      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent-text)]">
         Ready
       </p>
       <h2 className="mt-6 text-5xl font-semibold tracking-tight sm:text-6xl">
@@ -169,7 +169,7 @@ function IdleScreen({ onStart }: { onStart: () => void }) {
       <button
         type="button"
         onClick={onStart}
-        className="mt-12 rounded-full bg-[var(--accent)] px-10 py-4 text-sm font-semibold text-white transition hover:opacity-85"
+        className="mt-12 rounded-full bg-[var(--accent)] px-10 py-4 text-sm font-semibold text-[var(--accent-foreground)] transition hover:opacity-85"
       >
         スタート(Enter)
       </button>
@@ -191,7 +191,7 @@ function PlayingScreen({
   return (
     <div>
       <div className="flex items-baseline justify-between">
-        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent)]">
+        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent-text)]">
           Word {phase.wordIndex + 1} / {phase.words.length}
         </p>
         <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--muted)]">
@@ -204,7 +204,7 @@ function PlayingScreen({
         className="mt-10 break-all font-mono text-2xl tracking-wide sm:text-3xl"
         aria-hidden="true"
       >
-        <span className="font-semibold text-[var(--accent)]">{typed}</span>
+        <span className="font-semibold text-[var(--accent-text)]">{typed}</span>
         <span className="text-[var(--foreground)]/35">{remaining}</span>
       </p>
       <p className="mt-16 hidden text-xs text-[var(--muted)] pointer-fine:block">
@@ -234,10 +234,10 @@ function FinishedScreen({
 
   return (
     <div role="status">
-      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent)]">
+      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent-text)]">
         Result
       </p>
-      <p className="mt-6 text-8xl font-semibold tracking-tight text-[var(--accent)]">{rank}</p>
+      <p className="mt-6 text-8xl font-semibold tracking-tight text-[var(--accent-text)]">{rank}</p>
       <dl className="mt-12 grid grid-cols-2 gap-x-8 gap-y-6 sm:grid-cols-4">
         <ResultItem label="タイム" value={`${formatSeconds(phase.elapsedMs)}秒`} />
         <ResultItem label="速さ" value={`${kps.toFixed(1)}打/秒`} />
@@ -247,7 +247,7 @@ function FinishedScreen({
       <button
         type="button"
         onClick={onRetry}
-        className="mt-14 rounded-full bg-[var(--accent)] px-10 py-4 text-sm font-semibold text-white transition hover:opacity-85"
+        className="mt-14 rounded-full bg-[var(--accent)] px-10 py-4 text-sm font-semibold text-[var(--accent-foreground)] transition hover:opacity-85"
       >
         もう一度(Enter)
       </button>

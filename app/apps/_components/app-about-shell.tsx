@@ -21,7 +21,7 @@ export function AppAboutShell({
 }) {
   return (
     <main>
-      <header className="relative overflow-hidden bg-[var(--accent)] text-white">
+      <header className="relative overflow-hidden bg-[var(--accent)] text-[var(--accent-foreground)]">
         <div
           className="absolute -right-24 -top-32 h-80 w-80 rounded-full border border-white/10"
           aria-hidden="true"
@@ -35,7 +35,7 @@ export function AppAboutShell({
           aria-hidden="true"
         />
         <div className="relative mx-auto w-full max-w-2xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
-          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-[var(--highlight)]">
+          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent-foreground)]/75">
             {ddLabel}
           </p>
           <h1 className="text-6xl font-semibold tracking-tight sm:text-7xl">{appName}</h1>
@@ -52,7 +52,7 @@ export function AppAboutShell({
           aria-hidden="true"
         />
         <div className="relative mx-auto w-full max-w-2xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
-          <p className="mb-10 text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent)]">
+          <p className="mb-10 text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent-text)]">
             Why
           </p>
           <div className="space-y-6">
@@ -80,7 +80,7 @@ export function AppAboutShell({
       {youtubeUrl && youtubeThumbnailUrl && (
         <section className="bg-[var(--surface-strong)]">
           <div className="mx-auto w-full max-w-2xl px-4 py-20 sm:px-6 sm:py-24 lg:px-8">
-            <p className="mb-8 text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent)]">
+            <p className="mb-8 text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent-text)]">
               YouTube
             </p>
             <a
@@ -128,7 +128,7 @@ export function AppAboutShell({
             aria-hidden="true"
           />
           <div className="relative mx-auto w-full max-w-2xl px-4 py-20 sm:px-6 sm:py-24 lg:px-8">
-            <p className="mb-8 text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent)]">
+            <p className="mb-8 text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent-text)]">
               参考にしたもの
             </p>
             <ul className="space-y-8">
@@ -140,7 +140,7 @@ export function AppAboutShell({
                     rel="noopener noreferrer"
                     className="group block"
                   >
-                    <p className="text-sm font-semibold text-[var(--foreground)] underline underline-offset-4 group-hover:text-[var(--accent)]">
+                    <p className="text-sm font-semibold text-[var(--foreground)] underline underline-offset-4 group-hover:text-[var(--accent-text)]">
                       {link.label}
                     </p>
                     {link.description && (
