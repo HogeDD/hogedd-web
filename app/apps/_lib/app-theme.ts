@@ -90,7 +90,7 @@ export const appThemePresets = {
     surfaceStrong: "#f8e7e0",
     border: "#ecd0c4",
     muted: "#6e564c",
-    accent: "#a23c28",
+    accent: "#d16f23",
     accentSoft: "#f7ddd4",
     highlight: "#e3aa33",
   },

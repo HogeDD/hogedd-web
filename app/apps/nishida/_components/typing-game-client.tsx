@@ -6,20 +6,20 @@ import {
   calculateKps,
   formatSeconds,
   judgeRank,
-} from "@/app/apps/lala-typing/_lib/score";
+} from "@/app/apps/nishida/_lib/score";
 import {
   createSession,
   getRemainingRomaji,
   getTypedRomaji,
   typeKey,
   type TypingSession,
-} from "@/app/apps/lala-typing/_lib/typing-engine";
+} from "@/app/apps/nishida/_lib/typing-engine";
 import {
   WORDS_PER_GAME,
   pickWords,
   typingWords,
   type TypingWord,
-} from "@/app/apps/lala-typing/_lib/words";
+} from "@/app/apps/nishida/_lib/words";
 
 type Phase =
   | { name: "idle" }
@@ -156,13 +156,9 @@ function IdleScreen({ onStart }: { onStart: () => void }) {
   return (
     <div>
       <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent)]">
-        Ready
+        LALANDE
       </p>
-      <h2 className="mt-6 text-5xl font-semibold tracking-tight sm:text-6xl">
-        全{WORDS_PER_GAME}問、
-        <br />
-        最速で打て。
-      </h2>
+      <h2 className="mt-6 text-5xl font-semibold tracking-tight sm:text-6xl">ニシ打</h2>
       <p className="mt-8 text-base leading-7 text-[var(--muted)]">
         表示される単語をローマ字で入力する。PCはキーボード、スマホ・タブレットは画面に出るキーをタップする。
       </p>

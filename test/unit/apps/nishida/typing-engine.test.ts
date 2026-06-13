@@ -8,7 +8,7 @@ import {
   isCompleted,
   typeKey,
   type TypingSession,
-} from "@/app/apps/lala-typing/_lib/typing-engine";
+} from "@/app/apps/nishida/_lib/typing-engine";
 
 function typeAll(session: TypingSession, keys: string): TypingSession {
   let current = session;

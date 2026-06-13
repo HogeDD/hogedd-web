@@ -134,7 +134,7 @@ package.json
 
 ユーザーが今後編集する文章やデータは、ファイル冒頭の`const`へまとめ(`// ↓ ここを編集する`で囲む)、JSXを触らず`const`の差し替えだけで更新できる形にする。新しい共通shellを作るときも、可変コンテンツはpropsで受け取り、見た目はshellへ閉じ込める。
 
-実装例は`app/apps/lala-typing/`(単純な構成の手本)と`app/apps/clean-tasks/`(Clean Architecture構成の手本)、テンプレートは`docs/guides/app-development-cycle.md`を参照する。どちらも参照実装として意図的に残している。`app/apps/clean-tasks/`は近い将来削除する予定だが、テンプレートとして有用なため、cleanupと称して消したり作り替えたりしない。
+実装例は`app/apps/nishida/`(単純な構成の手本)と`app/apps/clean-tasks/`(Clean Architecture構成の手本)、テンプレートは`docs/guides/app-development-cycle.md`を参照する。どちらも参照実装として意図的に残している。`app/apps/clean-tasks/`は近い将来削除する予定だが、テンプレートとして有用なため、cleanupと称して消したり作り替えたりしない。
 
 ### Clean Architectureを追加する条件
 
@@ -172,7 +172,7 @@ app/apps/<app-name>/
 - 処理を一つ呼ぶだけの usecase。
 - 内部処理を呼ぶためだけの Route Handler。
 
-参照実装は`app/apps/lala-typing/`(タイピングゲーム)。ゼロから構成を考えず、まずこの形を写してから中身を差し替える。役割の分担(`page.tsx`は入口だけ、`_components`に唯一のClient Component、`_lib`に純関数とデータ、`test/unit/apps/<app-name>/`にその仕様)をそのまま踏襲する。
+参照実装は`app/apps/nishida/`(タイピングゲーム)。ゼロから構成を考えず、まずこの形を写してから中身を差し替える。役割の分担(`page.tsx`は入口だけ、`_components`に唯一のClient Component、`_lib`に純関数とデータ、`test/unit/apps/<app-name>/`にその仕様)をそのまま踏襲する。
 
 ### 複雑な機能の例
 

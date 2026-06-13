@@ -1,4 +1,4 @@
-import { kanaRomajiTable } from "@/app/apps/lala-typing/_lib/romaji-table";
+import { kanaRomajiTable } from "@/app/apps/nishida/_lib/romaji-table";
 
 export type TypingUnit = Readonly<{
   /** このユニットが表すかな(「っこ」「んじ」のように結合済みの場合がある)。 */
