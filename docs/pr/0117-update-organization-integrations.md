@@ -47,7 +47,7 @@ Organization運用と名前を揃えられるが、現在のHobby teamで支障�
 - Vercel GitHub Appへ`hogedd-web`のaccessを付与し、既存projectを`HogeDD/hogedd-web`へ再接続した。
 - Vercel project APIでGit ownerが`HogeDD`、repository IDが移管前と同じ、Production Branchが`main`であることを確認した。
 - 既存Production deploymentが`READY`で、`hogedd.com`から`www.hogedd.com`への308 redirectと`www`の200 responseが維持されていることを確認した。
-- 検証PRでGitHub ActionsとVercel Previewを確認する。
+- PR #121でGitHub Actionsの`Web` checkとVercel Preview deploymentが成功することを確認した。
 
 ## 今後の見直し条件
 
