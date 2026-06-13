@@ -8,7 +8,7 @@ export default function NishidaLayout({ children }: { children: ReactNode }) {
       appName="ニシ打"
       appHref="/apps/nishida"
       availablePages={["app", "about", "guide"]}
-      theme={appThemePresets.coral}
+      theme={appThemePresets.mikan}
     >
       {children}
     </AppPageShell>

@@ -84,7 +84,9 @@ import { appThemePresets } from "@/app/apps/_lib/app-theme";
 <AppPageShell theme={appThemePresets.ocean}>{children}</AppPageShell>;
 ```
 
-プリセットにない配色が必要な場合は`createAppTheme`で必要な色だけ差し替える。任意classやCSSを`AppPageShell`へ渡してレイアウト、余白、フォントをアプリごとに変更しない。明るいaccentを使う場合は、通常背景上の小さい文字を`accentText`、accent背景上の文字を`accentForeground`として分ける。通常サイズの文字は背景と`4.5:1`以上、装飾・UI境界として使うaccentは背景と`3:1`以上を確認する。
+プリセットにない配色が必要な場合は`createAppTheme`で必要な色だけ差し替える。任意classやCSSを`AppPageShell`へ渡してレイアウト、余白、フォントをアプリごとに変更しない。明るいaccentを使う場合は、通常背景上の小さい文字を濃い`accentText`、accent背景上の文字を白い`accentForeground`として分ける。本文と通常背景上の文字は背景と`4.5:1`以上、ブランド色として使うaccent上の白文字と装飾・UI境界は`3:1`以上を確認する。
+
+UIやthemeを決めるときは、開発環境の`/theme-preview`を人間へ案内する。全presetを同じ部品で比較できるため、名前や色値だけで決めず、実際の色面と白文字を確認して選ぶ。productionでは404になる。
 
 ### 参照実装を写してから作る
 

@@ -128,7 +128,9 @@ package.json
 
 各route segmentの`layout.tsx`で`AppPageShell`を呼び、`availablePages`に実装済みページ(`"app" | "about" | "guide"`)を列挙する。共通ナビ(App/About/Guide)と現在地表示は`AppPageShell`が担当するため、各ページ側では実装しない。
 
-配色は`layout.tsx`の`AppPageShell`へ`theme`(`app/apps/_lib/app-theme.ts`の`appThemePresets`、または`createAppTheme`)を渡す。CSS custom propertiesとして子コンポーネントへ自動的に伝わるため、`_components`側でテーマを意識する必要はない。`accent`は背景・装飾・focus ring、`accentText`は通常背景上の小さい文字、`accentForeground`はaccent背景上の文字に使う。通常サイズの文字は背景とのcontrast比`4.5:1`以上、装飾・UI境界として使うaccentは背景と`3:1`以上を確認する。
+配色は`layout.tsx`の`AppPageShell`へ`theme`(`app/apps/_lib/app-theme.ts`の`appThemePresets`、または`createAppTheme`)を渡す。CSS custom propertiesとして子コンポーネントへ自動的に伝わるため、`_components`側でテーマを意識する必要はない。`accent`は背景・装飾・focus ring、`accentText`は通常背景上の小さい文字、`accentForeground`はaccent背景上の文字に使う。本文と通常背景上の文字はcontrast比`4.5:1`以上、ブランド色として使うaccentと白い`accentForeground`、装飾・UI境界は`3:1`以上を確認する。
+
+アプリのUIやthemeを決めるときは、開発環境の`/theme-preview`に全presetの色見本があることを人間へ案内し、実画面を見ながら選ぶ。productionではこのrouteは404になる。
 
 ホームと`/apps`への表示は`app/apps/_lib/app-links.ts`の`status`(`"published" | "preparing"`)で制御する。`"preparing"`のアプリはカードを表示しない。`/apps`のおすすめ枠は`app/apps/_lib/apps-page-sections.ts`のslug配列で人力管理する。
 
