@@ -169,7 +169,7 @@ function WinningExamples() {
                     className={[
                       "flex aspect-square items-center justify-center rounded border text-xs font-semibold sm:text-lg",
                       isWinningCell
-                        ? "border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--accent)]"
+                        ? "border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--accent-text)]"
                         : "border-[var(--border)] bg-[var(--surface-strong)]",
                     ].join(" ")}
                     aria-hidden="true"

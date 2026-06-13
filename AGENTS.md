@@ -128,7 +128,7 @@ package.json
 
 各route segmentの`layout.tsx`で`AppPageShell`を呼び、`availablePages`に実装済みページ(`"app" | "about" | "guide"`)を列挙する。共通ナビ(App/About/Guide)と現在地表示は`AppPageShell`が担当するため、各ページ側では実装しない。
 
-配色は`layout.tsx`の`AppPageShell`へ`theme`(`app/apps/_lib/app-theme.ts`の`appThemePresets`、または`createAppTheme`)を渡す。CSS custom propertiesとして子コンポーネントへ自動的に伝わるため、`_components`側でテーマを意識する必要はない。独自色を使う場合は、通常文字・補助文字・accent上の白文字がWCAG AAのcontrast比`4.5:1`以上になることを確認する。
+配色は`layout.tsx`の`AppPageShell`へ`theme`(`app/apps/_lib/app-theme.ts`の`appThemePresets`、または`createAppTheme`)を渡す。CSS custom propertiesとして子コンポーネントへ自動的に伝わるため、`_components`側でテーマを意識する必要はない。`accent`は背景・装飾・focus ring、`accentText`は通常背景上の小さい文字、`accentForeground`はaccent背景上の文字に使う。通常サイズの文字は背景とのcontrast比`4.5:1`以上、装飾・UI境界として使うaccentは背景と`3:1`以上を確認する。
 
 ホームと`/apps`への表示は`app/apps/_lib/app-links.ts`の`status`(`"published" | "preparing"`)で制御する。`"preparing"`のアプリはカードを表示しない。`/apps`のおすすめ枠は`app/apps/_lib/apps-page-sections.ts`のslug配列で人力管理する。
 
@@ -383,10 +383,10 @@ npm run build
 
 App/About/Guideの見た目は`AppAboutShell` / `AppGuideShell`が体現している。新しい節やページを手で組む前に、まず既存shellで足りないかを確認する。shellを正とし、下記トークンはshellに合わせて手書きする場合の指針とする。
 
-- 色は必ずテーマのCSS変数を使い、直書きしない。使える変数は`--background` / `--foreground` / `--surface` / `--surface-strong` / `--border` / `--muted` / `--accent` / `--accent-soft` / `--highlight`(`app/apps/_lib/app-theme.ts`)。
+- 色は必ずテーマのCSS変数を使い、直書きしない。使える変数は`--background` / `--foreground` / `--surface` / `--surface-strong` / `--border` / `--muted` / `--accent` / `--accent-text` / `--accent-foreground` / `--accent-soft` / `--highlight`(`app/apps/_lib/app-theme.ts`)。
 - コンテンツ幅は`max-w-2xl`の中央寄せ、左右paddingは`px-4 sm:px-6 lg:px-8`。
 - 縦の余白は広めに取る(節は`py-16 sm:py-20`、ヘッダーは`py-20 sm:py-28`程度)。
-- 見出しは`text-6xl sm:text-7xl font-semibold tracking-tight`。節ラベルは`text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent)]`。
+- 見出しは`text-6xl sm:text-7xl font-semibold tracking-tight`。節ラベルは`text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent-text)]`。
 - 節の区切りに罫線(`border-t`)を使わない。背景色の濃淡(accentヘッダー / 通常 / `bg-[var(--surface-strong)]`)でリズムを作る。
 - 奥行きは`aria-hidden`の円や線(`absolute ... rounded-full border border-…/X`)で出す。
 

@@ -21,7 +21,7 @@ export function AppGuideShell({
 }) {
   return (
     <main>
-      <header className="relative overflow-hidden bg-[var(--accent)] text-white">
+      <header className="relative overflow-hidden bg-[var(--accent)] text-[var(--accent-foreground)]">
         <div
           className="absolute -right-24 -top-32 h-80 w-80 rounded-full border border-white/10"
           aria-hidden="true"
@@ -35,7 +35,7 @@ export function AppGuideShell({
           aria-hidden="true"
         />
         <div className="relative mx-auto w-full max-w-2xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
-          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-[var(--highlight)]">
+          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent-foreground)]/75">
             Guide
           </p>
           <h1 className="text-6xl font-semibold tracking-tight sm:text-7xl">{appName}</h1>
@@ -76,7 +76,7 @@ function GuideSection({
   return (
     <section className={tone === "strong" ? "bg-[var(--surface-strong)]" : undefined}>
       <div className="mx-auto w-full max-w-2xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
-        <p className="mb-6 text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent)]">
+        <p className="mb-6 text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent-text)]">
           {label}
         </p>
 
@@ -84,7 +84,7 @@ function GuideSection({
           <ol className="space-y-4">
             {items.map((text, i) => (
               <li key={i} className="flex gap-4">
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--accent)] text-sm font-semibold text-white">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--accent)] text-sm font-semibold text-[var(--accent-foreground)]">
                   {i + 1}
                 </span>
                 <p className={`pt-0.5 ${itemTextClassName}`}>{text}</p>
