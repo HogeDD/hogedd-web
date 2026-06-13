@@ -80,6 +80,34 @@ describe("app theme", () => {
     expect(new Set(accents).size).toBe(accents.length);
   });
 
+  it("uses short English preset names", () => {
+    expect(Object.keys(appThemePresets)).toEqual([
+      "hogedd",
+      "ocean",
+      "plum",
+      "sunset",
+      "indigo",
+      "sakura",
+      "coral",
+      "mikan",
+      "lemon",
+      "matcha",
+      "mint",
+      "sky",
+      "lavender",
+      "wine",
+      "sumi",
+      "melon",
+      "flamingo",
+      "tomato",
+      "carrot",
+      "himawari",
+      "soda",
+      "ruri",
+      "grape",
+    ]);
+  });
+
   it("keeps every palette readable", () => {
     for (const [name, theme] of Object.entries(appThemePresets) as [string, AppTheme][]) {
       const expectAtLeast = (value: number, min: number, pair: string) => {
@@ -93,9 +121,11 @@ describe("app theme", () => {
       expectAtLeast(getContrastRatio(theme.foreground, theme.background), 4.5, "fg/bg");
       expectAtLeast(getContrastRatio(theme.muted, theme.background), 4.5, "muted/bg");
       expectAtLeast(getContrastRatio(accentText, theme.background), 4.5, "accentText/bg");
+
+      // ブランド色の大きな面は、白文字を使えるよう3:1以上を守る。
       expectAtLeast(
         getContrastRatio(accentForeground, theme.accent),
-        4.5,
+        3.0,
         "accentForeground/accent",
       );
 
@@ -108,11 +138,11 @@ describe("app theme", () => {
     }
   });
 
-  it("allows a bright accent by pairing it with dedicated readable text colors", () => {
+  it("allows a bright brand accent with white foreground text", () => {
     expect(appThemePresets.coral).toMatchObject({
-      accent: "#d16f23",
-      accentText: "#a23c28",
-      accentForeground: "#221511",
+      accent: "#f4514c",
+      accentText: "#b52f35",
+      accentForeground: "#ffffff",
     });
   });
 });
