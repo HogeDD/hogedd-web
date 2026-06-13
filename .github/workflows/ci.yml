@@ -45,5 +45,11 @@ jobs:
       - name: Test
         run: npm test
 
+      - name: Validate release metadata
+        if: >-
+          (github.event_name == 'pull_request' && github.base_ref == 'main') ||
+          (github.event_name == 'push' && github.ref == 'refs/heads/main')
+        run: npm run test:release
+
       - name: Build
         run: npm run build

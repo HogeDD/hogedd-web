@@ -43,9 +43,35 @@ app/
 app/apps/<app-name>/
   opengraph-image.png                 # アプリ専用
   opengraph-image.alt.txt
+  twitter-image.png                   # 同じ画像をX Cardにも使用
+  twitter-image.alt.txt
 ```
 
 `favicon.ico`、`icon.png`、`apple-icon.png`などもNext.jsが指定する場所と名前を優先する。これらを整理目的で別フォルダへ移動しない。
+
+アプリを公開準備へ進めるときは、本人へ次の条件でOG画像を依頼する。
+
+```text
+- サイズ: 1200×630 px
+- 形式: PNG
+- ファイル名: opengraph-image.png
+- 格納先: app/apps/<app-name>/opengraph-image.png
+- 重要な文字やロゴ: SNSで端が切り抜かれても読めるよう中央寄りに置く
+- alt: 画像内容を短く説明する文章を一緒に渡す
+```
+
+受け取った画像とaltを次の2組へ同じ内容で保存する。
+
+```text
+app/apps/<app-name>/opengraph-image.png
+app/apps/<app-name>/opengraph-image.alt.txt
+app/apps/<app-name>/twitter-image.png
+app/apps/<app-name>/twitter-image.alt.txt
+```
+
+Next.jsではOpen GraphとTwitter Cardが別のfile conventionなので、片方だけではなく両方へ格納する。アプリsegmentに置くことで、metadata継承によりApp、About、Guideで同じ画像を使う。
+
+公開済みアプリのmetadata画像は、`main`向けrelease PRと`main`へのpushで動くCIがPNG形式と`1200×630`の実寸を検査する。画像未準備の状態でも作業branchから`dev`へはmergeできるが、Productionへ出すrelease PRは通らない。ファイル名だけを合わせた別形式や、画像編集ソフト上の設定だけで判断せず、repositoryへ格納した実ファイルで検査する。
 
 ## ファイル名
 
@@ -74,13 +100,13 @@ screen1.png
 
 ## サイズと形式
 
-| 用途                         | 推奨サイズ・比率          | 推奨形式        |
-| ---------------------------- | ------------------------- | --------------- |
-| アプリ代表画像・カード       | `1280×720`、16:9          | WebP            |
-| Open Graph画像               | `1200×630`                | PNG、JPEG、WebP |
-| 操作画面のスクリーンショット | 横幅`1600px`以下を目安    | WebP、PNG       |
-| 透過が必要なロゴ・図         | 必要な表示サイズの2倍程度 | PNG、SVG        |
-| Apple Touch Icon             | `180×180`                 | PNG             |
+| 用途                         | 推奨サイズ・比率          | 推奨形式  |
+| ---------------------------- | ------------------------- | --------- |
+| アプリ代表画像・カード       | `1280×720`、16:9          | WebP      |
+| Open Graph画像               | `1200×630`                | PNG       |
+| 操作画面のスクリーンショット | 横幅`1600px`以下を目安    | WebP、PNG |
+| 透過が必要なロゴ・図         | 必要な表示サイズの2倍程度 | PNG、SVG  |
+| Apple Touch Icon             | `180×180`                 | PNG       |
 
 - 写真や大きな背景画像はWebPまたはAVIFを優先する。
 - UIのスクリーンショットや透過画像は、劣化が目立つ場合にPNGを使う。

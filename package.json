@@ -9,6 +9,7 @@
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
+    "test:release": "REQUIRE_PUBLISHED_APP_METADATA=true vitest run test/unit/apps/published-app-metadata.test.ts",
     "test:watch": "vitest",
     "format": "prettier --write .",
     "format:check": "prettier --check ."

@@ -85,7 +85,7 @@ export const appLinks: readonly AppLink[] = [
     publishedAt: "2026-05-30",
     developmentDrive: "学習DD",
     shareText: "Clean Architecture の練習アプリ Clean Tasks を見ました",
-    tags: ["Next.js", "Go", "Clean Architecture"],
+    tags: ["Next.js", "TypeScript", "Clean Architecture"],
   }),
   definePreparingAppLink({
     slug: "chinchin",
