@@ -90,13 +90,13 @@ import { appThemePresets } from "@/app/apps/_lib/app-theme";
 
 新しいアプリは、ゼロから構成を考えず、参照実装の形を写してから中身を差し替える。
 
-単純な構成(`_components` + `_lib`)の手本は`app/apps/lala-typing/`(タイピングゲーム)。各ファイルが示している判断:
+単純な構成(`_components` + `_lib`)の手本は`app/apps/nishida/`(タイピングゲーム)。各ファイルが示している判断:
 
 - `page.tsx`: Server Componentの入口。metadataを定義し、Client Componentをマウントするだけ。
 - `layout.tsx`: `AppPageShell`にテーマと`availablePages`を渡す唯一の場所。
 - `_components/typing-game-client.tsx`: アプリで唯一の`"use client"`。キー入力もタップも同じ状態遷移関数(`handleKey`)へ流し、遷移ロジックを描画から分離する。
 - `_lib/`: 判定エンジン、スコア計算、データ(変換表・単語)。ReactやNext.jsをimportしない純関数とデータだけを置く。ロジックよりデータに寄せるほど壊れにくい(変換表が良い例)。
-- `test/unit/apps/lala-typing/`: `_lib`の仕様を固定するテスト。実装より先に書く。データの妥当性(全単語が変換可能か)もテストで守る。
+- `test/unit/apps/nishida/`: `_lib`の仕様を固定するテスト。実装より先に書く。データの妥当性(全単語が変換可能か)もテストで守る。
 - ユーザーが編集する文章・データは`// ↓ ここを編集する`で囲んだ`const`にまとめる。
 
 DBや外部APIを使う複雑な構成(`_domain` / `_usecases` / `_infrastructure`、Route Handler)の手本は`app/apps/clean-tasks/`を参照する。

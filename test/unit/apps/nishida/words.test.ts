@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { buildUnits } from "@/app/apps/lala-typing/_lib/typing-engine";
-import { WORDS_PER_GAME, pickWords, typingWords } from "@/app/apps/lala-typing/_lib/words";
+import { buildUnits } from "@/app/apps/nishida/_lib/typing-engine";
+import { WORDS_PER_GAME, pickWords, typingWords } from "@/app/apps/nishida/_lib/words";
 
 /** テスト用の決定的な乱数(線形合同法)。 */
 function createSeededRandom(seed: number): () => number {

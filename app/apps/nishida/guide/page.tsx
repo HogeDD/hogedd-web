@@ -3,9 +3,9 @@ import { createPageMetadata } from "@/app/_lib/site-metadata";
 import { AppGuideShell } from "@/app/apps/_components/app-guide-shell";
 
 export const metadata: Metadata = createPageMetadata({
-  title: "Guide | ララ打",
-  description: "ラランドの語彙で遊ぶ、ローマ字タイピングゲーム。",
-  path: "/apps/lala-typing/guide",
+  title: "Guide | ニシ打",
+  description: "ラランド・ニシダにまつわる語彙で遊ぶ、ローマ字タイピングゲーム。",
+  path: "/apps/nishida/guide",
 });
 
 // ↓ ここを編集する
@@ -39,10 +39,10 @@ const tips = [
 ] as const;
 // ↑ ここまで
 
-export default function LalaTypingGuidePage() {
+export default function NishidaGuidePage() {
   return (
     <AppGuideShell
-      appName="ララ打"
+      appName="ニシ打"
       firstSteps={firstSteps}
       basicControls={basicControls}
       screenGuide={screenGuide}

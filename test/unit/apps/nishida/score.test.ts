@@ -4,7 +4,7 @@ import {
   calculateKps,
   formatSeconds,
   judgeRank,
-} from "@/app/apps/lala-typing/_lib/score";
+} from "@/app/apps/nishida/_lib/score";
 
 describe("calculateAccuracy", () => {
   it("returns 1 when nothing has been typed", () => {
