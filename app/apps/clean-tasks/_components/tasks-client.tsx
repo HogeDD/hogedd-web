@@ -9,7 +9,7 @@ export function TasksClient() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [title, setTitle] = useState("");
   const [loadState, setLoadState] = useState<LoadState>("loading");
-  const [message, setMessage] = useState("Loading tasks from Go API...");
+  const [message, setMessage] = useState("Loading tasks...");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const completedCount = useMemo(() => tasks.filter((task) => task.completed).length, [tasks]);
@@ -32,7 +32,7 @@ export function TasksClient() {
   function applyLoadedTasks(nextTasks: Task[]) {
     setTasks(nextTasks);
     setLoadState("ready");
-    setMessage("Connected to Go API.");
+    setMessage("Tasks loaded.");
   }
 
   function applyLoadError(error: unknown) {
@@ -42,7 +42,7 @@ export function TasksClient() {
 
   async function loadTasks() {
     setLoadState("loading");
-    setMessage("Loading tasks from Go API...");
+    setMessage("Loading tasks...");
 
     try {
       applyLoadedTasks(await fetchTasks());
@@ -115,7 +115,7 @@ export function TasksClient() {
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
         <header className="flex flex-col gap-4 border-b border-zinc-200 pb-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-sm font-medium text-zinc-500">Next.js + Go</p>
+            <p className="text-sm font-medium text-zinc-500">Next.js + TypeScript</p>
             <h1 className="mt-1 text-3xl font-semibold tracking-normal text-zinc-950">
               Clean Tasks
             </h1>
@@ -157,7 +157,7 @@ export function TasksClient() {
             <div>
               <h2 className="text-base font-semibold">Create task</h2>
               <p className="mt-1 text-sm leading-6 text-zinc-500">
-                The form posts to a Next.js route handler, which forwards the request to the Go API.
+                The form posts to a Next.js route handler backed by a TypeScript use case.
               </p>
             </div>
             <label className="flex flex-col gap-2 text-sm font-medium">

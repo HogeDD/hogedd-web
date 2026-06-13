@@ -25,7 +25,10 @@ const screenGuide = [
   "各タスクの右側に Done / Pending の状態が表示される",
 ] as const;
 
-const rules = ["タスクのタイトルは空にできない", "一覧の完了状態はサーバー側で管理される"] as const;
+const rules = [
+  "タスクのタイトルは空にできない",
+  "一覧の状態はデモ用のサーバーメモリに保存され、サーバーの再起動や再デプロイで消える",
+] as const;
 
 const tips = ["特にありません。気軽に追加して試してください。"] as const;
 // ↑ ここまで
