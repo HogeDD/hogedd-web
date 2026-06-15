@@ -60,6 +60,8 @@ app/apps/<app-name>/
 - alt: 画像内容を短く説明する文章を一緒に渡す
 ```
 
+HogeDDのCanvaテンプレートを使って制作する場合は、`docs/guides/og-image-template.md`の手順に従う。編集元はCanvaのHogeDD共有領域で管理し、repositoryには書き出したPNGとaltだけを格納する。
+
 受け取った画像とaltを次の2組へ同じ内容で保存する。
 
 ```text
