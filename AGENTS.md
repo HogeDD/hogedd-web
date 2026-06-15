@@ -138,6 +138,8 @@ package.json
 
 実装例は`app/apps/nishida/`(単純な構成の手本)と`app/apps/clean-tasks/`(Clean Architecture構成の手本)、テンプレートは`docs/guides/app-development-cycle.md`を参照する。どちらも参照実装として意図的に残している。`app/apps/clean-tasks/`は近い将来削除する予定だが、テンプレートとして有用なため、cleanupと称して消したり作り替えたりしない。
 
+新しいアプリを追加するPRの前には、`docs/guides/app-development-cycle.md`の「新規アプリ追加チェックリスト」を確認する。App / About / Guideが短い場合も必須ページや必須セクションを省略せず、各役割を最小限の1項目で表現する。
+
 ### Clean Architectureを追加する条件
 
 次の質問に一つでも「はい」があれば、`_domain`、`_usecases`、`_infrastructure` の導入を検討する。
