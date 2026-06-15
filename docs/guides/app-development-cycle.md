@@ -186,6 +186,51 @@ export default function ExampleGuidePage() {
 
 `layout.tsx`の`availablePages`へ`"guide"`を追加すると、アプリ内ナビのGuideタブが有効になる。
 
+### 短いAbout・Guideの扱い
+
+アプリが単純でも、AboutとGuideは省略しない。説明量が少ない場合は、別ページへ統合したり空配列を渡したりせず、各ページの役割を最小限の文章で表現する。
+
+- Aboutの制作経緯が短い: `paragraphs`へ本人が確認した1段落を入れる。
+- 参考リンクやYouTubeが無い: 対応するpropsは省略してよい。仮URLや推測したリンクは置かない。
+- Guideの説明が短い: 5セクションへ最低1項目ずつ入れる。同じ内容の重複ではなく、「開始方法」「操作」「表示」「成立条件」「迷ったとき」の観点で分ける。
+- 注意事項が特に無い: `tips`へ復帰方法、再試行方法、またはアプリの調子に合う短い一言を入れる。
+- 図が不要: `ruleExample`は省略してよい。文字だけで理解しにくい場合に限り追加する。
+
+必須ページと必須セクションは量産時の共通契約であり、説明の長さを揃えるためのものではない。
+
+### 新規アプリ追加チェックリスト
+
+新しいアプリのPRを作る前に、次を順番に確認する。
+
+構成:
+
+- [ ] `app/apps/<slug>/`へ`page.tsx`、`layout.tsx`、`about/page.tsx`、`guide/page.tsx`を置いた。
+- [ ] 一つのアプリだけで使うUIと処理を、そのアプリの`_components`と`_lib`へ置いた。
+- [ ] DB、外部API、認証などが必要な場合だけ、`_domain`、`_usecases`、`_infrastructure`を追加した。
+- [ ] `app/apps/_lib/app-links.ts`へrouteと同じslugを登録した。未公開なら`preparing`にした。
+
+共通ページ:
+
+- [ ] App画面はすぐ操作でき、長い制作動機、詳しいルール、YouTube導線を置いていない。
+- [ ] `layout.tsx`で`AppPageShell`を使い、正しい`appHref`、App / About / Guideの`availablePages`、選んだthemeを渡した。
+- [ ] 人間へ`/theme-preview`を案内し、themeを実際の色面と白文字で確認した。
+- [ ] Aboutで`AppAboutShell`を使い、本人が書いた・確認した制作経緯をファイル冒頭の`const`へまとめた。
+- [ ] Guideで`AppGuideShell`を使い、5つの必須セクションへ1項目以上を渡した。
+- [ ] App / About / Guideの各ページで、routeに一致するmetadata pathを設定した。
+
+テストと表示:
+
+- [ ] 重要なルールを先にunit testで表現した。
+- [ ] `app-page-structure.test.ts`が新しいアプリを自動検出し、共通構成を検査できている。
+- [ ] desktopとmobileで主要操作、App / About / Guideの移動、overflowを確認した。
+- [ ] `npm run format:check`、`npm run lint`、`npm run typecheck`、`npm test`、`npm run build`が通った。
+
+公開範囲:
+
+- [ ] MVPへOG画像、YouTube公開、Apps一覧掲載などの公開準備を混ぜていない。
+- [ ] 実物を見て見つけた改善を、目的ごとの別Issueへ分けた。
+- [ ] 公開準備では`1200×630`のOG画像、alt、metadata、YouTube URL、`published`への変更を確認した。
+
 ## 3. devで確認し、改善Issueを分ける
 
 MVPを`dev`へmergeしたら、実物をdesktopとmobileで触る。
@@ -328,6 +373,34 @@ Issue close確認
 - 人とAIで認識がずれた手順。
 
 一つのアプリを公開した後にガイドを改訂する。複数回使って手順が安定してから、Issue作成、構成判断、公開チェックを支援する「HogeDDアプリ追加Skill」を別Issueで検討する。
+
+### 将来Skill化するときの入力と判断
+
+Skill化を検討するときは、単なるfolder生成ではなく、次の入力を人間から受け取れることを前提にする。
+
+必要な入力:
+
+- アプリ名、slug、〇〇DD。
+- 作りたい欲望・制作動機、利用場面、最低限遊べる条件。
+- DB、外部API、認証、オンライン通信の要否。
+- Aboutへ載せる本人確認済みの文章、参考リンク。
+- Guideの5セクションへ載せる内容。
+- `/theme-preview`で人間が選んだtheme。
+- MVP、改善、公開準備のどの段階か。
+
+Skillが支援する判断:
+
+- 単純な構成かClean Architectureを検討する構成か。
+- MVPへ含める範囲と、別Issueへ分ける改善・公開準備。
+- 必要なroute、shell props、metadata path、テスト配置。
+- `app-links`の`preparing` / `published`とrelease停止の扱い。
+- 人間が書く文章、提供する画像、確定するYouTube URLの待ち地点。
+
+Skill化の見直し条件:
+
+- このチェックリストを複数の新規アプリで使い、毎回同じ入力確認とファイル追加が繰り返された。
+- 自動化しても、本人の文章、theme選択、Issue分割などの人間判断を飛ばさない設計にできる。
+- Next.jsのfile conventionやHogeDDの共通ページ構成が安定している。
 
 ## 今は自動化しないこと
 
