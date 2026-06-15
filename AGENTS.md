@@ -33,6 +33,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 | 新しいアプリ・アプリページ(App/About/Guide)を作る、開発サイクルの流れを知る                 | `docs/guides/app-development-cycle.md`          |
 | 機能の置き場所(`_components`/`_lib`/`_domain`/`_usecases`/`_infrastructure`)に迷う          | `docs/guides/architecture-guide.md`             |
 | 画像・動画などの素材を追加する                                                              | `docs/guides/assets.md`                         |
+| アプリ専用のOG画像をCanvaテンプレートから作る                                               | `docs/guides/og-image-template.md`              |
 | ホームやアプリ紹介文のトーン・コピーを書く                                                  | `docs/guides/brand-copy.md`                     |
 | 本番deploy、release PR、conflict対応をする                                                  | `docs/guides/deployment.md`                     |
 | 設計・Next.js・Gitの用語が分からない                                                        | `docs/guides/glossary.md`                       |
