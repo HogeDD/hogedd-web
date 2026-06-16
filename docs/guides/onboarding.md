@@ -142,20 +142,13 @@ PR 本文には最低限これを書きます。
 Closes #16
 ```
 
-`Closes #16` のように Issue 番号を書くと、PR が merge されたときに Issue も閉じられます。
+`Closes #16`のようにIssue番号を書く。通常のPR targetは`dev`で、default branchは`main`のため、`dev`へmergeしてもIssueは自動closeされない。merge後にIssueの状態を確認し、必要なら手動で閉じる。
 
 ### 6. CI を確認する
 
 PR を作ると GitHub Actions の CI が動きます。
 
-移行期間中は主にこの check を見ます。
-
-- `API`
-- `Web`
-
-どちらも pass していることを確認します。fail している場合は、PR 画面で失敗内容を確認します。分からないときは PR にコメントしてください。
-
-TypeScript 完全移行後は Go 用の `API` check を削除する予定です。
+`Web` checkがpassしていることを確認する。failしている場合は、PR画面で失敗内容を確認する。分からないときはPRにコメントする。
 
 Webの変更では、`npm test`でTypeScriptのunit testも実行されます。
 
