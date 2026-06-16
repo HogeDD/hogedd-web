@@ -182,12 +182,13 @@ secretをIssue、PR、docs、log、screenshotへ載せない。漏洩した場�
 
 ## Hobby planの運用
 
-2026年6月6日時点のVercel公式情報では、Hobbyは非商用のpersonal use向けである。
+2026年6月16日時点のVercel公式情報では、Hobbyは非商用のpersonal use向けである。
 
 - 広告を掲載しない。
 - affiliate linkを掲載しない。
 - 有料機能を提供しない。
 - 収益化前に最新のVercel規約を再確認し、必要ならProへ移行する。
+- Web AnalyticsはHobbyの無料枠内で使う。
 - HobbyではSpend Managementを利用できない。
 - 使用量上限へ達した場合、多くの機能は次の利用期間まで待つ必要がある。
 - DashboardのUsageを定期的に確認する。
@@ -196,6 +197,26 @@ secretをIssue、PR、docs、log、screenshotへ載せない。漏洩した場�
 
 - https://vercel.com/docs/accounts/plans/hobby
 - https://vercel.com/docs/limits/overview
+- https://vercel.com/docs/analytics/limits-and-pricing
+
+## Web Analytics
+
+Vercel Web Analyticsでサイト訪問状況を確認する。
+
+運用:
+
+- コード側では`@vercel/analytics`を使い、root layoutで全ページへ`Analytics`を組み込む。
+- Vercel Project DashboardのAnalyticsでWeb Analyticsを有効化する。
+- 有効化後にdeployされたページビューからDashboardへ反映される。
+- GA4は使わない。
+- Hobby無料枠の範囲で使い、上限や課金条件が変わった場合は継続可否を確認する。
+
+確認:
+
+1. `main`へのrelease後、Vercel Project DashboardのAnalyticsを開く。
+2. Web Analyticsが有効になっていることを確認する。
+3. `https://www.hogedd.com/`へアクセスする。
+4. Dashboardでページビューが記録されることを確認する。
 
 ## 現在の制約
 
