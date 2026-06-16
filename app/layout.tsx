@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import { siteDescription, siteName, siteUrl } from "@/app/_lib/site-metadata";
 import "./globals.css";
 
@@ -32,7 +33,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja" className="h-full antialiased">
-      <body className="min-h-full bg-[var(--background)] text-[var(--foreground)]">{children}</body>
+      <body className="min-h-full bg-[var(--background)] text-[var(--foreground)]">
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
