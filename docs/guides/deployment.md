@@ -5,8 +5,9 @@
 HogeDDはVercel Hobbyで公開する。
 
 ```text
-GitHub: iwasawarenji954/hogedd-web
+GitHub: HogeDD/hogedd-web
 Vercel project: hogedd-web
+Vercel owner: iwasawa-renjis-projects
 Framework: Next.js
 Root Directory: repository root
 Node.js: 24.x
@@ -16,6 +17,17 @@ Apex domain: https://hogedd.com/ -> wwwへ308 redirect
 ```
 
 VercelはhostingとNext.jsの実行環境として使う。Vercel Blob、KV、Edge Config、Queues、Workflowなどをアプリケーションの標準backendとして使わない。
+
+GitHub OrganizationとVercel teamは別の所有境界である。GitHub repositoryをOrganizationへ移管しても、Vercel project ownerを同名teamへ移す必要はない。現在はHobby team`iwasawa-renjis-projects`でproject、domain、deploymentを維持し、Git integrationだけを`HogeDD/hogedd-web`へ接続する。
+
+GitHub repositoryの移管後は、Organization SettingsのInstalled GitHub AppsでVercelへ対象repositoryのaccessを付与する。その後、Vercel Project SettingsのGitまたはCLIでrepositoryを再接続する。
+
+```bash
+npx vercel@latest git connect https://github.com/HogeDD/hogedd-web.git \
+  --scope iwasawa-renjis-projects
+```
+
+接続後はVercel project APIの`link.org`が`HogeDD`、`productionBranch`が`main`であることを確認する。
 
 ## Branchとdeployの対応
 
@@ -170,12 +182,13 @@ secretをIssue、PR、docs、log、screenshotへ載せない。漏洩した場�
 
 ## Hobby planの運用
 
-2026年6月6日時点のVercel公式情報では、Hobbyは非商用のpersonal use向けである。
+2026年6月16日時点のVercel公式情報では、Hobbyは非商用のpersonal use向けである。
 
 - 広告を掲載しない。
 - affiliate linkを掲載しない。
 - 有料機能を提供しない。
 - 収益化前に最新のVercel規約を再確認し、必要ならProへ移行する。
+- Web AnalyticsはHobbyの無料枠内で使う。
 - HobbyではSpend Managementを利用できない。
 - 使用量上限へ達した場合、多くの機能は次の利用期間まで待つ必要がある。
 - DashboardのUsageを定期的に確認する。
@@ -184,10 +197,30 @@ secretをIssue、PR、docs、log、screenshotへ載せない。漏洩した場�
 
 - https://vercel.com/docs/accounts/plans/hobby
 - https://vercel.com/docs/limits/overview
+- https://vercel.com/docs/analytics/limits-and-pricing
+
+## Web Analytics
+
+Vercel Web Analyticsでサイト訪問状況を確認する。
+
+運用:
+
+- コード側では`@vercel/analytics`を使い、root layoutで全ページへ`Analytics`を組み込む。
+- Vercel Project DashboardのAnalyticsでWeb Analyticsを有効化する。
+- 有効化後にdeployされたページビューからDashboardへ反映される。
+- GA4は使わない。
+- Hobby無料枠の範囲で使い、上限や課金条件が変わった場合は継続可否を確認する。
+
+確認:
+
+1. `main`へのrelease後、Vercel Project DashboardのAnalyticsを開く。
+2. Web Analyticsが有効になっていることを確認する。
+3. `https://www.hogedd.com/`へアクセスする。
+4. Dashboardでページビューが記録されることを確認する。
 
 ## 現在の制約
 
-Clean Tasksとちんちんゲームのランダム対戦は、server memoryへ状態を保存している。
+Clean Tasksは、server memoryへ状態を保存している。
 
 Vercel Functionsでは次を保証できない。
 
@@ -195,7 +228,7 @@ Vercel Functionsでは次を保証できない。
 - 複数instanceで同じ状態を共有すること
 - deploy後も状態が残ること
 
-そのため、Clean Tasksはdemo扱い、ランダム対戦は試験機能として扱う。永続性や安定したonline対戦が必要になったら、交換可能なrepository境界を保ったままPostgreSQLなどへ移す。
+そのため、Clean Tasksはdemo扱いとする。永続性が必要になったら、交換可能なrepository境界を保ったままPostgreSQLなどへ移す。
 
 ## Logsと障害確認
 

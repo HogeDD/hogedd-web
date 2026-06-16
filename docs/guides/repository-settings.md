@@ -4,7 +4,8 @@
 
 ## 前提
 
-- repository: `iwasawarenji954/hogedd-web`
+- organization: `HogeDD`
+- repository: `HogeDD/hogedd-web`
 - 長期ブランチ: `main`, `dev`
 - 通常の PR target: `dev`
 - release / production target: `main`
@@ -14,12 +15,12 @@
 
 ### Collaborators
 
-共同開発者を repository collaborator として招待する。
+共同開発者をOrganization memberとして招待し、repository roleを付与する。
 
 現在の設定:
 
-- 非エンジニア共同開発者: `Write`
-- 管理者: `Admin`
+- 非エンジニア共同開発者: Organization member + repository `Write`
+- 管理者: Organization owner + repository `Admin`
 - 外部に review だけ頼む人: 必要になってから追加
 
 理由:
@@ -89,9 +90,9 @@ approvalを必須にしていない理由:
 
 `main`へのmerge権限:
 
-- 現在のrepository collaboratorは管理者`iwasawarenji954`だけなので、実質的に本人だけがmergeできる。
-- Write権限のcollaboratorを追加すると、その人もruleを満たしたPRをmergeできる可能性がある。
-- collaborator追加前に、organization化、approval必須化、role設計のどれを採用するか見直す。
+- Organization memberへrepositoryの`Write`以上を付与すると、ruleを満たしたPRをmergeできる可能性がある。
+- member追加時はOrganization roleとrepository roleの両方を確認する。
+- approval必須化やCODEOWNERSは共同開発者が増えたときに見直す。
 
 #### GitHub画面で確認する
 
@@ -118,6 +119,25 @@ Repository settings の Actions で、以下を確認する。
 
 - CI は PR の品質ゲートとして使う。
 - Actions に強い書き込み権限は最初から渡さない。
+
+### Organization Security
+
+GitHub Organization`HogeDD`では、次の設定を基本とする。
+
+- Organizationへのアクセスには2FAを必須にする。
+- Organization ownerは復旧手段として2名以上を維持する。
+- default repository permissionは`Read`にする。
+- 一般memberによるrepositoryの新規作成を禁止する。Organization ownerは必要なrepositoryを作成できる。
+- 一般memberによるteam作成を禁止する。
+- repositoryの削除・移管とvisibility変更はOrganization ownerだけに許可する。
+- public repositoryではsecret scanningとpush protectionを有効にする。
+- Dependabot alertsとDependabot security updatesを有効にする。
+
+2FAを必須化する前に、Organization SettingsのPeopleで2FA未設定者がいないことを確認する。未設定者がいる状態で必須化するとOrganizationへのアクセスを失う可能性があるため、本人の設定完了を待ってから変更する。
+
+secret scanningのpush protectionで正当な値が止められた場合も、安易にbypassしない。secretではないことを確認し、必要ならIssueまたはPRに理由を残す。secretだった場合はpushせず、値をrevokeまたはrotateする。
+
+GitHub Freeでは、repository Adminによるoutside collaborator招待をOrganization ownerだけに制限できない。Admin roleを付与する相手をownerと同じ基準で管理し、共同開発者には必要な範囲のroleだけを付与する。
 
 ### Secrets
 
@@ -151,6 +171,8 @@ Secrets and variables は repository に実値を置き、コードには入れ�
   - `clean-architecture`
   - `hogedd`
 
+Organization profileはHogeDD全体の入口として、名前`HogeDD`、説明`Hoge Driven Development`、website`https://www.hogedd.com/`を設定する。repositoryのAbout欄は個別repositoryの用途と技術構成、Organization profileはプロジェクト全体の説明を担当する。
+
 ## 今は保留する項目
 
 ### Review 必須化
@@ -182,7 +204,7 @@ deploy が始まったら `preview`、`production` などを検討する。
 
 ## 手作業設定チェックリスト
 
-- [ ] 共同開発者を collaborator に招待する。
+- [ ] 共同開発者をOrganization memberとして招待し、repository roleを付与する。
 - [x] Pull Requests で squash merge を有効にする。
 - [x] Pull Requests で merge commit / rebase merge を無効にする。
 - [x] Pull Requests で head branch 自動削除を有効にする。
@@ -191,9 +213,19 @@ deploy が始まったら `preview`、`production` などを検討する。
 - [x] `main`をrulesetで保護する。
 - [x] `main`で`Web` checkを必須にする。
 - [x] force pushとbranch deletionを禁止する。
+- [x] Organizationへのアクセスに2FAを必須にする。
+- [x] Organization ownerを2名以上にする。
+- [x] default repository permissionを`Read`にする。
+- [x] 一般memberによるrepositoryの新規作成を禁止する。
+- [x] 一般memberによるteam作成を禁止する。
+- [x] repositoryの削除・移管をOrganization ownerだけに許可する。
+- [x] repositoryのvisibility変更をOrganization ownerだけに許可する。
+- [x] secret scanningとpush protectionを有効にする。
+- [x] Dependabot alertsとsecurity updatesを有効にする。
 - [ ] Actions の workflow permissions を確認する。
 - [ ] 必要な secrets を GitHub Secrets に入れる。
-- [ ] repository description / website / topics を設定する。
+- [x] repository description / website / topics を設定する。
+- [x] Organization profileのname / description / websiteを設定する。
 
 ## 見直し条件
 
@@ -201,4 +233,7 @@ deploy が始まったら `preview`、`production` などを検討する。
 - Write権限のcollaboratorを追加するとき。
 - production deploy を始めるとき。
 - secret を使う外部サービスが増えたとき。
+- Organization ownerが1名になるとき。
+- private repositoryを追加するとき。
+- Dependabot alertやsecret scanning alertが発生したとき。
 - PR の merge 事故や CI すり抜けが起きたとき。

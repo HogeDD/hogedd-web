@@ -74,7 +74,162 @@ Issue本文の例:
 
 実装前に`AGENTS.md`の保存場所とClean Architecture導入条件を確認する。単純なアプリは`page.tsx`、`_components`、`_lib`から始め、必要性が確認できる前に層を増やさない。
 
+各アプリのroute segmentには`layout.tsx`を置き、`app/apps/_components/app-page-shell.tsx`の`AppPageShell`で`children`を囲む。これにより、アプリ固有のUIへサイト共通のHeaderとFooterを重複実装せず追加する。
+
+アプリごとの雰囲気は、共通レイアウトを変えず色テーマで表現する。`app/apps/_lib/app-theme.ts`の`appThemePresets`から選び、アプリの`layout.tsx`で`AppPageShell`の`theme`へ渡す。テーマ未指定時は、緑と黄色を組み合わせた`defaultAppTheme`が使われる。
+
+```tsx
+import { appThemePresets } from "@/app/apps/_lib/app-theme";
+
+<AppPageShell theme={appThemePresets.ocean}>{children}</AppPageShell>;
+```
+
+プリセットにない配色が必要な場合は`createAppTheme`で必要な色だけ差し替える。任意classやCSSを`AppPageShell`へ渡してレイアウト、余白、フォントをアプリごとに変更しない。明るいaccentを使う場合は、通常背景上の小さい文字を濃い`accentText`、accent背景上の文字を白い`accentForeground`として分ける。本文と通常背景上の文字は背景と`4.5:1`以上、ブランド色として使うaccent上の白文字と装飾・UI境界は`3:1`以上を確認する。
+
+UIやthemeを決めるときは、開発環境の`/theme-preview`を人間へ案内する。全presetを同じ部品で比較できるため、名前や色値だけで決めず、実際の色面と白文字を確認して選ぶ。productionでは404になる。
+
+### 参照実装を写してから作る
+
+新しいアプリは、ゼロから構成を考えず、参照実装の形を写してから中身を差し替える。
+
+単純な構成(`_components` + `_lib`)の手本は`app/apps/nishida/`(タイピングゲーム)。各ファイルが示している判断:
+
+- `page.tsx`: Server Componentの入口。metadataを定義し、Client Componentをマウントするだけ。
+- `layout.tsx`: `AppPageShell`にテーマと`availablePages`を渡す唯一の場所。
+- `_components/typing-game-client.tsx`: アプリで唯一の`"use client"`。キー入力もタップも同じ状態遷移関数(`handleKey`)へ流し、遷移ロジックを描画から分離する。
+- `_lib/`: 判定エンジン、スコア計算、データ(変換表・単語)。ReactやNext.jsをimportしない純関数とデータだけを置く。ロジックよりデータに寄せるほど壊れにくい(変換表が良い例)。
+- `test/unit/apps/nishida/`: `_lib`の仕様を固定するテスト。実装より先に書く。データの妥当性(全単語が変換可能か)もテストで守る。
+- ユーザーが編集する文章・データは`// ↓ ここを編集する`で囲んだ`const`にまとめる。
+
+DBや外部APIを使う複雑な構成(`_domain` / `_usecases` / `_infrastructure`、Route Handler)の手本は`app/apps/clean-tasks/`を参照する。
+
+### Aboutページの作り方
+
+`app/apps/<app-name>/about/page.tsx`は`app/apps/_components/app-about-shell.tsx`の`AppAboutShell`を使う。`AppAboutShell`は次の情報を受け取り、共通のレイアウトとして表示する。
+
+- `appName` / `ddLabel`: アプリ名と〇〇DD
+- `paragraphs`: 制作経緯やパッションを語る段落（文字列の配列）
+- `youtubeUrl` / `youtubeThumbnailUrl`: YouTube導線（`app-links.ts`の値を使う）
+- `referenceLinks`: 参考にした作品やコンテンツへの通常リンク（`label` / `href` / 任意の`description`）
+
+```tsx
+import { AppAboutShell } from "@/app/apps/_components/app-about-shell";
+import { appLinks } from "@/app/apps/_lib/app-links";
+
+// ↓ ここを編集する
+const paragraphs = ["..."] as const;
+const referenceLinks = [{ label: "...", href: "...", description: "..." }] as const;
+// ↑ ここまで
+
+const appLink = appLinks.find((a) => a.slug === "<app-name>");
+
+export default function ExampleAboutPage() {
+  return (
+    <AppAboutShell
+      appName="Example"
+      ddLabel="〇〇DD"
+      paragraphs={paragraphs}
+      youtubeUrl={appLink?.status === "published" ? appLink.youtubeUrl : undefined}
+      youtubeThumbnailUrl={appLink?.status === "published" ? appLink.thumbnailUrl : undefined}
+      referenceLinks={referenceLinks}
+    />
+  );
+}
+```
+
+`paragraphs`と`referenceLinks`はファイル冒頭の定数としてまとめ、編集箇所を狭くする。ここに書く文章はAIが代筆せず、人間が自分の言葉で書く・確認する。実装例は`app/apps/clean-tasks/about/page.tsx`を参照する。
+
+参考リンクへの画像表示やアフィリエイトリンクは、Vercel Hobby利用中は追加しない。収益化のタイミングで`docs/pr/0072-decide-app-page-information-architecture.md`を踏まえた別Issueで扱う。
+
+`layout.tsx`の`availablePages`へ`"about"`を追加すると、アプリ内ナビのAboutタブが有効になる。
+
 MVP PRは通常どおり`dev`へ向け、CI成功後にsquash mergeする。Issueはmergeによる自動close、またはmerge確認後の手動closeで完了させる。
+
+### Guideページの作り方
+
+`app/apps/<app-name>/guide/page.tsx`は`app/apps/_components/app-guide-shell.tsx`の`AppGuideShell`を使う。`AppGuideShell`は次の5セクションを必ず受け取り、共通のレイアウトとして表示する。いずれも省略や空表示はできない（型レベルで1要素以上を必須にしている）。
+
+- `firstSteps`: 最初に行う操作（番号付きリストで表示）
+- `basicControls`: 基本操作
+- `screenGuide`: 画面の見方（他より少し大きい文字で表示）
+- `rules`: ルール
+- `tips`: 困ったときは（深刻な注意点が無い場合は、ふざけた一言でもよい）
+
+```tsx
+import { AppGuideShell } from "@/app/apps/_components/app-guide-shell";
+
+// ↓ ここを編集する
+const firstSteps = ["...", "..."] as const;
+const basicControls = ["...", "..."] as const;
+const screenGuide = ["...", "..."] as const;
+const rules = ["...", "..."] as const;
+const tips = ["..."] as const;
+// ↑ ここまで
+
+export default function ExampleGuidePage() {
+  return (
+    <AppGuideShell
+      appName="Example"
+      firstSteps={firstSteps}
+      basicControls={basicControls}
+      screenGuide={screenGuide}
+      rules={rules}
+      tips={tips}
+    />
+  );
+}
+```
+
+各配列はファイル冒頭の定数としてまとめ、編集箇所を狭くする。実装例は`app/apps/clean-tasks/guide/page.tsx`を参照する。
+
+図や画像が必要になった場合は`app/apps/<app-name>/_assets/`へ置き、静的importで読み込む（`docs/guides/assets.md`参照）。
+
+`layout.tsx`の`availablePages`へ`"guide"`を追加すると、アプリ内ナビのGuideタブが有効になる。
+
+### 短いAbout・Guideの扱い
+
+アプリが単純でも、AboutとGuideは省略しない。説明量が少ない場合は、別ページへ統合したり空配列を渡したりせず、各ページの役割を最小限の文章で表現する。
+
+- Aboutの制作経緯が短い: `paragraphs`へ本人が確認した1段落を入れる。
+- 参考リンクやYouTubeが無い: 対応するpropsは省略してよい。仮URLや推測したリンクは置かない。
+- Guideの説明が短い: 5セクションへ最低1項目ずつ入れる。同じ内容の重複ではなく、「開始方法」「操作」「表示」「成立条件」「迷ったとき」の観点で分ける。
+- 注意事項が特に無い: `tips`へ復帰方法、再試行方法、またはアプリの調子に合う短い一言を入れる。
+- 図が不要: `ruleExample`は省略してよい。文字だけで理解しにくい場合に限り追加する。
+
+必須ページと必須セクションは量産時の共通契約であり、説明の長さを揃えるためのものではない。
+
+### 新規アプリ追加チェックリスト
+
+新しいアプリのPRを作る前に、次を順番に確認する。
+
+構成:
+
+- [ ] `app/apps/<slug>/`へ`page.tsx`、`layout.tsx`、`about/page.tsx`、`guide/page.tsx`を置いた。
+- [ ] 一つのアプリだけで使うUIと処理を、そのアプリの`_components`と`_lib`へ置いた。
+- [ ] DB、外部API、認証などが必要な場合だけ、`_domain`、`_usecases`、`_infrastructure`を追加した。
+- [ ] `app/apps/_lib/app-links.ts`へrouteと同じslugを登録した。未公開なら`preparing`にした。
+
+共通ページ:
+
+- [ ] App画面はすぐ操作でき、長い制作動機、詳しいルール、YouTube導線を置いていない。
+- [ ] `layout.tsx`で`AppPageShell`を使い、正しい`appHref`、App / About / Guideの`availablePages`、選んだthemeを渡した。
+- [ ] 人間へ`/theme-preview`を案内し、themeを実際の色面と白文字で確認した。
+- [ ] Aboutで`AppAboutShell`を使い、本人が書いた・確認した制作経緯をファイル冒頭の`const`へまとめた。
+- [ ] Guideで`AppGuideShell`を使い、5つの必須セクションへ1項目以上を渡した。
+- [ ] App / About / Guideの各ページで、routeに一致するmetadata pathを設定した。
+
+テストと表示:
+
+- [ ] 重要なルールを先にunit testで表現した。
+- [ ] `app-page-structure.test.ts`が新しいアプリを自動検出し、共通構成を検査できている。
+- [ ] desktopとmobileで主要操作、App / About / Guideの移動、overflowを確認した。
+- [ ] `npm run format:check`、`npm run lint`、`npm run typecheck`、`npm test`、`npm run build`が通った。
+
+公開範囲:
+
+- [ ] MVPへOG画像、YouTube公開、Apps一覧掲載などの公開準備を混ぜていない。
+- [ ] 実物を見て見つけた改善を、目的ごとの別Issueへ分けた。
+- [ ] 公開準備では`1200×630`のOG画像、alt、metadata、YouTube URL、`published`への変更を確認した。
 
 ## 3. devで確認し、改善Issueを分ける
 
@@ -135,7 +290,8 @@ Issue titleの例:
 
 - アプリ名、説明、開発DD、公開日を確定する。
 - routeのmetadataを確認する。
-- アプリ専用のOpen Graph画像とaltを用意する。
+- 本人へ`1200×630`のPNG形式のOpen Graph画像を依頼する。HogeDDのCanvaテンプレートを使う場合は`docs/guides/og-image-template.md`に従う。
+- 受け取った画像とaltを同じ内容で`opengraph-image.*`と`twitter-image.*`へ格納する。
 - YouTube動画を公開できる状態にする。
 - `app/apps/_lib/app-links.ts`へ公開情報を登録する。
 - 必要な場合は`app/apps/_lib/apps-page-sections.ts`のおすすめslugを変更する。
@@ -158,6 +314,8 @@ Issue titleの例:
 YouTube URLが確定するまでは、公開情報を推測で登録しない。secret、限定公開URL、公開前に共有できない情報をIssueやPRへ載せない。
 
 公開準備Issueは本番確認までrelease停止の目印として残す。公開準備PRの本文では`Closes`を使わず`Refs #<issue-number>`で関連付け、`dev`へのmerge時には閉じない。
+
+公開metadataの厳格検査は`main`向けrelease PRで実行する。OG画像が未準備でも途中の変更を`dev`へmergeできるが、画像、alt、公開情報が揃うまでrelease PRのCIは成功しない。
 
 ## 6. YouTubeとアプリを同時に本番公開する
 
@@ -215,6 +373,34 @@ Issue close確認
 - 人とAIで認識がずれた手順。
 
 一つのアプリを公開した後にガイドを改訂する。複数回使って手順が安定してから、Issue作成、構成判断、公開チェックを支援する「HogeDDアプリ追加Skill」を別Issueで検討する。
+
+### 将来Skill化するときの入力と判断
+
+Skill化を検討するときは、単なるfolder生成ではなく、次の入力を人間から受け取れることを前提にする。
+
+必要な入力:
+
+- アプリ名、slug、〇〇DD。
+- 作りたい欲望・制作動機、利用場面、最低限遊べる条件。
+- DB、外部API、認証、オンライン通信の要否。
+- Aboutへ載せる本人確認済みの文章、参考リンク。
+- Guideの5セクションへ載せる内容。
+- `/theme-preview`で人間が選んだtheme。
+- MVP、改善、公開準備のどの段階か。
+
+Skillが支援する判断:
+
+- 単純な構成かClean Architectureを検討する構成か。
+- MVPへ含める範囲と、別Issueへ分ける改善・公開準備。
+- 必要なroute、shell props、metadata path、テスト配置。
+- `app-links`の`preparing` / `published`とrelease停止の扱い。
+- 人間が書く文章、提供する画像、確定するYouTube URLの待ち地点。
+
+Skill化の見直し条件:
+
+- このチェックリストを複数の新規アプリで使い、毎回同じ入力確認とファイル追加が繰り返された。
+- 自動化しても、本人の文章、theme選択、Issue分割などの人間判断を飛ばさない設計にできる。
+- Next.jsのfile conventionやHogeDDの共通ページ構成が安定している。
 
 ## 今は自動化しないこと
 
