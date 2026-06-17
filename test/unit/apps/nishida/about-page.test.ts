@@ -13,11 +13,15 @@ const gameClientPath = path.join(
 );
 
 describe("Nishida about page", () => {
-  it("keeps the comment drive and source YouTube reference", async () => {
+  it("keeps the confirmed source YouTube reference", async () => {
     const aboutPage = await readFile(aboutPagePath, "utf8");
 
     expect(aboutPage).toContain('ddLabel="コメントDD"');
     expect(aboutPage).toContain("https://www.youtube.com/watch?v=LL5yvuJzVOk");
+    expect(aboutPage).toContain('label: "タイピングできないニシダ"');
+    expect(aboutPage).toContain(
+      "「サーヤとスタッフで悪口寿司打作ってニシダにやってほしい」というコメントが寄せられた動画。",
+    );
     expect(aboutPage).toContain("referenceLinks={referenceLinks}");
   });
 
