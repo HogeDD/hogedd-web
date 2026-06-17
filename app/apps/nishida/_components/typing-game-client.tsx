@@ -194,8 +194,10 @@ function PlayingScreen({
           Miss {phase.missCount}
         </p>
       </div>
-      <p className="mt-14 text-5xl font-semibold tracking-tight sm:text-6xl">{word.display}</p>
-      <p className="mt-4 text-lg text-[var(--muted)]">{word.reading}</p>
+      <p className="mt-14 break-words text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
+        {word.display}
+      </p>
+      <p className="mt-4 break-words text-lg text-[var(--muted)]">{word.reading}</p>
       <p
         className="mt-10 break-all font-mono text-2xl tracking-wide sm:text-3xl"
         aria-hidden="true"

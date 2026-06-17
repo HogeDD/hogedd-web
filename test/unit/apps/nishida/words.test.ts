@@ -2,6 +2,32 @@ import { describe, expect, it } from "vitest";
 import { buildUnits } from "@/app/apps/nishida/_lib/typing-engine";
 import { WORDS_PER_GAME, pickWords, typingWords } from "@/app/apps/nishida/_lib/words";
 
+const confirmedDisplays = [
+  "昔さ，服装めっちゃダサかったけどさ今もホント見てらんないよね",
+  "ニシダもさ汗かくけどさ歯も黄色いじゃん",
+  "昔はもっと汚かったけど今は家畜に近い",
+  "メール一本で親から百万羨ましいです",
+  "市民税も親に払わせてて嬉しいですね",
+  "怠惰の集合住宅だ",
+  "エレベーター一人でブザー鳴っちゃうよ",
+  "悪玉菌が歩いてる",
+  "脂のタワーマンションだよ",
+  "家族なしハリポタニワカの呪いの子",
+  "親不孝でモラハラ気質でカ行の滑舌が終わっている",
+  "二重なだけ",
+  "電車で隣に座られたら1日ちょっと凹む",
+  "つまずけ",
+  "笑うな",
+  "今世は諦めろ",
+  "一生浄水器使うな",
+  "お洒落はダサいという価値観がダサい",
+  "毒息子",
+  "脂肪がテンパってるだけ",
+  "私は両親の失敗作です",
+  "ニシダさん単品で好きな人いなくないですか？",
+  "きっうわぁ",
+] as const;
+
 /** テスト用の決定的な乱数(線形合同法)。 */
 function createSeededRandom(seed: number): () => number {
   let state = seed;
@@ -12,6 +38,10 @@ function createSeededRandom(seed: number): () => number {
 }
 
 describe("typingWords", () => {
+  it("uses the human-confirmed comments from the issue", () => {
+    expect(typingWords.map((word) => word.display)).toEqual(confirmedDisplays);
+  });
+
   it("provides enough words for one game", () => {
     expect(typingWords.length).toBeGreaterThanOrEqual(WORDS_PER_GAME);
   });
