@@ -18,7 +18,7 @@ const paragraphs = [
 
 const referenceLinks = [
   {
-    label: "ニシ打のきっかけになったYouTube動画",
+    label: "タイピングできないニシダ",
     href: "https://www.youtube.com/watch?v=LL5yvuJzVOk",
     description:
       "「サーヤとスタッフで悪口寿司打作ってニシダにやってほしい」というコメントが寄せられた動画。",
