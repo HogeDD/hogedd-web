@@ -7,20 +7,62 @@ export type TypingWord = Readonly<{
 
 // ↓ ここを編集する
 export const typingWords: readonly TypingWord[] = [
-  { display: "ラランド", reading: "ららんど" },
-  { display: "サーヤ", reading: "さーや" },
-  { display: "ニシダ", reading: "にしだ" },
-  { display: "レモンジャム", reading: "れもんじゃむ" },
-  { display: "ララチューン", reading: "ららちゅーん" },
-  { display: "上智大学", reading: "じょうちだいがく" },
-  { display: "ボケとツッコミ", reading: "ぼけとつっこみ" },
-  { display: "単独ライブ", reading: "たんどくらいぶ" },
-  { display: "ネタ合わせ", reading: "ねたあわせ" },
-  { display: "兼業芸人", reading: "けんぎょうげいにん" },
-  { display: "お笑いコンビ", reading: "おわらいこんび" },
-  { display: "漫才", reading: "まんざい" },
-  { display: "コント", reading: "こんと" },
-  { display: "優勝候補", reading: "ゆうしょうこうほ" },
+  {
+    display: "昔さ，服装めっちゃダサかったけどさ今もホント見てらんないよね",
+    reading: "むかしさふくそうめっちゃださかったけどさいまもほんとみてらんないよね",
+  },
+  {
+    display: "ニシダもさ汗かくけどさ歯も黄色いじゃん",
+    reading: "にしだもさあせかくけどさはもきいろいじゃん",
+  },
+  {
+    display: "昔はもっと汚かったけど今は家畜に近い",
+    reading: "むかしはもっときたなかったけどいまはかちくにちかい",
+  },
+  {
+    display: "メール一本で親から百万羨ましいです",
+    reading: "めーるいっぽんでおやからひゃくまんうらやましいです",
+  },
+  {
+    display: "市民税も親に払わせてて嬉しいですね",
+    reading: "しみんぜいもおやにはらわせててうれしいですね",
+  },
+  { display: "怠惰の集合住宅だ", reading: "たいだのしゅうごうじゅうたくだ" },
+  {
+    display: "エレベーター一人でブザー鳴っちゃうよ",
+    reading: "えれべーたーひとりでぶざーなっちゃうよ",
+  },
+  { display: "悪玉菌が歩いてる", reading: "あくだまきんがあるいてる" },
+  { display: "脂のタワーマンションだよ", reading: "あぶらのたわーまんしょんだよ" },
+  {
+    display: "家族なしハリポタニワカの呪いの子",
+    reading: "かぞくなしはりぽたにわかののろいのこ",
+  },
+  {
+    display: "親不孝でモラハラ気質でカ行の滑舌が終わっている",
+    reading: "おやふこうでもらはらきしつでかぎょうのかつぜつがおわっている",
+  },
+  { display: "二重なだけ", reading: "ふたえなだけ" },
+  {
+    display: "電車で隣に座られたら1日ちょっと凹む",
+    reading: "でんしゃでとなりにすわられたらいちにちちょっとへこむ",
+  },
+  { display: "つまずけ", reading: "つまずけ" },
+  { display: "笑うな", reading: "わらうな" },
+  { display: "今世は諦めろ", reading: "こんせはあきらめろ" },
+  { display: "一生浄水器使うな", reading: "いっしょうじょうすいきつかうな" },
+  {
+    display: "お洒落はダサいという価値観がダサい",
+    reading: "おしゃれはださいというかちかんがださい",
+  },
+  { display: "毒息子", reading: "どくむすこ" },
+  { display: "脂肪がテンパってるだけ", reading: "しぼうがてんぱってるだけ" },
+  { display: "私は両親の失敗作です", reading: "わたしはりょうしんのしっぱいさくです" },
+  {
+    display: "ニシダさん単品で好きな人いなくないですか？",
+    reading: "にしださんたんぴんですきなひといなくないですか",
+  },
+  { display: "きっうわぁ", reading: "きっうわぁ" },
 ];
 // ↑ ここまで
 
