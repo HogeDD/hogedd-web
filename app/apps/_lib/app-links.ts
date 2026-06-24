@@ -111,6 +111,14 @@ export const appLinks: readonly AppLink[] = [
     publishedAt: "動画準備中",
     tags: ["Game", "Roulette", "Next.js"],
   }),
+  definePreparingAppLink({
+    slug: "bakuon-kikiippatsu",
+    title: "爆音危機一髪",
+    description: "1つだけ爆音が鳴るボタンを避けながら、みんなで順番に押していくゲーム。",
+    appHref: "/apps/bakuon-kikiippatsu",
+    publishedAt: "動画準備中",
+    tags: ["Game", "Local Multiplayer", "Sound"],
+  }),
 ];
 
 export const publishedAppLinks: readonly PublishedAppLink[] = appLinks.filter(
