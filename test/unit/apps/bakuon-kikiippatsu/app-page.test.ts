@@ -38,6 +38,14 @@ describe("bakuon kikiippatsu app page", () => {
     expect(clientSource).toContain("REVEAL_DURATION_MS");
   });
 
+  it("keeps the about page close to the creator's words", () => {
+    const aboutSource = readFileSync(path.join(appDirectory, "about", "page.tsx"), "utf8");
+
+    expect(aboutSource).toContain("ランダムで器用じゃないですか！");
+    expect(aboutSource).toContain("絶対に授業中にやらないでください。");
+    expect(aboutSource).toContain("絶対にじゅg");
+  });
+
   it("splits player icons into the requested rows", () => {
     expect(getPlayerIconRows(2).map((row) => row.length)).toEqual([2]);
     expect(getPlayerIconRows(3).map((row) => row.length)).toEqual([3]);
