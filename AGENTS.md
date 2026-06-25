@@ -404,6 +404,11 @@ HogeDDのブランドコピーは`docs/guides/brand-copy.md`を参照する。
 - branch名にはIssue番号を含める。
 - 新機能は`feature/*`、修正は`fix/*`、docsは`docs/*`、infraは`infra/*`を基本にする。
 - PRは原則`dev`へ向ける。
+- PRを作る直前に`git fetch origin dev`を実行し、作業branchへ`origin/dev`をmergeして最新の`dev`との差分とconflictを確認する。conflictがなければ検証後にpushしてPRを作る。
+- PR作成後に`dev`が進み、GitHub上でout-of-dateやconflictが表示された場合も、同じ手順で作業branchへ`origin/dev`をmergeし、検証をやり直してからPRを更新する。
+- `origin/dev`とのconflictが出た場合、機械的に判断できる範囲は作業branch上で解消し、format/lint/typecheck/testなど必要な検証をやり直す。判断が必要なconflictは勝手に決めず、PRをdraftまたはコメント付きで残して人間へ判断を依頼する。
+- 作業branchを`origin/dev`へ追従させる目的で`dev`をrebaseしない。共同作業branchではforce pushを避け、通常の作業PRはsquash mergeで`dev`へ入れる。
+- conflictを減らすため、Issueは目的ごとに小さく切り、同じファイルや同じUI領域を複数人・複数AIが同時に大きく触らないようにする。
 - 作業branchから`dev`へのPRは、CIが通ったらsquash mergeする。
 - `dev`から`main`へのrelease PRは、履歴をつなぐためmerge commitでmergeする。
 - merge後は作業branchを削除する。
