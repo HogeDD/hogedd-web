@@ -107,7 +107,22 @@ Clean TasksのAPIもNext.js内で動きます。別のAPI serverを起動する�
 
 新しいアプリを作る場合は、MVPと公開準備を一つのIssueへ詰め込まず、`docs/guides/app-development-cycle.md`の流れに従います。まずMVP Issueで最低限動かし、実物を確認してから改善Issueを作り、最後に公開準備Issueでアプリ本体とYouTube動画を同時公開します。
 
-### 4. PR が作れる状態になったら push する
+### 4. PR 前に最新の `dev` と合わせる
+
+PRを作る前に、remoteの`dev`から進んだ変更を作業branchへ取り込みます。
+
+```bash
+git fetch origin dev
+git merge origin/dev
+```
+
+conflictが出なければ、検証をやり直してからpushします。conflictが出た場合は、分かる範囲だけで直さず、PRやIssueに状況を書いて相談してください。
+
+PRを作った後に`dev`がさらに進んで、GitHub上でout-of-dateやconflictが表示された場合も、同じ手順で作業branchへ`origin/dev`を取り込んでからPRを更新します。
+
+作業branchを最新の`dev`へ合わせるために`dev`をrebaseしないでください。共同作業では履歴が分かりにくくなるため、通常の開発PRは作業branchで`origin/dev`をmergeし、最後は`dev`へsquash mergeします。
+
+### 5. PR が作れる状態になったら push する
 
 作業がある程度まとまったら、remote に push します。
 
@@ -117,7 +132,7 @@ git push -u origin docs/16-onboarding-guide
 
 AI 駆動で開発している場合も、この段階で Issue 番号つき branch を push します。
 
-### 5. PR を作る
+### 6. PR を作る
 
 GitHub の repository を開くと、push した branch から PR を作る案内が出ることがあります。`Compare & pull request` を押します。
 
@@ -144,7 +159,7 @@ Closes #16
 
 `Closes #16`のようにIssue番号を書く。通常のPR targetは`dev`で、default branchは`main`のため、`dev`へmergeしてもIssueは自動closeされない。merge後にIssueの状態を確認し、必要なら手動で閉じる。
 
-### 6. CI を確認する
+### 7. CI を確認する
 
 PR を作ると GitHub Actions の CI が動きます。
 
@@ -152,7 +167,7 @@ PR を作ると GitHub Actions の CI が動きます。
 
 Webの変更では、`npm test`でTypeScriptのunit testも実行されます。
 
-### 7. `dev` に squash merge する
+### 8. `dev` に squash merge する
 
 CI が通ったら、PR を `dev` に squash merge します。
 
@@ -164,13 +179,13 @@ GitHub の PR 画面で:
 
 `dev`向けの開発PRでは`Squash and merge`を使う。`Merge commit`は`dev`から`main`への本番release PRだけで使い、`Rebase merge`は使わない。
 
-### 8. 用が済んだ remote branch を削除する
+### 9. 用が済んだ remote branch を削除する
 
 PR を merge したら、GitHub の画面に `Delete branch` が出ることがあります。出ていたら押します。
 
 branch は作業が終わったら消して大丈夫です。必要な内容は `dev` に入っています。
 
-### 9. `main` への merge は管理者が行う
+### 10. `main` への merge は管理者が行う
 
 `main` は公開・本番に近い branch です。
 
@@ -187,11 +202,12 @@ AI に頼む場合も、流れは同じです。
 1. Issue を作る
 2. Issue 番号つき branch を切る
 3. AI に作業してもらう
-4. PR を作る
-5. CI を確認する
-6. `dev` に squash merge する
-7. Issue が閉じたことを確認する
-8. branch を消す
+4. 最新の`dev`とconflictしていないことを確認する
+5. PR を作る
+6. CI を確認する
+7. `dev` に squash merge する
+8. Issue が閉じたことを確認する
+9. branch を消す
 
 AI に頼むときは、Issue の URL とやってほしいことを伝えると進めやすいです。
 
