@@ -8,7 +8,7 @@ export default function BakuonKikiippatsuLayout({ children }: { children: ReactN
       appName="爆音危機一髪"
       appHref="/apps/bakuon-kikiippatsu"
       availablePages={["app", "about", "guide"]}
-      theme={appThemePresets.tomato}
+      theme={appThemePresets.sumi}
     >
       {children}
     </AppPageShell>

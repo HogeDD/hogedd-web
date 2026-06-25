@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   MAX_PLAYER_COUNT,
   MIN_PLAYER_COUNT,
@@ -9,14 +9,26 @@ import {
   pressButton,
 } from "@/app/apps/bakuon-kikiippatsu/_lib/game";
 
-const playerCounts = Array.from(
-  { length: MAX_PLAYER_COUNT - MIN_PLAYER_COUNT + 1 },
-  (_, index) => MIN_PLAYER_COUNT + index,
-);
+const REVEAL_DURATION_MS = 1400;
 
 export function BakuonKikiippatsuClient() {
   const [playerCount, setPlayerCount] = useState(3);
+  const [setupStep, setSetupStep] = useState<"players" | "volume">("players");
   const [game, setGame] = useState<BakuonGame | null>(null);
+  const [revealingButton, setRevealingButton] = useState<{
+    index: number;
+    isFilling: boolean;
+  } | null>(null);
+  const revealTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const revealFrameRef = useRef<number | null>(null);
+
+  useEffect(
+    () => () => {
+      if (revealTimerRef.current) clearTimeout(revealTimerRef.current);
+      if (revealFrameRef.current) cancelAnimationFrame(revealFrameRef.current);
+    },
+    [],
+  );
 
   const gridColumns = useMemo(() => {
     if (!game) return 3;
@@ -27,33 +39,53 @@ export function BakuonKikiippatsuClient() {
 
   function startGame() {
     setGame(createGame({ playerCount }));
+    setRevealingButton(null);
   }
 
   function resetGame() {
+    if (revealTimerRef.current) clearTimeout(revealTimerRef.current);
+    if (revealFrameRef.current) cancelAnimationFrame(revealFrameRef.current);
     setGame(null);
+    setRevealingButton(null);
+    setSetupStep("players");
+  }
+
+  function selectPreviousPlayerCount() {
+    setPlayerCount((count) => Math.max(MIN_PLAYER_COUNT, count - 1));
+  }
+
+  function selectNextPlayerCount() {
+    setPlayerCount((count) => Math.min(MAX_PLAYER_COUNT, count + 1));
   }
 
   function handleButtonPress(index: number) {
-    if (!game) return;
+    if (!game || revealingButton) return;
 
     const selectedButton = game.buttons[index];
     if (!selectedButton || selectedButton.status !== "hidden") return;
 
-    const nextGame = pressButton(game, index);
-    setGame(nextGame);
+    setRevealingButton({ index, isFilling: false });
+    revealFrameRef.current = requestAnimationFrame(() => {
+      setRevealingButton({ index, isFilling: true });
+    });
 
-    if (selectedButton.hasBomb) {
-      playBakuon();
-    } else {
-      playSafeClick();
-    }
+    revealTimerRef.current = setTimeout(() => {
+      const nextGame = pressButton(game, index);
+      setGame(nextGame);
+      setRevealingButton(null);
+
+      if (selectedButton.hasBomb) {
+        playBakuon();
+      }
+    }, REVEAL_DURATION_MS);
   }
 
+  const remainingSafeCount = game ? game.buttons.length - 1 - game.safePressCount : 0;
   const statusLabel = game
     ? game.status === "lost"
-      ? "爆音。押した人の負け。"
-      : `セーフ ${game.safePressCount} 回。次の人、どうぞ。`
-    : "人数を選んで、音量を上げてから開始。";
+      ? "OUT"
+      : `SAFE 残り ${remainingSafeCount}`
+    : null;
 
   return (
     <section className="relative overflow-hidden">
@@ -69,75 +101,93 @@ export function BakuonKikiippatsuClient() {
       <div className="relative mx-auto w-full max-w-2xl px-4 py-10 sm:px-6 sm:py-16 lg:px-8">
         <header className="text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--accent-text)]">
-            Sound Trap
+            Silent or Out
           </p>
           <h1 className="mt-3 text-5xl font-semibold tracking-tight sm:text-7xl">爆音危機一髪</h1>
-          <p className="mx-auto mt-5 max-w-md text-base leading-7 text-[var(--muted)]">
-            1つだけ爆音が鳴るボタンがあります。順番は自分たちで決めて、1人ずつ押してください。
-          </p>
         </header>
 
-        <div
-          className={[
-            "mt-8 rounded-3xl px-5 py-5 text-center shadow-lg transition-colors sm:px-7",
-            game?.status === "lost"
-              ? "bg-[var(--accent)] text-[var(--accent-foreground)]"
-              : "bg-[var(--surface)] text-[var(--foreground)]",
-          ].join(" ")}
-          role="status"
-          aria-live="polite"
-        >
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] opacity-70">Status</p>
-          <p className="mt-2 text-xl font-semibold">{statusLabel}</p>
-        </div>
+        {game ? (
+          <div
+            className={[
+              "mt-8 rounded-3xl px-5 py-4 text-center shadow-lg transition-colors sm:px-7",
+              game.status === "lost"
+                ? "bg-[var(--accent)] text-4xl text-[var(--accent-foreground)] ring-4 ring-[var(--accent)]/25"
+                : "bg-[var(--surface)] text-[var(--foreground)]",
+            ].join(" ")}
+            role="status"
+            aria-live="polite"
+          >
+            <p className="text-2xl font-semibold tracking-tight">{statusLabel}</p>
+          </div>
+        ) : null}
 
         {!game ? (
           <div className="mt-8 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-xl sm:p-7">
-            <p className="text-sm font-semibold text-[var(--muted)]">人数</p>
-            <div className="mt-4 grid grid-cols-4 gap-2">
-              {playerCounts.map((count) => (
+            {setupStep === "players" ? (
+              <>
+                <p className="mb-5 text-center text-2xl font-semibold tracking-tight text-[var(--foreground)]">
+                  プレイヤー人数選択
+                </p>
+                <PlayerCountRollSelector
+                  count={playerCount}
+                  onPrevious={selectPreviousPlayerCount}
+                  onNext={selectNextPlayerCount}
+                />
+
                 <button
-                  key={count}
                   type="button"
-                  onClick={() => setPlayerCount(count)}
-                  className={[
-                    "touch-manipulation rounded-2xl border px-4 py-4 text-lg font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)]",
-                    playerCount === count
-                      ? "border-[var(--accent)] bg-[var(--accent)] text-[var(--accent-foreground)]"
-                      : "border-[var(--border)] bg-[var(--surface-strong)] text-[var(--foreground)] hover:border-[var(--accent)]",
-                  ].join(" ")}
-                  aria-pressed={playerCount === count}
+                  onClick={() => setSetupStep("volume")}
+                  className="mt-6 w-full touch-manipulation rounded-full bg-[var(--accent)] px-6 py-4 text-base font-semibold text-[var(--accent-foreground)] shadow-lg transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)]"
                 >
-                  {count}
+                  決定
                 </button>
-              ))}
-            </div>
-
-            <div className="mt-6 rounded-2xl bg-[var(--surface-strong)] px-5 py-4">
-              <p className="text-base font-semibold">音量MAXにしましたか？</p>
-              <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-                端末の音量を上げてから始めてください。消音モードだと台無しです。
-              </p>
-            </div>
-
-            <button
-              type="button"
-              onClick={startGame}
-              className="mt-6 w-full touch-manipulation rounded-full bg-[var(--accent)] px-6 py-4 text-base font-semibold text-[var(--accent-foreground)] shadow-lg transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)]"
-            >
-              音量MAXで開始
-            </button>
+              </>
+            ) : (
+              <div className="text-center">
+                <p className="mb-5 text-2xl font-semibold tracking-tight text-[var(--foreground)]">
+                  音量を上げる
+                </p>
+                <p className="text-4xl font-semibold tracking-tight text-[var(--foreground)]">
+                  READY
+                </p>
+                <div className="mt-6 flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setSetupStep("players")}
+                    className="min-w-0 flex-1 touch-manipulation rounded-full border border-[var(--border)] bg-[var(--surface)] px-5 py-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)]"
+                  >
+                    戻る
+                  </button>
+                  <button
+                    type="button"
+                    onClick={startGame}
+                    className="min-w-0 flex-[2] touch-manipulation rounded-full bg-[var(--accent)] px-6 py-4 text-base font-semibold text-[var(--accent-foreground)] shadow-lg transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)]"
+                  >
+                    開始
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           <div className="mt-8">
             <div
-              className="grid gap-2 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-3 shadow-xl sm:gap-3 sm:p-4"
+              className={[
+                "grid gap-2 rounded-3xl border p-3 shadow-xl transition-colors sm:gap-3 sm:p-4",
+                game.status === "lost"
+                  ? "border-[var(--accent)] bg-[var(--accent-soft)]"
+                  : "border-[var(--border)] bg-[var(--surface)]",
+              ].join(" ")}
               style={{ gridTemplateColumns: `repeat(${gridColumns}, minmax(0, 1fr))` }}
             >
               {game.buttons.map((button) => {
                 const isBomb = button.status === "bomb";
                 const isSafe = button.status === "safe";
-                const isDisabled = game.status !== "playing" || button.status !== "hidden";
+                const isRevealing = revealingButton?.index === button.index;
+                const isDisabled =
+                  game.status !== "playing" ||
+                  button.status !== "hidden" ||
+                  revealingButton !== null;
 
                 return (
                   <button
@@ -147,17 +197,29 @@ export function BakuonKikiippatsuClient() {
                     disabled={isDisabled}
                     aria-label={`${button.index + 1}番のボタン`}
                     className={[
-                      "flex aspect-square touch-manipulation items-center justify-center rounded-2xl border text-2xl font-semibold shadow-sm transition sm:rounded-3xl sm:text-3xl",
+                      "relative flex aspect-square touch-manipulation items-center justify-center overflow-hidden rounded-2xl border text-2xl font-semibold shadow-sm transition sm:rounded-3xl sm:text-3xl",
                       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)]",
                       isBomb
-                        ? "border-[var(--accent)] bg-[var(--accent)] text-[var(--accent-foreground)] motion-safe:animate-pulse"
+                        ? "border-[var(--accent)] bg-[var(--accent)] text-[var(--accent-foreground)] shadow-2xl motion-safe:animate-pulse"
                         : isSafe
                           ? "border-[var(--border)] bg-[var(--surface-strong)] text-[var(--muted)]"
                           : "border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] hover:-translate-y-0.5 hover:border-[var(--accent)] motion-safe:active:scale-95",
                       isDisabled ? "cursor-default" : "cursor-pointer",
                     ].join(" ")}
                   >
-                    {isBomb ? "爆" : isSafe ? "済" : button.index + 1}
+                    {isRevealing ? (
+                      <span
+                        className={[
+                          "absolute inset-x-0 bottom-0 bg-[var(--accent)]/80 transition-[height] ease-out",
+                          revealingButton?.isFilling ? "h-full" : "h-0",
+                        ].join(" ")}
+                        style={{ transitionDuration: `${REVEAL_DURATION_MS}ms` }}
+                        aria-hidden="true"
+                      />
+                    ) : null}
+                    <span className="relative z-10">
+                      {isBomb ? "OUT" : isSafe ? "SAFE" : button.index + 1}
+                    </span>
                   </button>
                 );
               })}
@@ -168,7 +230,7 @@ export function BakuonKikiippatsuClient() {
               onClick={resetGame}
               className="mx-auto mt-7 block rounded-full border border-[var(--border)] bg-[var(--surface)] px-6 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]"
             >
-              人数選択からやり直す
+              やり直す
             </button>
           </div>
         )}
@@ -177,12 +239,86 @@ export function BakuonKikiippatsuClient() {
   );
 }
 
-function playSafeClick() {
-  playTone({ frequencies: [360], durationMs: 120, gainValue: 0.04 });
+function PlayerCountRollSelector({
+  count,
+  onPrevious,
+  onNext,
+}: {
+  count: number;
+  onPrevious: () => void;
+  onNext: () => void;
+}) {
+  const canSelectPrevious = count > MIN_PLAYER_COUNT;
+  const canSelectNext = count < MAX_PLAYER_COUNT;
+
+  return (
+    <div
+      className="rounded-3xl bg-[var(--surface-strong)] p-3 text-center sm:p-4"
+      role="group"
+      aria-label="プレイヤー人数"
+    >
+      <div className="flex items-stretch gap-3">
+        <button
+          type="button"
+          onClick={onPrevious}
+          disabled={!canSelectPrevious}
+          className="flex w-14 touch-manipulation items-center justify-center rounded-2xl border border-[var(--border)] bg-[var(--surface)] text-3xl font-semibold text-[var(--foreground)] transition hover:border-[var(--accent)] disabled:opacity-25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface-strong)] sm:w-16"
+          aria-label="人数を減らす"
+        >
+          −
+        </button>
+
+        <div
+          className="min-w-0 flex-1 rounded-3xl bg-[var(--accent)] px-5 py-5 text-[var(--accent-foreground)] shadow-lg"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          <p className="text-6xl font-semibold leading-none tracking-tight">{count}</p>
+          <PlayerIconRows count={count} />
+        </div>
+
+        <button
+          type="button"
+          onClick={onNext}
+          disabled={!canSelectNext}
+          className="flex w-14 touch-manipulation items-center justify-center rounded-2xl border border-[var(--border)] bg-[var(--surface)] text-3xl font-semibold text-[var(--foreground)] transition hover:border-[var(--accent)] disabled:opacity-25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface-strong)] sm:w-16"
+          aria-label="人数を増やす"
+        >
+          ＋
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function PlayerIconRows({ count }: { count: number }) {
+  return (
+    <div
+      className="mt-4 flex min-h-10 flex-col items-center justify-center gap-1"
+      aria-hidden="true"
+    >
+      {getPlayerIconRows(count).map((row, rowIndex) => (
+        <div key={rowIndex} className="flex justify-center gap-1.5">
+          {row.map((iconIndex) => (
+            <span key={iconIndex} className="h-4 w-3 rounded-full bg-[var(--accent-foreground)]" />
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export function getPlayerIconRows(count: number): number[][] {
+  const firstRowCount = count <= 4 ? count : Math.ceil(count / 2);
+  const indexes = Array.from({ length: count }, (_, index) => index);
+
+  return [indexes.slice(0, firstRowCount), indexes.slice(firstRowCount)].filter(
+    (row) => row.length > 0,
+  );
 }
 
 function playBakuon() {
-  playTone({ frequencies: [220, 330, 440], durationMs: 900, gainValue: 0.18 });
+  playTone({ frequencies: [120, 180, 240, 360], durationMs: 1500, gainValue: 0.42 });
 }
 
 function playTone({

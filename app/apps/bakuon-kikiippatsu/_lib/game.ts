@@ -1,5 +1,5 @@
 export const MIN_PLAYER_COUNT = 2;
-export const MAX_PLAYER_COUNT = 8;
+export const MAX_PLAYER_COUNT = 10;
 export const BUTTONS_PER_PLAYER = 3;
 
 export type BakuonButtonStatus = "hidden" | "safe" | "bomb";
