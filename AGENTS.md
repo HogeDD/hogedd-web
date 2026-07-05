@@ -34,7 +34,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 | 動画を作って公開する(3日サイクルの工程・時間上限・週次バッチ)                               | `docs/guides/video-production-sop.md`           |
 | 機能の置き場所(`_components`/`_lib`/`_domain`/`_usecases`/`_infrastructure`)に迷う          | `docs/guides/architecture-guide.md`             |
 | 画像・動画などの素材を追加する                                                              | `docs/guides/assets.md`                         |
-| アプリ専用のOG画像をCanvaテンプレートから作る                                               | `docs/guides/og-image-template.md`              |
+| アプリ専用のOG画像をサムネ自動生成ツールから作る                                            | `docs/guides/og-image-template.md`              |
 | ホームやアプリ紹介文のトーン・コピーを書く                                                  | `docs/guides/brand-copy.md`                     |
 | 本番deploy、release PR、conflict対応をする                                                  | `docs/guides/deployment.md`                     |
 | 設計・Next.js・Gitの用語が分からない                                                        | `docs/guides/glossary.md`                       |
