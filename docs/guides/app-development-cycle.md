@@ -290,7 +290,7 @@ Issue titleの例:
 
 - アプリ名、説明、開発DD、公開日を確定する。
 - routeのmetadataを確認する。
-- 本人へ`1200×630`のPNG形式のOpen Graph画像を依頼する。HogeDDのCanvaテンプレートを使う場合は`docs/guides/og-image-template.md`に従う。
+- 本人へ`1200×630`のPNG形式のOpen Graph画像を依頼する。OG画像はサムネ自動生成ツールでYouTubeサムネイルと同時に生成し、`docs/guides/og-image-template.md`に従って受け渡す。
 - 受け取った画像とaltを同じ内容で`opengraph-image.*`と`twitter-image.*`へ格納する。
 - YouTube動画を公開できる状態にする。
 - `app/apps/_lib/app-links.ts`へ公開情報を登録する。
