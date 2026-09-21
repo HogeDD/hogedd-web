@@ -20,6 +20,8 @@ VercelはhostingとNext.jsの実行環境として使う。Vercel Blob、KV、Ed
 
 GitHub OrganizationとVercel teamは別の所有境界である。GitHub repositoryをOrganizationへ移管しても、Vercel project ownerを同名teamへ移す必要はない。現在はHobby team`iwasawa-renjis-projects`でproject、domain、deploymentを維持し、Git integrationだけを`HogeDD/hogedd-web`へ接続する。
 
+Vercel Hobbyでは、GitHub Organizationが所有するprivate repositoryからdeployできない。`HogeDD/hogedd-web`はpublic repositoryとして運用し、privateへ変更する場合はVercel Proへの移行も同時に検討する。
+
 GitHub repositoryの移管後は、Organization SettingsのInstalled GitHub AppsでVercelへ対象repositoryのaccessを付与する。その後、Vercel Project SettingsのGitまたはCLIでrepositoryを再接続する。
 
 ```bash
