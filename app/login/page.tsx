@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default async function LoginPage() {
-  const session = await auth0.getSession();
+  const session = await auth0?.getSession();
 
   return (
     <main className="min-h-screen bg-[var(--background)]">
@@ -28,7 +28,11 @@ export default async function LoginPage() {
               {session ? "ログイン中" : "ログイン"}
             </h1>
 
-            {session ? (
+            {!auth0 ? (
+              <p className="mt-8 text-base text-[var(--muted)]">
+                この環境ではログインを利用できません。
+              </p>
+            ) : session ? (
               <div className="mt-8 flex flex-col items-start gap-5">
                 <p className="text-base text-[var(--muted)]">
                   {session.user.email ?? "認証済みアカウント"}
