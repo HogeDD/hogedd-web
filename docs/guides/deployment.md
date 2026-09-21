@@ -20,6 +20,8 @@ VercelはhostingとNext.jsの実行環境として使う。Vercel Blob、KV、Ed
 
 GitHub OrganizationとVercel teamは別の所有境界である。GitHub repositoryをOrganizationへ移管しても、Vercel project ownerを同名teamへ移す必要はない。現在はHobby team`iwasawa-renjis-projects`でproject、domain、deploymentを維持し、Git integrationだけを`HogeDD/hogedd-web`へ接続する。
 
+Vercel Hobbyでは、GitHub Organizationが所有するprivate repositoryからdeployできない。`HogeDD/hogedd-web`はpublic repositoryとして運用し、privateへ変更する場合はVercel Proへの移行も同時に検討する。
+
 GitHub repositoryの移管後は、Organization SettingsのInstalled GitHub AppsでVercelへ対象repositoryのaccessを付与する。その後、Vercel Project SettingsのGitまたはCLIでrepositoryを再接続する。
 
 ```bash
@@ -165,7 +167,29 @@ curl -I https://www.hogedd.com/
 
 ## 環境変数とsecret
 
-2026年6月6日時点では、Productionに必須の環境変数はない。
+ProductionではAuth0認証のために次の環境変数を設定する。
+
+| key                   | 種別   | 用途                                             |
+| --------------------- | ------ | ------------------------------------------------ |
+| `AUTH0_DOMAIN`        | Config | Auth0 tenant domain                              |
+| `AUTH0_CLIENT_ID`     | Secret | HogeDD Web ApplicationのClient ID                |
+| `AUTH0_CLIENT_SECRET` | Secret | HogeDD Web ApplicationのClient Secret            |
+| `AUTH0_SECRET`        | Secret | session cookieを暗号化するランダムな32 byteの値  |
+| `APP_BASE_URL`        | Config | Productionのorigin（`https://www.hogedd.com`）   |
+| `AUTH0_AUDIENCE`      | Config | HogeDD APIのaudience（`https://api.hogedd.com`） |
+
+`AUTH0_SECRET`は次のコマンドで生成し、生成結果をrepositoryへ保存せずVercelへ直接登録する。
+
+```bash
+openssl rand -hex 32
+```
+
+Auth0のHogeDD Web Applicationには次のURLを設定する。
+
+- Allowed Callback URLs: `https://www.hogedd.com/auth/callback`
+- Allowed Logout URLs: `https://www.hogedd.com`
+
+環境変数の追加・変更は既存deploymentへ遡って反映されない。設定後に新しいdeploymentを作成する。
 
 環境変数を追加するとき:
 
