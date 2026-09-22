@@ -104,9 +104,17 @@ function AccountUnavailable({ kind }: { kind: "not_found" | "unavailable" }) {
       </h2>
       <p className="mt-3 text-sm leading-7 text-[var(--muted)]">
         {kind === "not_found"
-          ? "初回設定画面の準備後に、プロフィールを登録できるようになります。"
+          ? "初回設定を完了すると、アカウント情報を確認できます。"
           : "時間をおいて、もう一度お試しください。"}
       </p>
+      {kind === "not_found" ? (
+        <a
+          href="/setup"
+          className="mt-6 inline-flex min-h-11 items-center justify-center bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[var(--foreground)]"
+        >
+          初回設定へ
+        </a>
+      ) : null}
     </div>
   );
 }
