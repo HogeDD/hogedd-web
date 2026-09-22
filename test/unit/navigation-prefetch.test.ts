@@ -2,14 +2,16 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 describe("shared navigation prefetch policy", () => {
-  it.each(["app/_components/site-header.tsx", "app/_components/site-footer.tsx"])(
-    "disables viewport prefetch in %s",
-    (path) => {
-      const source = readFileSync(path, "utf8");
-      const links = source.match(/<Link\b[\s\S]*?>/g) ?? [];
+  it("prefetches only the My Page loading boundary in the header", () => {
+    const source = readFileSync("app/_components/site-header.tsx", "utf8");
+    expect(source).toContain('prefetch={item.href === "/mypage" ? null : false}');
+    expect(source).not.toContain('href="/apps" prefetch');
+  });
 
-      expect(links.length).toBeGreaterThan(0);
-      expect(links.every((link) => link.includes("prefetch={false}"))).toBe(true);
-    },
-  );
+  it("disables viewport prefetch in the footer", () => {
+    const source = readFileSync("app/_components/site-footer.tsx", "utf8");
+    const links = source.match(/<Link\b[\s\S]*?>/g) ?? [];
+    expect(links.length).toBeGreaterThan(0);
+    expect(links.every((link) => link.includes("prefetch={false}"))).toBe(true);
+  });
 });
