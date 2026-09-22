@@ -7,7 +7,7 @@ export function SiteFooter() {
   return (
     <footer className="relative left-1/2 w-screen -translate-x-1/2 border-t border-black/10 bg-[var(--background)] px-4 py-10 text-[var(--foreground)] sm:px-6 sm:py-12 lg:px-8">
       <div className="mx-auto grid w-full max-w-4xl gap-8 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
-        <Link href="/" className="group w-fit" aria-label="HogeDD ホーム">
+        <Link href="/" prefetch={false} className="group w-fit" aria-label="HogeDD ホーム">
           <span>
             <span className="block text-2xl font-semibold tracking-tight">HogeDD</span>
             <span className="mt-1 block text-sm text-[var(--muted)]">Hoge Driven Development</span>
@@ -49,6 +49,7 @@ function FooterLink({
   return (
     <Link
       href={href}
+      prefetch={false}
       target={external ? "_blank" : undefined}
       rel={external ? "noreferrer" : undefined}
       className="text-sm font-semibold transition hover:text-[var(--accent)]"
