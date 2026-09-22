@@ -1,5 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
-import { fetchCurrentUser, registerAuthenticatedUser } from "@/app/_lib/hogedd-api";
+import {
+  fetchCurrentUser,
+  fetchCurrentUserProfile,
+  registerAuthenticatedUser,
+  updateCurrentUserProfile,
+} from "@/app/_lib/hogedd-api";
 
 const registeredUser = {
   id: "0199-user",
@@ -107,6 +112,62 @@ describe("HogeDD Current User API client", () => {
       "https://api.hogedd.com",
       "token",
       vi.fn<typeof fetch>().mockResolvedValue(new Response(null, { status })),
+    );
+    expect(result).toEqual({ kind });
+  });
+});
+
+describe("HogeDD User profile API client", () => {
+  it("gets a profile without exposing the Access Token", async () => {
+    const fetchImplementation = vi
+      .fn<typeof fetch>()
+      .mockResolvedValue(Response.json({ display_name: "HogeDD" }));
+    const result = await fetchCurrentUserProfile(
+      "https://api.hogedd.com",
+      "secret-access-token",
+      fetchImplementation,
+    );
+    expect(result).toEqual({ kind: "ok", profile: { display_name: "HogeDD" } });
+    expect(fetchImplementation).toHaveBeenCalledWith(
+      new URL("https://api.hogedd.com/v1/users/me/profile"),
+      expect.objectContaining({ method: "GET" }),
+    );
+    expect(JSON.stringify(result)).not.toContain("secret-access-token");
+  });
+
+  it("updates only the display name", async () => {
+    const fetchImplementation = vi
+      .fn<typeof fetch>()
+      .mockResolvedValue(Response.json({ display_name: "New Name" }));
+    const result = await updateCurrentUserProfile(
+      "https://api.hogedd.com",
+      "token",
+      "New Name",
+      fetchImplementation,
+    );
+    expect(result).toEqual({ kind: "ok", profile: { display_name: "New Name" } });
+    expect(fetchImplementation).toHaveBeenCalledWith(
+      new URL("https://api.hogedd.com/v1/users/me/profile"),
+      expect.objectContaining({
+        method: "PUT",
+        body: JSON.stringify({ display_name: "New Name" }),
+      }),
+    );
+  });
+
+  it.each([
+    [401, "unauthorized", undefined],
+    [403, "forbidden", undefined],
+    [404, "profile_not_found", { error: { code: "profile_not_found" } }],
+    [404, "user_not_found", { error: { code: "user_not_found" } }],
+    [422, "invalid", undefined],
+    [500, "unavailable", undefined],
+  ] as const)("maps API status %s to %s", async (status, kind, body) => {
+    const response = body ? Response.json(body, { status }) : new Response(null, { status });
+    const result = await fetchCurrentUserProfile(
+      "https://api.hogedd.com",
+      "token",
+      vi.fn<typeof fetch>().mockResolvedValue(response),
     );
     expect(result).toEqual({ kind });
   });

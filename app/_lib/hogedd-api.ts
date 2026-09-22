@@ -29,6 +29,17 @@ export type CurrentUserAPIResult =
   | { kind: "not_found" }
   | { kind: "unavailable" };
 
+export type UserProfile = { display_name: string };
+
+export type UserProfileAPIResult =
+  | { kind: "ok"; profile: UserProfile }
+  | { kind: "unauthorized" }
+  | { kind: "user_not_found" }
+  | { kind: "profile_not_found" }
+  | { kind: "forbidden" }
+  | { kind: "invalid" }
+  | { kind: "unavailable" };
+
 type Fetch = typeof fetch;
 
 const requestTimeoutMilliseconds = 5_000;
@@ -130,6 +141,78 @@ export async function fetchCurrentUser(
   }
 }
 
+// fetchCurrentUserProfileは、現在Userの本人編集プロフィールを取得します。
+export async function fetchCurrentUserProfile(
+  baseURL: string,
+  accessToken: string,
+  fetchImplementation: Fetch = fetch,
+): Promise<UserProfileAPIResult> {
+  return requestUserProfile(baseURL, accessToken, "GET", undefined, fetchImplementation);
+}
+
+// updateCurrentUserProfileは、現在Userの表示名を登録・更新します。
+export async function updateCurrentUserProfile(
+  baseURL: string,
+  accessToken: string,
+  displayName: string,
+  fetchImplementation: Fetch = fetch,
+): Promise<UserProfileAPIResult> {
+  return requestUserProfile(
+    baseURL,
+    accessToken,
+    "PUT",
+    JSON.stringify({ display_name: displayName }),
+    fetchImplementation,
+  );
+}
+
+async function requestUserProfile(
+  baseURL: string,
+  accessToken: string,
+  method: "GET" | "PUT",
+  body: string | undefined,
+  fetchImplementation: Fetch,
+): Promise<UserProfileAPIResult> {
+  try {
+    const response = await fetchImplementation(new URL("/v1/users/me/profile", baseURL), {
+      method,
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${accessToken}`,
+        ...(body ? { "Content-Type": "application/json" } : {}),
+      },
+      body,
+      cache: "no-store",
+      signal: AbortSignal.timeout(requestTimeoutMilliseconds),
+    });
+    if (response.status === 401) return { kind: "unauthorized" };
+    if (response.status === 403) return { kind: "forbidden" };
+    if (response.status === 422) return { kind: "invalid" };
+    if (response.status === 404) {
+      const code = await readErrorCode(response);
+      return { kind: code === "profile_not_found" ? "profile_not_found" : "user_not_found" };
+    }
+    if (!response.ok) return { kind: "unavailable" };
+    const value: unknown = await response.json();
+    return isUserProfile(value) ? { kind: "ok", profile: value } : { kind: "unavailable" };
+  } catch {
+    return { kind: "unavailable" };
+  }
+}
+
+async function readErrorCode(response: Response): Promise<string | undefined> {
+  try {
+    const value: unknown = await response.json();
+    if (typeof value !== "object" || value === null) return undefined;
+    const error = (value as Record<string, unknown>).error;
+    if (typeof error !== "object" || error === null) return undefined;
+    const code = (error as Record<string, unknown>).code;
+    return typeof code === "string" ? code : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 function isAuthenticatedIdentity(value: unknown): value is AuthenticatedIdentity {
   if (typeof value !== "object" || value === null) {
     return false;
@@ -158,6 +241,15 @@ function isRegisteredUser(value: unknown): value is RegisteredUser {
     (user.status === "active" || user.status === "disabled") &&
     isDateTime(user.created_at) &&
     isDateTime(user.updated_at)
+  );
+}
+
+function isUserProfile(value: unknown): value is UserProfile {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    typeof (value as Record<string, unknown>).display_name === "string" &&
+    ((value as Record<string, unknown>).display_name as string).length > 0
   );
 }
 
