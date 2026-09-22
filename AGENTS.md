@@ -36,6 +36,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 | アプリ専用のOG画像をCanvaテンプレートから作る                                               | `docs/guides/og-image-template.md`              |
 | ホームやアプリ紹介文のトーン・コピーを書く                                                  | `docs/guides/brand-copy.md`                     |
 | 本番deploy、release PR、conflict対応をする                                                  | `docs/guides/deployment.md`                     |
+| Auth0 login、session、BFF、HogeDD APIとの認証通信を変更する                                 | `docs/guides/authentication-bff-flow.md`        |
 | 設計・Next.js・Gitの用語が分からない                                                        | `docs/guides/glossary.md`                       |
 | ローカル環境構築、別端末からの確認(ngrok)をする                                             | `docs/guides/local-dev.md`                      |
 | HogeDDに新しく参加する、Issue/PR/branchの流れが分からない                                   | `docs/guides/onboarding.md`                     |
