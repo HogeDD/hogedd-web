@@ -23,6 +23,12 @@ export type UserRegistrationAPIResult =
   | { kind: "unauthorized" }
   | { kind: "unavailable" };
 
+export type CurrentUserAPIResult =
+  | { kind: "ok"; user: RegisteredUser }
+  | { kind: "unauthorized" }
+  | { kind: "not_found" }
+  | { kind: "unavailable" };
+
 type Fetch = typeof fetch;
 
 const requestTimeoutMilliseconds = 5_000;
@@ -90,6 +96,35 @@ export async function registerAuthenticatedUser(
       return { kind: "unavailable" };
     }
     return { kind: "ok", status: response.status, user: body };
+  } catch {
+    return { kind: "unavailable" };
+  }
+}
+
+// fetchCurrentUserは、Access Tokenをサーバー間通信だけに使って登録済みUserを取得します。
+export async function fetchCurrentUser(
+  baseURL: string,
+  accessToken: string,
+  fetchImplementation: Fetch = fetch,
+): Promise<CurrentUserAPIResult> {
+  try {
+    const response = await fetchImplementation(new URL("/v1/users/me", baseURL), {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      cache: "no-store",
+      signal: AbortSignal.timeout(requestTimeoutMilliseconds),
+    });
+
+    if (response.status === 401) return { kind: "unauthorized" };
+    if (response.status === 404) return { kind: "not_found" };
+    if (!response.ok) return { kind: "unavailable" };
+
+    const body: unknown = await response.json();
+    if (!isRegisteredUser(body)) return { kind: "unavailable" };
+    return { kind: "ok", user: body };
   } catch {
     return { kind: "unavailable" };
   }
