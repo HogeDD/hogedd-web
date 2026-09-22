@@ -57,9 +57,6 @@ async function loadCurrentUser(): Promise<
   if (!auth0 || !process.env.HOGEDD_API_BASE_URL) {
     return { kind: "unavailable" };
   }
-  const session = await auth0.getSession();
-  if (!session) redirect("/login");
-
   let accessToken: string;
   try {
     ({ token: accessToken } = await auth0.getAccessToken());
@@ -67,11 +64,13 @@ async function loadCurrentUser(): Promise<
     redirect("/login");
   }
 
-  const result = await fetchCurrentUser(process.env.HOGEDD_API_BASE_URL, accessToken);
+  const [result, profile] = await Promise.all([
+    fetchCurrentUser(process.env.HOGEDD_API_BASE_URL, accessToken),
+    fetchCurrentUserProfile(process.env.HOGEDD_API_BASE_URL, accessToken),
+  ]);
   if (result.kind === "unauthorized") redirect("/login");
   if (result.kind !== "ok") return { kind: result.kind };
 
-  const profile = await fetchCurrentUserProfile(process.env.HOGEDD_API_BASE_URL, accessToken);
   if (profile.kind === "unauthorized") redirect("/login");
   if (profile.kind === "profile_not_found") redirect("/setup");
   if (profile.kind !== "ok") return { kind: "unavailable" };
