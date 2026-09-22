@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { registerAuthenticatedUser } from "@/app/_lib/hogedd-api";
+import { fetchCurrentUser, registerAuthenticatedUser } from "@/app/_lib/hogedd-api";
 
 const registeredUser = {
   id: "0199-user",
@@ -72,5 +72,42 @@ describe("HogeDD User registration API client", () => {
     );
 
     expect(result).toEqual({ kind: "unavailable" });
+  });
+});
+
+describe("HogeDD Current User API client", () => {
+  it("gets the registered User without exposing the Access Token", async () => {
+    const fetchImplementation = vi
+      .fn<typeof fetch>()
+      .mockResolvedValue(Response.json(registeredUser));
+
+    const result = await fetchCurrentUser(
+      "https://api.hogedd.com",
+      "secret-access-token",
+      fetchImplementation,
+    );
+
+    expect(result).toEqual({ kind: "ok", user: registeredUser });
+    expect(fetchImplementation).toHaveBeenCalledWith(
+      new URL("https://api.hogedd.com/v1/users/me"),
+      expect.objectContaining({
+        method: "GET",
+        headers: expect.objectContaining({ Authorization: "Bearer secret-access-token" }),
+      }),
+    );
+    expect(JSON.stringify(result)).not.toContain("secret-access-token");
+  });
+
+  it.each([
+    [401, "unauthorized"],
+    [404, "not_found"],
+    [500, "unavailable"],
+  ] as const)("maps API status %s to %s", async (status, kind) => {
+    const result = await fetchCurrentUser(
+      "https://api.hogedd.com",
+      "token",
+      vi.fn<typeof fetch>().mockResolvedValue(new Response(null, { status })),
+    );
+    expect(result).toEqual({ kind });
   });
 });
