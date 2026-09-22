@@ -30,7 +30,12 @@ export function SiteHeader() {
       ].join(" ")}
     >
       <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between gap-3 px-3 sm:h-18 sm:px-6 lg:px-8">
-        <Link href="/" aria-label="HogeDD ホーム" className="flex min-w-0 items-center gap-2">
+        <Link
+          href="/"
+          prefetch={false}
+          aria-label="HogeDD ホーム"
+          className="flex min-w-0 items-center gap-2"
+        >
           <Image
             src="/HogeDD.png"
             width={720}
@@ -53,6 +58,7 @@ export function SiteHeader() {
             <Link
               key={item.href}
               href={item.href}
+              prefetch={false}
               target={item.external ? "_blank" : undefined}
               rel={item.external ? "noreferrer" : undefined}
               className="px-2 py-2 text-xs font-medium text-[var(--muted)] transition hover:text-[var(--foreground)] sm:rounded-full sm:px-3 sm:text-sm sm:hover:bg-[var(--surface)]"
