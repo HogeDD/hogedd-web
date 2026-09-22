@@ -194,6 +194,8 @@ Auth0のHogeDD Web Applicationには次のURLを設定する。
 
 ブラウザからHogeDD APIを直接呼ばず、Next.jsのRoute HandlerをBFFとして使用する。Auth0 Access TokenはNext.jsサーバーとHogeDD APIの間だけで扱い、response、Client Component、Web Storageへ渡さない。Auth0 SDKの`/auth/access-token` routeは`enableAccessTokenEndpoint: false`で無効化する。
 
+loginからGo APIのJWT検証までの詳細は[`authentication-bff-flow.md`](./authentication-bff-flow.md)を参照する。
+
 環境変数を追加するとき:
 
 1. Vercel Project SettingsのEnvironment Variablesを開く。
