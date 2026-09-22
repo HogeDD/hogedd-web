@@ -9,7 +9,7 @@ import {
   type RegisteredUser,
   type UserProfile,
 } from "@/app/_lib/hogedd-api";
-import { updateDisplayName } from "@/app/mypage/actions";
+import { DisplayNameEditor } from "@/app/mypage/_components/display-name-editor";
 import { presentUser } from "@/app/mypage/_lib/user-presentation";
 
 export const metadata: Metadata = {
@@ -97,44 +97,11 @@ function AccountDetails({
 
   return (
     <div className="mt-12">
-      <form action={updateDisplayName} className="border-y border-[var(--border)] py-7">
-        <label
-          htmlFor="display_name"
-          className="block text-sm font-semibold text-[var(--foreground)]"
-        >
-          表示名
-        </label>
-        <div className="mt-3 flex max-w-2xl flex-col gap-3 sm:flex-row">
-          <input
-            id="display_name"
-            name="display_name"
-            type="text"
-            required
-            maxLength={50}
-            autoComplete="nickname"
-            defaultValue={profile.display_name}
-            className="min-h-11 min-w-0 flex-1 border border-[var(--border)] bg-white px-4 text-base text-[var(--foreground)] outline-none transition focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20"
-          />
-          <button
-            type="submit"
-            className="inline-flex min-h-11 shrink-0 items-center justify-center bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[var(--foreground)]"
-          >
-            変更を保存
-          </button>
-        </div>
-        {notice.updated ? (
-          <p role="status" className="mt-3 text-sm font-medium text-emerald-700">
-            表示名を更新しました。
-          </p>
-        ) : null}
-        {notice.error ? (
-          <p role="alert" className="mt-3 text-sm font-medium text-red-700">
-            {notice.error === "invalid"
-              ? "表示名を1〜50文字で入力してください。"
-              : "更新できませんでした。時間をおいて、もう一度お試しください。"}
-          </p>
-        ) : null}
-      </form>
+      <DisplayNameEditor
+        displayName={profile.display_name}
+        error={notice.error}
+        updated={notice.updated}
+      />
       <div className="mt-10 border-t border-[var(--border)]">
         <dl>
           {details.map(([label, value]) => (
