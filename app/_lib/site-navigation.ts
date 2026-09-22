@@ -8,6 +8,7 @@ type NavigationItem = {
 
 export const primaryNavigation: readonly NavigationItem[] = [
   { href: "/apps", label: "Apps" },
+  { href: "/mypage", label: "My Page" },
   { href: "/#about", label: "About" },
   { href: youtubeChannelUrl, label: "YouTube", external: true },
 ];
