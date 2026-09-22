@@ -177,6 +177,7 @@ ProductionではAuth0認証のために次の環境変数を設定する。
 | `AUTH0_SECRET`        | Secret | session cookieを暗号化するランダムな32 byteの値  |
 | `APP_BASE_URL`        | Config | Productionのorigin（`https://www.hogedd.com`）   |
 | `AUTH0_AUDIENCE`      | Config | HogeDD APIのaudience（`https://api.hogedd.com`） |
+| `HOGEDD_API_BASE_URL` | Config | BFFがserver-sideで接続するHogeDD APIのorigin     |
 
 `AUTH0_SECRET`は次のコマンドで生成し、生成結果をrepositoryへ保存せずVercelへ直接登録する。
 
@@ -190,6 +191,8 @@ Auth0のHogeDD Web Applicationには次のURLを設定する。
 - Allowed Logout URLs: `https://www.hogedd.com`
 
 環境変数の追加・変更は既存deploymentへ遡って反映されない。設定後に新しいdeploymentを作成する。
+
+ブラウザからHogeDD APIを直接呼ばず、Next.jsのRoute HandlerをBFFとして使用する。Auth0 Access TokenはNext.jsサーバーとHogeDD APIの間だけで扱い、response、Client Component、Web Storageへ渡さない。Auth0 SDKの`/auth/access-token` routeは`enableAccessTokenEndpoint: false`で無効化する。
 
 環境変数を追加するとき:
 
