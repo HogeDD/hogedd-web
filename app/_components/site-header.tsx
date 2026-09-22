@@ -58,7 +58,7 @@ export function SiteHeader() {
             <Link
               key={item.href}
               href={item.href}
-              prefetch={false}
+              prefetch={item.href === "/mypage" ? null : false}
               target={item.external ? "_blank" : undefined}
               rel={item.external ? "noreferrer" : undefined}
               className="px-2 py-2 text-xs font-medium text-[var(--muted)] transition hover:text-[var(--foreground)] sm:rounded-full sm:px-3 sm:text-sm sm:hover:bg-[var(--surface)]"
