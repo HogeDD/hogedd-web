@@ -165,6 +165,24 @@ Codexが検証用に起動する場合は、ユーザーが使う`3000`と競合
 npm run dev -- --hostname 0.0.0.0 --port 3100
 ```
 
+### Dockerで起動する
+
+Node.jsをhostへ直接入れず、DockerでWebだけを起動する場合は次を実行する。
+
+```bash
+docker build -f Dockerfile.dev -t hogedd-web-dev .
+docker run --rm --init \
+  --publish 3000:3000 \
+  --mount type=bind,source="$PWD",target=/workspace \
+  --mount type=volume,source=hogedd-web-node-modules,target=/workspace/node_modules \
+  --mount type=volume,source=hogedd-web-next,target=/workspace/.next \
+  hogedd-web-dev
+```
+
+http://localhost:3000 をbrowserで開く。Next.jsがsource codeの変更を検知し、画面へ反映する。
+
+`node_modules`と`.next`はDocker volumeへ保存され、hostのsource codeとは分離される。dependencyを変更した場合はimageを再buildする。APIやDBを含む統合起動は`hogedd-local`から行う。
+
 ## 作業を始める
 
 作業はIssueを作成してから、最新の`dev`からbranchを作る。
