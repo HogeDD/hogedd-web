@@ -1,8 +1,37 @@
 import { NextResponse } from "next/server";
 import { auth0 } from "@/app/_lib/auth0";
-import { registerAuthenticatedUser } from "@/app/_lib/hogedd-api";
+import { fetchCurrentUser, registerAuthenticatedUser } from "@/app/_lib/hogedd-api";
 
 export const dynamic = "force-dynamic";
+
+// GETは、Auth0 sessionの認証主体に紐づくHogeDD Userを返します。
+export async function GET() {
+  const apiBaseURL = process.env.HOGEDD_API_BASE_URL;
+  if (!auth0 || !apiBaseURL) {
+    return errorResponse(503, "service_unavailable", "service temporarily unavailable");
+  }
+
+  let accessToken: string;
+  try {
+    ({ token: accessToken } = await auth0.getAccessToken());
+  } catch {
+    return errorResponse(401, "unauthorized", "authentication required");
+  }
+
+  const result = await fetchCurrentUser(apiBaseURL, accessToken);
+  if (result.kind === "unauthorized") {
+    return errorResponse(401, "unauthorized", "authentication required");
+  }
+  if (result.kind === "not_found") {
+    return errorResponse(404, "user_not_found", "user not found");
+  }
+  if (result.kind === "unavailable") {
+    return errorResponse(502, "upstream_unavailable", "service temporarily unavailable");
+  }
+  return NextResponse.json(result.user, {
+    headers: { "Cache-Control": "no-store" },
+  });
+}
 
 // PUTは、Auth0 sessionの利用者をHogeDD Userとして冪等に登録します。
 export async function PUT() {
