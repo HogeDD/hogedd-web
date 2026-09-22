@@ -15,6 +15,9 @@ HogeDD Webは、ブラウザへAuth0 Access Tokenを渡さないBFF（Backend fo
 | `POST https://hogedd.jp.auth0.com/oauth/token`          | Next.jsサーバー                 | authorization codeまたはrefresh tokenをTokenへ交換するサーバー間通信 |
 | `GET https://www.hogedd.com/api/me`                     | ブラウザ                        | 現在の利用者を取得するHogeDD WebのBFF endpoint                       |
 | `GET https://api.hogedd.com/v1/me`                      | Next.jsサーバー                 | Bearer Tokenを検証し、認証主体を返すGo API                           |
+| `PUT https://www.hogedd.com/api/users/me`               | ブラウザ                        | 現在の利用者をHogeDD Userとして登録するBFF endpoint                  |
+| `PUT https://api.hogedd.com/v1/users/me`                | Next.jsサーバー                 | 認証主体とemail snapshotをPostgreSQLへ冪等に登録するGo API           |
+| `GET https://hogedd.jp.auth0.com/userinfo`              | Go API                          | Access Tokenの主体に紐づくemailを取得する                            |
 | `GET https://hogedd.jp.auth0.com/.well-known/jwks.json` | Go API                          | JWTの署名検証に使う公開鍵を取得する。取得後はcacheされる             |
 | `GET https://www.hogedd.com/auth/access-token`          | 呼び出し不可                    | Access Tokenをブラウザへ公開しないため`404`にしている                |
 
@@ -120,6 +123,49 @@ sequenceDiagram
     end
 ```
 
+## 3. 認証主体をHogeDD Userとして登録する
+
+login済みの利用者をHogeDDの`users`へ登録します。ブラウザはemailやroleを送らず、Go APIがAuth0からemailを取得します。
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as 利用者
+    participant Browser as ブラウザ
+    participant BFF as Next.js BFF<br/>PUT www.hogedd.com/api/users/me
+    participant SDK as Auth0 Next.js SDK
+    participant API as Go API<br/>PUT api.hogedd.com/v1/users/me
+    participant Auth0 as Auth0<br/>GET /userinfo
+    participant DB as Neon PostgreSQL<br/>users
+
+    User->>Browser: User登録を実行
+    Browser->>BFF: PUT /api/users/me<br/>Cookie: appSession=...
+    BFF->>SDK: auth0.getAccessToken()
+    SDK-->>BFF: Access Token（server内だけ）
+    BFF->>API: PUT /v1/users/me<br/>Authorization: Bearer ACCESS_TOKEN<br/>bodyなし
+    API->>API: JWTを検証し<br/>Identity(issuer, subject)を確定
+    API->>Auth0: GET /userinfo<br/>Authorization: Bearer ACCESS_TOKEN
+    Auth0-->>API: sub・email・email_verified
+    API->>API: JWTのsubjectと<br/>userinfoのsubを照合
+
+    alt 初回登録
+        API->>DB: INSERT role=member, status=active
+        DB-->>API: 作成したUser
+        API-->>BFF: 201 Created + User
+        BFF-->>Browser: 201 Created + User<br/>Location: /api/users/me
+    else 登録済み
+        API->>DB: UPDATE email snapshotのみ<br/>role・statusは維持
+        DB-->>API: 更新したUser
+        API-->>BFF: 200 OK + User
+        BFF-->>Browser: 200 OK + User
+    else Auth0 profile取得失敗
+        API-->>BFF: 502 Bad Gateway
+        BFF-->>Browser: 502 upstream_unavailable
+    end
+```
+
+自己登録時のroleは常に`member`です。`owner`や`admin`への変更はこのendpointのrequestでは受け付けず、将来の管理操作へ分離します。emailは通知先のsnapshotであり、Userの同一性は`issuer + subject`で判断します。
+
 ## Endpointごとの責務
 
 ### `GET www.hogedd.com/api/me`
@@ -145,6 +191,14 @@ Go API側の認証済みendpointです。
 5. `MeHandler`がcontextから`issuer`と`subject`だけを取り出して返す。
 
 このendpointはAccess Token内のemailを返しません。現在の`subject`は将来DBのuserと紐づけるための認証主体識別子です。
+
+### `PUT www.hogedd.com/api/users/me`
+
+Next.js側のUser登録BFFです。Auth0 sessionからAccess Tokenを取得し、request bodyなしでGo APIの`PUT /v1/users/me`を呼びます。Go APIのUser responseを検査し、初回の`201`と再実行時の`200`を維持してブラウザへ返します。
+
+### `PUT api.hogedd.com/v1/users/me`
+
+Go API側のUser登録endpointです。JWT検証後、同じAccess TokenでAuth0 `/userinfo`を呼び、取得した`sub`と検証済みJWTの`sub`を照合します。初回は`member`を作成し、登録済みの場合はemail snapshotだけを更新します。
 
 ## Status codeの変換
 
