@@ -39,10 +39,13 @@ feature/*, fix/*, docs/*, infra/*
         | PR
         v
        dev --------------------> Preview deployment
-        |
-        | release PR
-        v
-       main -------------------> Production deployment
+        | \
+        |  `-- release/* ------> 選択release
+        |                       （未公開appを除外）
+        `----------------------> 全体release
+                    |
+                    v
+                  main --------> Production deployment
                                   www.hogedd.com
 ```
 
@@ -66,7 +69,13 @@ feature/*, fix/*, docs/*, infra/*
 6. Vercel Previewで対象画面とRoute Handlerを確認する。
 7. `dev`へsquash mergeする。
 
-### 2. Production release
+### 2. Production release方式を選ぶ
+
+`dev`にある全差分を公開できるかでrelease方式を選ぶ。未公開appを含むかどうかは、画面上のリンクだけでなく、routeへ直接アクセスされた場合も含めて判断する。
+
+#### 全体release
+
+`dev`の全差分が公開可能な場合だけ使用する。
 
 1. `dev`から`main`へのrelease PRを作る。
 2. 差分とGitHub Actionsの`Web` checkを確認する。
@@ -75,16 +84,29 @@ feature/*, fix/*, docs/*, infra/*
 5. VercelのProduction deploymentがReadyになるまで待つ。
 6. `https://www.hogedd.com/`で主要ページとRoute Handlerを確認する。
 
+#### 選択release
+
+`dev`に公開準備中のappがある場合は、`main`を起点に`release/<目的>`を作り、公開対象のcommitだけを取り込む。`app/apps/**`を一律に含めたり除外したりせず、Issueと受け入れ条件を単位に選ぶ。
+
+1. 最新の`main`を起点にrelease branchを作る。
+2. 公開対象の`dev` commitを古い順に取り込む。
+3. `main`向けPRで、含める変更と除外する変更を列挙する。
+4. CI、Preview、`main`との差分を確認する。
+5. `Create a merge commit`で`main`へmergeする。
+6. Production確認後、release内容が`dev`にも存在することを確認し、最新`main`を`dev`の祖先として記録する同期PRを作る。
+
+最後の同期を省略すると、同じ変更が異なるcommitとして両branchへ残り、次回のreleaseやhotfix同期で既公開ファイルが競合する。同期時に競合が出た場合は、機械的に片側を採用せず、`main`だけに存在する変更が`dev`へ欠落していないか確認する。
+
 `main`へ直接pushしない。Productionを急いで直す場合も、原則としてfix branch、`dev`、release PRの履歴を残す。
 
 ### mainへmergeするときのGitHub操作
 
 開発PRとrelease PRではmerge方法が異なる。
 
-| PR             | 向き先             | 選ぶ操作                |
-| -------------- | ------------------ | ----------------------- |
-| 通常の開発PR   | 作業branch → `dev` | `Squash and merge`      |
-| 本番release PR | `dev` → `main`     | `Create a merge commit` |
+| PR             | 向き先                          | 選ぶ操作                |
+| -------------- | ------------------------------- | ----------------------- |
+| 通常の開発PR   | 作業branch → `dev`              | `Squash and merge`      |
+| 本番release PR | `dev`または`release/*` → `main` | `Create a merge commit` |
 
 release PRをmergeするとき:
 
@@ -110,7 +132,7 @@ release後も`dev`を削除しない。`dev`は長期branchであり、次の開
 - conflictをGitHub画面だけで推測して解決する。
 - rulesetを一時的に無効化する。
 
-まず作業を止め、release PRへconflictしていることをコメントする。過去にreleaseをsquash mergeしたことが原因なら、`main`起点の一時的な`release/*` branchで`dev`をmergeし、内容を`dev`と一致させたmerge commitを作る。そのbranchから`main`へPRを作り、`Create a merge commit`でmergeする。
+まず作業を止め、release PRへconflictしていることをコメントする。過去の選択release後に履歴同期が漏れている場合は、公開内容を変えずにbranchの親子関係だけを再接続できるか調査する。未公開appを含む`dev`を、競合解消のためだけに`main`へmergeしない。
 
 この復旧操作は履歴とファイル内容の両方を確認する必要があるため、慣れていない場合は手作業で進めずAIまたは経験者へ依頼する。
 
