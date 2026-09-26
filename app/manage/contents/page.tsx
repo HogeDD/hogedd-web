@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { fetchManagementApps } from "@/app/_lib/hogedd-api";
 import { CreateAppForm } from "@/app/manage/contents/_components/create-app-form";
 import { requireManagementContext } from "@/app/manage/_lib/management-context";
@@ -61,8 +62,9 @@ export default async function ManageContentsPage({
         ) : (
           <div className="mt-5 border-t border-[var(--border)]">
             {result.apps.map((app) => (
-              <div
+              <Link
                 key={app.slug}
+                href={`/manage/contents/${app.slug}`}
                 className="grid gap-2 border-b border-[var(--border)] py-5 sm:grid-cols-[minmax(0,1fr)_10rem_auto] sm:items-center"
               >
                 <div className="min-w-0">
@@ -75,7 +77,7 @@ export default async function ManageContentsPage({
                 <span className="text-xs font-semibold text-[var(--muted)]">
                   {app.status === "preparing" ? "準備中" : "公開中"}
                 </span>
-              </div>
+              </Link>
             ))}
           </div>
         )}
