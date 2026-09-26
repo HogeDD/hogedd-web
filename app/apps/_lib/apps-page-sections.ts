@@ -18,30 +18,18 @@ export const appsPageSections: readonly AppsPageSectionConfig[] = [
   },
 ];
 
-export function getAppsPageSections(): readonly AppsPageSection[] {
-  return appsPageSections.flatMap((section) => {
-    const apps = section.appSlugs.map((slug) => {
-      const app = publishedAppLinks.find((candidate) => candidate.slug === slug);
-
-      if (!app) {
-        throw new Error(`Published app not found: ${slug}`);
-      }
-
-      return app;
-    });
-
-    return apps.length > 0
-      ? [
-          {
-            id: section.id,
-            label: section.label,
-            apps,
-          },
-        ]
-      : [];
-  });
+export function getAppsPageSections(
+  recommendedApps: readonly PublishedAppLink[] = publishedAppLinks.filter(
+    (app) => app.slug === "clean-tasks",
+  ),
+): readonly AppsPageSection[] {
+  return recommendedApps.length > 0
+    ? [{ id: "recommended", label: "おすすめ", apps: recommendedApps }]
+    : [];
 }
 
-export function getAllPublishedApps(): readonly PublishedAppLink[] {
-  return publishedAppLinks;
+export function getAllPublishedApps(
+  apps: readonly PublishedAppLink[] = publishedAppLinks,
+): readonly PublishedAppLink[] {
+  return apps;
 }
