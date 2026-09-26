@@ -89,6 +89,16 @@ export type PublicApp = {
 
 export type PublicAppsAPIResult = { kind: "ok"; apps: PublicApp[] } | { kind: "unavailable" };
 
+export type AppRecommendations = {
+  latest?: PublicApp;
+  popular?: PublicApp;
+  trending?: PublicApp;
+};
+
+export type AppRecommendationsAPIResult =
+  | { kind: "ok"; recommendations: AppRecommendations }
+  | { kind: "unavailable" };
+
 export type CreateManagementAppAPIResult =
   | { kind: "ok"; app: ManagementApp }
   | { kind: "not_found" }
@@ -117,6 +127,26 @@ export async function fetchPublicApps(
     const body: unknown = await response.json();
     if (!isPublicAppsResponse(body)) return { kind: "unavailable" };
     return { kind: "ok", apps: body.data };
+  } catch {
+    return { kind: "unavailable" };
+  }
+}
+
+// fetchAppRecommendationsは、最新・人気・急上昇の公開Appを取得します。
+export async function fetchAppRecommendations(
+  baseURL: string,
+  fetchImplementation: Fetch = fetch,
+): Promise<AppRecommendationsAPIResult> {
+  try {
+    const response = await fetchImplementation(new URL("/v1/apps/recommendations", baseURL), {
+      headers: { Accept: "application/json" },
+      next: { revalidate: 300 },
+      signal: AbortSignal.timeout(requestTimeoutMilliseconds),
+    });
+    if (!response.ok) return { kind: "unavailable" };
+    const value: unknown = await response.json();
+    if (!isAppRecommendations(value)) return { kind: "unavailable" };
+    return { kind: "ok", recommendations: value };
   } catch {
     return { kind: "unavailable" };
   }
@@ -585,6 +615,14 @@ function isPublicAppsResponse(value: unknown): value is { data: PublicApp[] } {
         typeof value.youtube_url === "string"
       );
     })
+  );
+}
+
+function isAppRecommendations(value: unknown): value is AppRecommendations {
+  if (typeof value !== "object" || value === null) return false;
+  const result = value as Record<string, unknown>;
+  return ["latest", "popular", "trending"].every(
+    (key) => result[key] === undefined || isPublicAppsResponse({ data: [result[key]] }),
   );
 }
 
