@@ -9,11 +9,15 @@ import { requireManagementContext } from "@/app/manage/_lib/management-context";
 export async function publishApp(slug: string, formData: FormData) {
   const developmentDrive = value(formData, "development_drive");
   const youtubeUrl = value(formData, "youtube_url");
+  const status = value(formData, "status");
   const version = Number(value(formData, "version"));
-  if (!developmentDrive || !youtubeUrl || !Number.isSafeInteger(version) || version < 1)
+  if (status !== "private" && (!developmentDrive || !youtubeUrl))
+    redirect(`/manage/contents/${slug}?error=invalid`);
+  if (!Number.isSafeInteger(version) || version < 1)
     redirect(`/manage/contents/${slug}?error=invalid`);
   const { apiBaseURL, accessToken } = await requireManagementContext();
   const result = await publishManagementApp(apiBaseURL, accessToken, slug, {
+    status: status === "private" ? "private" : "published",
     development_drive: developmentDrive,
     youtube_url: youtubeUrl,
     version,

@@ -11,10 +11,12 @@ export function PublishAppForm({ app }: { app: ManagementApp & { version: number
       className="grid gap-5 border-t border-[var(--border)] pt-6"
     >
       <input type="hidden" name="version" value={app.version} />
+      <input type="hidden" name="status" value="published" />
       <label className="grid gap-2 text-sm font-medium">
         開発動機
         <input
           name="development_drive"
+          defaultValue={app.development_drive}
           required
           maxLength={200}
           placeholder="例: 学習DD"
@@ -26,6 +28,7 @@ export function PublishAppForm({ app }: { app: ManagementApp & { version: number
         <input
           name="youtube_url"
           type="url"
+          defaultValue={app.youtube_url}
           required
           placeholder="https://youtu.be/..."
           className="min-h-11 border border-[var(--border)] bg-white px-3 text-base outline-none focus:border-[var(--accent)]"
@@ -34,6 +37,21 @@ export function PublishAppForm({ app }: { app: ManagementApp & { version: number
       <div>
         <SubmitButton />
       </div>
+    </form>
+  );
+}
+
+export function MakePrivateForm({ app }: { app: ManagementApp & { version: number } }) {
+  return (
+    <form action={publishApp.bind(null, app.slug)}>
+      <input type="hidden" name="version" value={app.version} />
+      <input type="hidden" name="status" value="private" />
+      <button
+        type="submit"
+        className="min-h-11 border border-[var(--border)] px-5 text-sm font-semibold text-[var(--foreground)]"
+      >
+        非公開にする
+      </button>
     </form>
   );
 }
