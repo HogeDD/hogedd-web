@@ -54,7 +54,7 @@ export type ManagementApp = {
   slug: string;
   title: string;
   description: string;
-  status: "preparing" | "published";
+  status: "preparing" | "published" | "private";
   tags: string[];
   version?: number;
   published_at?: string;
@@ -337,7 +337,12 @@ export async function publishManagementApp(
   baseURL: string,
   accessToken: string,
   slug: string,
-  input: { development_drive: string; youtube_url: string; version: number },
+  input: {
+    status?: "published" | "private";
+    development_drive?: string;
+    youtube_url?: string;
+    version: number;
+  },
   fetchImplementation: Fetch = fetch,
 ): Promise<PublishManagementAppAPIResult> {
   try {
@@ -585,7 +590,7 @@ function isManagementApp(value: unknown): value is ManagementApp {
     app.title.length > 0 &&
     typeof app.description === "string" &&
     app.description.length > 0 &&
-    (app.status === "preparing" || app.status === "published") &&
+    (app.status === "preparing" || app.status === "published" || app.status === "private") &&
     Array.isArray(app.tags) &&
     app.tags.every((tag) => typeof tag === "string") &&
     (app.version === undefined || (Number.isSafeInteger(app.version) && Number(app.version) > 0))

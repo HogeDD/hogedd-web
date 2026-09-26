@@ -3,7 +3,10 @@ import { notFound } from "next/navigation";
 import { fetchManagementApp } from "@/app/_lib/hogedd-api";
 import { requireManagementContext } from "@/app/manage/_lib/management-context";
 import { EditAppForm } from "@/app/manage/contents/[slug]/_components/edit-app-form";
-import { PublishAppForm } from "@/app/manage/contents/[slug]/_components/publish-app-form";
+import {
+  MakePrivateForm,
+  PublishAppForm,
+} from "@/app/manage/contents/[slug]/_components/publish-app-form";
 
 export default async function ManageContentPage({
   params,
@@ -37,7 +40,11 @@ export default async function ManageContentPage({
           <h1 className="mt-3 text-3xl font-semibold sm:text-4xl">{result.app.title}</h1>
         </div>
         <span className="text-xs font-semibold text-[var(--muted)]">
-          {result.app.status === "preparing" ? "準備中" : "公開中"}
+          {result.app.status === "preparing"
+            ? "準備中"
+            : result.app.status === "private"
+              ? "非公開"
+              : "公開中"}
         </span>
       </div>
       {query.saved ? (
@@ -63,10 +70,10 @@ export default async function ManageContentPage({
           <EditAppForm app={result.app} />
         </div>
       </section>
-      {result.app.status === "preparing" ? (
+      {result.app.status === "preparing" || result.app.status === "private" ? (
         <section className="mt-14" aria-labelledby="publish-app">
           <h2 id="publish-app" className="text-lg font-semibold">
-            公開
+            {result.app.status === "private" ? "再公開" : "公開"}
           </h2>
           <p className="mt-2 text-sm text-[var(--muted)]">
             公開するとHogeDDの公開一覧に表示されます。
@@ -106,6 +113,9 @@ export default async function ManageContentPage({
               <dd className="mt-1">{result.app.published_at}</dd>
             </div>
           </dl>
+          <div className="mt-6">
+            <MakePrivateForm app={result.app} />
+          </div>
         </section>
       )}
     </div>
