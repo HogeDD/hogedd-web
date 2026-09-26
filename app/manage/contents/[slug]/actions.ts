@@ -10,17 +10,29 @@ export async function updateApp(slug: string, formData: FormData) {
   const title = value(formData, "title");
   const description = value(formData, "description");
   const version = Number(value(formData, "version"));
+  const status = value(formData, "status");
+  const developmentDrive = value(formData, "development_drive");
+  const youtubeUrl = value(formData, "youtube_url");
   const tags = value(formData, "tags")
     .split(",")
     .map((tag) => tag.trim())
     .filter(Boolean);
-  if (!title || !description || !Number.isSafeInteger(version) || version < 1)
+  if (
+    !title ||
+    !description ||
+    (status !== "private" && status !== "published") ||
+    !Number.isSafeInteger(version) ||
+    version < 1
+  )
     redirect(`/manage/contents/${slug}?error=invalid`);
   const { apiBaseURL, accessToken } = await requireManagementContext();
   const result = await updateManagementApp(apiBaseURL, accessToken, slug, {
     title,
     description,
     tags,
+    status,
+    development_drive: developmentDrive,
+    youtube_url: youtubeUrl,
     version,
   });
   if (result.kind === "not_found") redirect("/manage/contents");
