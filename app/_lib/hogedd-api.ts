@@ -50,6 +50,26 @@ export type ManagementUserAPIResult =
   | { kind: "not_found" }
   | { kind: "unavailable" };
 
+export type ManagementApp = {
+  slug: string;
+  title: string;
+  description: string;
+  status: "preparing" | "published";
+  tags: string[];
+};
+
+export type ManagementAppsAPIResult =
+  | { kind: "ok"; apps: ManagementApp[] }
+  | { kind: "not_found" }
+  | { kind: "unavailable" };
+
+export type CreateManagementAppAPIResult =
+  | { kind: "ok"; app: ManagementApp }
+  | { kind: "not_found" }
+  | { kind: "conflict" }
+  | { kind: "invalid" }
+  | { kind: "unavailable" };
+
 type Fetch = typeof fetch;
 
 const requestTimeoutMilliseconds = 5_000;
@@ -179,6 +199,76 @@ export async function fetchManagementUser(
   }
 }
 
+// fetchManagementAppsは、運営権限でdraftを含むApp一覧を取得します。
+export async function fetchManagementApps(
+  baseURL: string,
+  accessToken: string,
+  fetchImplementation: Fetch = fetch,
+): Promise<ManagementAppsAPIResult> {
+  try {
+    const response = await managementAppsRequest(
+      baseURL,
+      accessToken,
+      "GET",
+      undefined,
+      fetchImplementation,
+    );
+    if (response.status === 404) return { kind: "not_found" };
+    if (!response.ok) return { kind: "unavailable" };
+    const body: unknown = await response.json();
+    if (!isManagementAppsResponse(body)) return { kind: "unavailable" };
+    return { kind: "ok", apps: body.data };
+  } catch {
+    return { kind: "unavailable" };
+  }
+}
+
+// createManagementAppは、運営権限で公開準備中Appを作成します。
+export async function createManagementApp(
+  baseURL: string,
+  accessToken: string,
+  input: { slug: string; title: string; description: string; tags: string[] },
+  fetchImplementation: Fetch = fetch,
+): Promise<CreateManagementAppAPIResult> {
+  try {
+    const response = await managementAppsRequest(
+      baseURL,
+      accessToken,
+      "POST",
+      JSON.stringify(input),
+      fetchImplementation,
+    );
+    if (response.status === 404) return { kind: "not_found" };
+    if (response.status === 409) return { kind: "conflict" };
+    if (response.status === 400 || response.status === 422) return { kind: "invalid" };
+    if (response.status !== 201) return { kind: "unavailable" };
+    const body: unknown = await response.json();
+    return isManagementApp(body) ? { kind: "ok", app: body } : { kind: "unavailable" };
+  } catch {
+    return { kind: "unavailable" };
+  }
+}
+
+function managementAppsRequest(
+  baseURL: string,
+  accessToken: string,
+  method: "GET" | "POST",
+  body: string | undefined,
+  fetchImplementation: Fetch,
+) {
+  return fetchImplementation(new URL("/v1/management/apps", baseURL), {
+    method,
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${accessToken}`,
+      ...(body ? { "Content-Type": "application/json" } : {}),
+    },
+    body,
+    cache: "no-store",
+    signal: AbortSignal.timeout(requestTimeoutMilliseconds),
+  });
+}
+
 // fetchCurrentUserProfileは、現在Userの本人編集プロフィールを取得します。
 export async function fetchCurrentUserProfile(
   baseURL: string,
@@ -298,6 +388,28 @@ function isManagementUser(value: unknown): value is ManagementUser {
     typeof user.id === "string" &&
     user.id.length > 0 &&
     (user.role === "owner" || user.role === "admin")
+  );
+}
+
+function isManagementAppsResponse(value: unknown): value is { data: ManagementApp[] } {
+  if (typeof value !== "object" || value === null) return false;
+  const data = (value as Record<string, unknown>).data;
+  return Array.isArray(data) && data.every(isManagementApp);
+}
+
+function isManagementApp(value: unknown): value is ManagementApp {
+  if (typeof value !== "object" || value === null) return false;
+  const app = value as Record<string, unknown>;
+  return (
+    typeof app.slug === "string" &&
+    app.slug.length > 0 &&
+    typeof app.title === "string" &&
+    app.title.length > 0 &&
+    typeof app.description === "string" &&
+    app.description.length > 0 &&
+    (app.status === "preparing" || app.status === "published") &&
+    Array.isArray(app.tags) &&
+    app.tags.every((tag) => typeof tag === "string")
   );
 }
 
