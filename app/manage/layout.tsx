@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
-import { auth0 } from "@/app/_lib/auth0";
-import { fetchManagementUser, type ManagementUser } from "@/app/_lib/hogedd-api";
+import type { ManagementUser } from "@/app/_lib/hogedd-api";
+import { requireManagementContext } from "@/app/manage/_lib/management-context";
 
 export const metadata: Metadata = {
   title: "運営管理",
@@ -12,7 +11,7 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function ManageLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const user = await requireManagementUser();
+  const { user } = await requireManagementContext();
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
@@ -25,6 +24,12 @@ export default async function ManageLayout({ children }: Readonly<{ children: Re
             <span className="text-sm text-[var(--muted)]">Manage</span>
           </div>
           <nav aria-label="運営ナビゲーション" className="flex items-center gap-4 text-sm">
+            <Link
+              href="/manage/contents"
+              className="text-[var(--muted)] transition hover:text-[var(--foreground)]"
+            >
+              コンテンツ
+            </Link>
             <Link
               href="/"
               className="text-[var(--muted)] transition hover:text-[var(--foreground)]"
@@ -57,23 +62,6 @@ export default async function ManageLayout({ children }: Readonly<{ children: Re
       </div>
     </div>
   );
-}
-
-async function requireManagementUser(): Promise<ManagementUser> {
-  const authClient = auth0;
-  const apiBaseURL = process.env.HOGEDD_API_BASE_URL;
-  if (!authClient || !apiBaseURL) notFound();
-
-  let accessToken: string;
-  try {
-    ({ token: accessToken } = await authClient.getAccessToken());
-  } catch {
-    notFound();
-  }
-
-  const result = await fetchManagementUser(apiBaseURL, accessToken);
-  if (result.kind !== "ok") notFound();
-  return result.user;
 }
 
 function roleLabel(role: ManagementUser["role"]): string {
