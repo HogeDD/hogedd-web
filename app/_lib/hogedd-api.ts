@@ -40,6 +40,16 @@ export type UserProfileAPIResult =
   | { kind: "invalid" }
   | { kind: "unavailable" };
 
+export type ManagementUser = {
+  id: string;
+  role: "owner" | "admin";
+};
+
+export type ManagementUserAPIResult =
+  | { kind: "ok"; user: ManagementUser }
+  | { kind: "not_found" }
+  | { kind: "unavailable" };
+
 type Fetch = typeof fetch;
 
 const requestTimeoutMilliseconds = 5_000;
@@ -135,6 +145,34 @@ export async function fetchCurrentUser(
 
     const body: unknown = await response.json();
     if (!isRegisteredUser(body)) return { kind: "unavailable" };
+    return { kind: "ok", user: body };
+  } catch {
+    return { kind: "unavailable" };
+  }
+}
+
+// fetchManagementUserは、Access Tokenをserver-sideだけで使って運営権限を確認します。
+export async function fetchManagementUser(
+  baseURL: string,
+  accessToken: string,
+  fetchImplementation: Fetch = fetch,
+): Promise<ManagementUserAPIResult> {
+  try {
+    const response = await fetchImplementation(new URL("/v1/management/me", baseURL), {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      cache: "no-store",
+      signal: AbortSignal.timeout(requestTimeoutMilliseconds),
+    });
+
+    if (response.status === 404) return { kind: "not_found" };
+    if (!response.ok) return { kind: "unavailable" };
+
+    const body: unknown = await response.json();
+    if (!isManagementUser(body)) return { kind: "unavailable" };
     return { kind: "ok", user: body };
   } catch {
     return { kind: "unavailable" };
@@ -250,6 +288,16 @@ function isUserProfile(value: unknown): value is UserProfile {
     value !== null &&
     typeof (value as Record<string, unknown>).display_name === "string" &&
     ((value as Record<string, unknown>).display_name as string).length > 0
+  );
+}
+
+function isManagementUser(value: unknown): value is ManagementUser {
+  if (typeof value !== "object" || value === null) return false;
+  const user = value as Record<string, unknown>;
+  return (
+    typeof user.id === "string" &&
+    user.id.length > 0 &&
+    (user.role === "owner" || user.role === "admin")
   );
 }
 
