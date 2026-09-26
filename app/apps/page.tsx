@@ -3,9 +3,9 @@ import type { Metadata } from "next";
 import { SiteFooter } from "@/app/_components/site-footer";
 import { SiteHeader } from "@/app/_components/site-header";
 import { createPageMetadata } from "@/app/_lib/site-metadata";
-import { fetchPublicApps } from "@/app/_lib/hogedd-api";
+import { fetchAppRecommendations, fetchPublicApps } from "@/app/_lib/hogedd-api";
 import { toPublishedAppLink, type PublishedAppLink } from "@/app/apps/_lib/app-links";
-import { getAppsPageSections } from "@/app/apps/_lib/apps-page-sections";
+import { createRankedAppsPageSections } from "@/app/apps/_lib/apps-page-sections";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Apps",
@@ -15,19 +15,25 @@ export const metadata: Metadata = createPageMetadata({
 
 export default async function AppsPage() {
   const baseURL = process.env.HOGEDD_API_BASE_URL;
-  const [allResult, recommendedResult] = baseURL
-    ? await Promise.all([
-        fetchPublicApps(baseURL),
-        fetchPublicApps(baseURL, "/v1/apps/recommended"),
-      ])
+  const [allResult, recommendationsResult] = baseURL
+    ? await Promise.all([fetchPublicApps(baseURL), fetchAppRecommendations(baseURL)])
     : [{ kind: "unavailable" as const }, { kind: "unavailable" as const }];
   const allApps =
     allResult.kind === "ok" ? allResult.apps.map(toPublishedAppLink) : ([] as PublishedAppLink[]);
-  const recommendedApps =
-    recommendedResult.kind === "ok"
-      ? recommendedResult.apps.map(toPublishedAppLink)
-      : ([] as PublishedAppLink[]);
-  const sections = getAppsPageSections(recommendedApps);
+  const sections =
+    recommendationsResult.kind === "ok"
+      ? createRankedAppsPageSections({
+          latest: recommendationsResult.recommendations.latest
+            ? toPublishedAppLink(recommendationsResult.recommendations.latest)
+            : undefined,
+          popular: recommendationsResult.recommendations.popular
+            ? toPublishedAppLink(recommendationsResult.recommendations.popular)
+            : undefined,
+          trending: recommendationsResult.recommendations.trending
+            ? toPublishedAppLink(recommendationsResult.recommendations.trending)
+            : undefined,
+        })
+      : [];
 
   return (
     <main className="min-h-screen bg-[var(--background)]">
