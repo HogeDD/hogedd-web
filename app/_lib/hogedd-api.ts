@@ -56,7 +56,15 @@ export type ManagementApp = {
   description: string;
   status: "preparing" | "published";
   tags: string[];
+  version?: number;
 };
+
+export type ManagementAppAPIResult =
+  | { kind: "ok"; app: ManagementApp & { version: number } }
+  | { kind: "not_found" }
+  | { kind: "conflict" }
+  | { kind: "invalid" }
+  | { kind: "unavailable" };
 
 export type ManagementAppsAPIResult =
   | { kind: "ok"; apps: ManagementApp[] }
@@ -249,6 +257,77 @@ export async function createManagementApp(
   }
 }
 
+// fetchManagementAppは、運営権限でApp詳細と更新versionを取得します。
+export async function fetchManagementApp(
+  baseURL: string,
+  accessToken: string,
+  slug: string,
+  fetchImplementation: Fetch = fetch,
+): Promise<ManagementAppAPIResult> {
+  return managementAppDetailRequest(
+    baseURL,
+    accessToken,
+    slug,
+    "GET",
+    undefined,
+    fetchImplementation,
+  );
+}
+
+// updateManagementAppは、取得時versionを使って公開準備中Appを更新します。
+export async function updateManagementApp(
+  baseURL: string,
+  accessToken: string,
+  slug: string,
+  input: { title: string; description: string; tags: string[]; version: number },
+  fetchImplementation: Fetch = fetch,
+): Promise<ManagementAppAPIResult> {
+  return managementAppDetailRequest(
+    baseURL,
+    accessToken,
+    slug,
+    "PUT",
+    JSON.stringify(input),
+    fetchImplementation,
+  );
+}
+
+async function managementAppDetailRequest(
+  baseURL: string,
+  accessToken: string,
+  slug: string,
+  method: "GET" | "PUT",
+  body: string | undefined,
+  fetchImplementation: Fetch,
+): Promise<ManagementAppAPIResult> {
+  try {
+    const response = await fetchImplementation(
+      new URL(`/v1/management/apps/${encodeURIComponent(slug)}`, baseURL),
+      {
+        method,
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          ...(body ? { "Content-Type": "application/json" } : {}),
+        },
+        body,
+        cache: "no-store",
+        signal: AbortSignal.timeout(requestTimeoutMilliseconds),
+      },
+    );
+    if (response.status === 404) return { kind: "not_found" };
+    if (response.status === 409) return { kind: "conflict" };
+    if (response.status === 400 || response.status === 422) return { kind: "invalid" };
+    if (!response.ok) return { kind: "unavailable" };
+    const value: unknown = await response.json();
+    if (!isManagementApp(value) || !Number.isSafeInteger(value.version) || (value.version ?? 0) < 1)
+      return { kind: "unavailable" };
+    return { kind: "ok", app: value as ManagementApp & { version: number } };
+  } catch {
+    return { kind: "unavailable" };
+  }
+}
+
 function managementAppsRequest(
   baseURL: string,
   accessToken: string,
@@ -409,7 +488,8 @@ function isManagementApp(value: unknown): value is ManagementApp {
     app.description.length > 0 &&
     (app.status === "preparing" || app.status === "published") &&
     Array.isArray(app.tags) &&
-    app.tags.every((tag) => typeof tag === "string")
+    app.tags.every((tag) => typeof tag === "string") &&
+    (app.version === undefined || (Number.isSafeInteger(app.version) && Number(app.version) > 0))
   );
 }
 

@@ -1,8 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
 import {
   createManagementApp,
+  fetchManagementApp,
   fetchManagementApps,
   fetchManagementUser,
+  updateManagementApp,
 } from "@/app/_lib/hogedd-api";
 
 describe("Management API client", () => {
@@ -49,6 +51,55 @@ describe("Management API client", () => {
     );
 
     expect(result).toEqual({ kind: "unavailable" });
+  });
+});
+
+describe("Management App detail API client", () => {
+  const app = {
+    slug: "draft",
+    title: "Draft",
+    description: "Description",
+    status: "preparing" as const,
+    tags: ["Go"],
+    version: 2,
+  };
+
+  it("gets a versioned app detail", async () => {
+    const request = vi.fn<typeof fetch>().mockResolvedValue(Response.json(app));
+    await expect(
+      fetchManagementApp("https://api.hogedd.com", "token", "draft", request),
+    ).resolves.toEqual({ kind: "ok", app });
+    expect(request).toHaveBeenCalledWith(
+      new URL("https://api.hogedd.com/v1/management/apps/draft"),
+      expect.objectContaining({ method: "GET" }),
+    );
+  });
+
+  it("updates with the fetched version and maps conflicts", async () => {
+    const success = vi
+      .fn<typeof fetch>()
+      .mockResolvedValue(Response.json({ ...app, title: "Updated", version: 3 }));
+    const result = await updateManagementApp(
+      "https://api.hogedd.com",
+      "token",
+      "draft",
+      { title: "Updated", description: "Description", tags: ["Go"], version: 2 },
+      success,
+    );
+    expect(result.kind).toBe("ok");
+    expect(success).toHaveBeenCalledWith(
+      expect.any(URL),
+      expect.objectContaining({ method: "PUT", body: expect.stringContaining('"version":2') }),
+    );
+    await expect(
+      updateManagementApp(
+        "https://api.hogedd.com",
+        "token",
+        "draft",
+        { title: "Updated", description: "Description", tags: [], version: 2 },
+        vi.fn<typeof fetch>().mockResolvedValue(new Response(null, { status: 409 })),
+      ),
+    ).resolves.toEqual({ kind: "conflict" });
   });
 });
 
