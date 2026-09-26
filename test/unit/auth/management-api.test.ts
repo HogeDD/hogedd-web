@@ -84,7 +84,15 @@ describe("Management App detail API client", () => {
       "https://api.hogedd.com",
       "token",
       "draft",
-      { title: "Updated", description: "Description", tags: ["Go"], version: 2 },
+      {
+        title: "Updated",
+        description: "Description",
+        tags: ["Go"],
+        status: "private",
+        development_drive: "",
+        youtube_url: "",
+        version: 2,
+      },
       success,
     );
     expect(result.kind).toBe("ok");
@@ -97,7 +105,15 @@ describe("Management App detail API client", () => {
         "https://api.hogedd.com",
         "token",
         "draft",
-        { title: "Updated", description: "Description", tags: [], version: 2 },
+        {
+          title: "Updated",
+          description: "Description",
+          tags: [],
+          status: "private",
+          development_drive: "",
+          youtube_url: "",
+          version: 2,
+        },
         vi.fn<typeof fetch>().mockResolvedValue(new Response(null, { status: 409 })),
       ),
     ).resolves.toEqual({ kind: "conflict" });

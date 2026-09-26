@@ -319,7 +319,15 @@ export async function updateManagementApp(
   baseURL: string,
   accessToken: string,
   slug: string,
-  input: { title: string; description: string; tags: string[]; version: number },
+  input: {
+    title: string;
+    description: string;
+    tags: string[];
+    status: "private" | "published";
+    development_drive: string;
+    youtube_url: string;
+    version: number;
+  },
   fetchImplementation: Fetch = fetch,
 ): Promise<ManagementAppAPIResult> {
   return managementAppDetailRequest(
