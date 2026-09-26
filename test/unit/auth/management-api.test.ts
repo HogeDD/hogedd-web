@@ -4,6 +4,7 @@ import {
   fetchManagementApp,
   fetchManagementApps,
   fetchManagementUser,
+  publishManagementApp,
   updateManagementApp,
 } from "@/app/_lib/hogedd-api";
 
@@ -100,6 +101,30 @@ describe("Management App detail API client", () => {
         vi.fn<typeof fetch>().mockResolvedValue(new Response(null, { status: 409 })),
       ),
     ).resolves.toEqual({ kind: "conflict" });
+  });
+
+  it("publishes with the current version", async () => {
+    const request = vi.fn<typeof fetch>().mockResolvedValue(
+      Response.json({
+        ...app,
+        version: 3,
+        published_at: "2026-09-26T10:00:00Z",
+        development_drive: "学習DD",
+        youtube_url: "https://youtu.be/video",
+      }),
+    );
+    const result = await publishManagementApp(
+      "https://api.hogedd.com",
+      "token",
+      "draft",
+      { development_drive: "学習DD", youtube_url: "https://youtu.be/video", version: 2 },
+      request,
+    );
+    expect(result.kind).toBe("ok");
+    expect(request).toHaveBeenCalledWith(
+      new URL("https://api.hogedd.com/v1/management/apps/draft/publication"),
+      expect.objectContaining({ method: "PUT" }),
+    );
   });
 });
 
