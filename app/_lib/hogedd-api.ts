@@ -57,6 +57,9 @@ export type ManagementApp = {
   status: "preparing" | "published";
   tags: string[];
   version?: number;
+  published_at?: string;
+  development_drive?: string;
+  youtube_url?: string;
 };
 
 export type ManagementAppAPIResult =
@@ -65,6 +68,8 @@ export type ManagementAppAPIResult =
   | { kind: "conflict" }
   | { kind: "invalid" }
   | { kind: "unavailable" };
+
+export type PublishManagementAppAPIResult = ManagementAppAPIResult;
 
 export type ManagementAppsAPIResult =
   | { kind: "ok"; apps: ManagementApp[] }
@@ -290,6 +295,42 @@ export async function updateManagementApp(
     JSON.stringify(input),
     fetchImplementation,
   );
+}
+
+// publishManagementAppは、公開条件を満たしたDraftを公開します。
+export async function publishManagementApp(
+  baseURL: string,
+  accessToken: string,
+  slug: string,
+  input: { development_drive: string; youtube_url: string; version: number },
+  fetchImplementation: Fetch = fetch,
+): Promise<PublishManagementAppAPIResult> {
+  try {
+    const response = await fetchImplementation(
+      new URL(`/v1/management/apps/${encodeURIComponent(slug)}/publication`, baseURL),
+      {
+        method: "PUT",
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(input),
+        cache: "no-store",
+        signal: AbortSignal.timeout(requestTimeoutMilliseconds),
+      },
+    );
+    if (response.status === 404) return { kind: "not_found" };
+    if (response.status === 409) return { kind: "conflict" };
+    if (response.status === 400 || response.status === 422) return { kind: "invalid" };
+    if (!response.ok) return { kind: "unavailable" };
+    const value: unknown = await response.json();
+    if (!isManagementApp(value) || !Number.isSafeInteger(value.version) || (value.version ?? 0) < 1)
+      return { kind: "unavailable" };
+    return { kind: "ok", app: value as ManagementApp & { version: number } };
+  } catch {
+    return { kind: "unavailable" };
+  }
 }
 
 async function managementAppDetailRequest(
