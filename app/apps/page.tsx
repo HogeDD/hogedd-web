@@ -3,8 +3,9 @@ import type { Metadata } from "next";
 import { SiteFooter } from "@/app/_components/site-footer";
 import { SiteHeader } from "@/app/_components/site-header";
 import { createPageMetadata } from "@/app/_lib/site-metadata";
-import type { PublishedAppLink } from "@/app/apps/_lib/app-links";
-import { getAllPublishedApps, getAppsPageSections } from "@/app/apps/_lib/apps-page-sections";
+import { fetchPublicApps } from "@/app/_lib/hogedd-api";
+import { toPublishedAppLink, type PublishedAppLink } from "@/app/apps/_lib/app-links";
+import { getAppsPageSections } from "@/app/apps/_lib/apps-page-sections";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Apps",
@@ -12,9 +13,21 @@ export const metadata: Metadata = createPageMetadata({
   path: "/apps",
 });
 
-export default function AppsPage() {
-  const sections = getAppsPageSections();
-  const allApps = getAllPublishedApps();
+export default async function AppsPage() {
+  const baseURL = process.env.HOGEDD_API_BASE_URL;
+  const [allResult, recommendedResult] = baseURL
+    ? await Promise.all([
+        fetchPublicApps(baseURL),
+        fetchPublicApps(baseURL, "/v1/apps/recommended"),
+      ])
+    : [{ kind: "unavailable" as const }, { kind: "unavailable" as const }];
+  const allApps =
+    allResult.kind === "ok" ? allResult.apps.map(toPublishedAppLink) : ([] as PublishedAppLink[]);
+  const recommendedApps =
+    recommendedResult.kind === "ok"
+      ? recommendedResult.apps.map(toPublishedAppLink)
+      : ([] as PublishedAppLink[]);
+  const sections = getAppsPageSections(recommendedApps);
 
   return (
     <main className="min-h-screen bg-[var(--background)]">
@@ -88,7 +101,9 @@ export default function AppsPage() {
         <div className="relative mx-auto w-full max-w-6xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
           <h2 className="mb-10 text-3xl font-semibold tracking-tight sm:mb-12 sm:text-4xl">一覧</h2>
 
-          {allApps.length === 0 ? (
+          {allResult.kind !== "ok" ? (
+            <p className="text-sm text-[var(--muted)]">アプリを読み込めませんでした。</p>
+          ) : allApps.length === 0 ? (
             <p className="text-sm text-[var(--muted)]">公開中のアプリはまだありません。</p>
           ) : (
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">

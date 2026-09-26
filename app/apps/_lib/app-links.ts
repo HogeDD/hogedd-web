@@ -3,6 +3,7 @@ import {
   getYouTubeVideoId,
   getYouTubeWatchUrl,
 } from "@/app/apps/_lib/youtube";
+import type { PublicApp } from "@/app/_lib/hogedd-api";
 
 type AppLinkBase = {
   slug: string;
@@ -69,6 +70,18 @@ export function definePreparingAppLink(options: DefineAppLinkOptions): AppLink {
     status: "preparing",
     tags: options.tags ?? [],
   };
+}
+
+export function toPublishedAppLink(app: PublicApp): PublishedAppLink {
+  return defineAppLink(app.youtube_url, {
+    slug: app.slug,
+    title: app.title,
+    description: app.description,
+    appHref: `/apps/${app.slug}`,
+    publishedAt: app.published_at,
+    developmentDrive: app.development_drive,
+    tags: app.tags,
+  });
 }
 
 function getXShareUrl({ text, url }: { text: string; url: string }): string {

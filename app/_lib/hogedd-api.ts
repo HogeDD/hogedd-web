@@ -76,6 +76,19 @@ export type ManagementAppsAPIResult =
   | { kind: "not_found" }
   | { kind: "unavailable" };
 
+export type PublicApp = {
+  slug: string;
+  title: string;
+  description: string;
+  status: "published";
+  published_at: string;
+  tags: string[];
+  development_drive: string;
+  youtube_url: string;
+};
+
+export type PublicAppsAPIResult = { kind: "ok"; apps: PublicApp[] } | { kind: "unavailable" };
+
 export type CreateManagementAppAPIResult =
   | { kind: "ok"; app: ManagementApp }
   | { kind: "not_found" }
@@ -86,6 +99,28 @@ export type CreateManagementAppAPIResult =
 type Fetch = typeof fetch;
 
 const requestTimeoutMilliseconds = 5_000;
+
+// fetchPublicAppsは、公開済みアプリをHogeDD APIから取得します。
+export async function fetchPublicApps(
+  baseURL: string,
+  path = "/v1/apps",
+  fetchImplementation: Fetch = fetch,
+): Promise<PublicAppsAPIResult> {
+  try {
+    const response = await fetchImplementation(new URL(path, baseURL), {
+      method: "GET",
+      headers: { Accept: "application/json" },
+      cache: "no-store",
+      signal: AbortSignal.timeout(requestTimeoutMilliseconds),
+    });
+    if (!response.ok) return { kind: "unavailable" };
+    const body: unknown = await response.json();
+    if (!isPublicAppsResponse(body)) return { kind: "unavailable" };
+    return { kind: "ok", apps: body.data };
+  } catch {
+    return { kind: "unavailable" };
+  }
+}
 
 // fetchAuthenticatedIdentityは、Access Tokenをサーバー間通信だけに使って認証主体を取得します。
 export async function fetchAuthenticatedIdentity(
@@ -515,6 +550,29 @@ function isManagementAppsResponse(value: unknown): value is { data: ManagementAp
   if (typeof value !== "object" || value === null) return false;
   const data = (value as Record<string, unknown>).data;
   return Array.isArray(data) && data.every(isManagementApp);
+}
+
+function isPublicAppsResponse(value: unknown): value is { data: PublicApp[] } {
+  if (typeof value !== "object" || value === null) return false;
+  const data = (value as Record<string, unknown>).data;
+  return (
+    Array.isArray(data) &&
+    data.every((app) => {
+      if (typeof app !== "object" || app === null) return false;
+      const value = app as Record<string, unknown>;
+      return (
+        typeof value.slug === "string" &&
+        typeof value.title === "string" &&
+        typeof value.description === "string" &&
+        value.status === "published" &&
+        typeof value.published_at === "string" &&
+        Array.isArray(value.tags) &&
+        value.tags.every((tag) => typeof tag === "string") &&
+        typeof value.development_drive === "string" &&
+        typeof value.youtube_url === "string"
+      );
+    })
+  );
 }
 
 function isManagementApp(value: unknown): value is ManagementApp {
